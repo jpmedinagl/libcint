@@ -7,6 +7,24 @@ set(cint_VERSION_TWEAK "0")
 set(cint_VERSION "${cint_VERSION_MAJOR}.${cint_VERSION_MINOR}.${cint_VERSION_PATCH}")
 set(cint_SOVERSION "${cint_VERSION_MAJOR}")
 
+# CC="/u/jpmedina/llvm-project-14.0.6/build/bin/clang"
+
+# set(CMAKE_C_COMPILER "/u/jpmedina/llvm-project-14.0.6/build/bin/clang")
+message("set clang")
+
+if ("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto --save-temps -fuse-ld=lld")
+    message("Clang found")
+    # target_link_libraries(Foobar -flto)
+endif ()
+
+#cmake_policy(SET CMP0069 NEW) 
+#set(CMAKE_POLICY_DEFAULT_CMP0069 NEW)
+#include(CheckIPOSupported)
+#check_ipo_supported()
+#set_target_properties(cint PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+
+
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE RELWITHDEBINFO)
   message("Build type RELWITHDEBINFO")
@@ -37,6 +55,13 @@ endif()
 cmake_policy(SET CMP0042 NEW)
 include(GNUInstallDirs)
 #set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+find_package(Enzyme REQUIRED CONFIG NO_DEFAULT_PATH)
+message("found dir ${Enzyme_DIR}")
+message("found ${Enzyme_FOUND}")
+get_property(importTargetsAfter DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY IMPORTED_TARGETS)
+message("imported targets ${importTargetsAfter}")
+
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 find_package(QUADMATH)
@@ -173,10 +198,9 @@ set_target_properties(cint PROPERTIES
   SOVERSION ${cint_SOVERSION}
   LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 if(QUADMATH_FOUND)
-  target_link_libraries(cint quadmath)
+  target_link_libraries(cint quadmath -flto LLDEnzymeFlags)
 endif()
-target_link_libraries(cint "-lm")
-
+target_link_libraries(cint "-lm" -flto LLDEnzymeFlags)
 
 set(CintHeaders
   ${PROJECT_SOURCE_DIR}/include/cint_funcs.h
@@ -243,5 +267,3 @@ if(HAVE_QUADMATH)
 endif()
 
 set(CPACK_COMPONENTS_GROUPING "IGNORE")
-
-include(CPack)
