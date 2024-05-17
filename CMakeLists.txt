@@ -13,7 +13,7 @@ set(cint_SOVERSION "${cint_VERSION_MAJOR}")
 message("set clang")
 
 if ("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto --save-temps -fuse-ld=lld")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto") # --save-temps -fuse-ld=lld")
     message("Clang found")
     # target_link_libraries(Foobar -flto)
 endif ()
