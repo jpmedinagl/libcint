@@ -51,7 +51,7 @@ int main(int argc, char ** argv)
 	int * bas = malloc(sizeof(int) * nbas * BAS_SLOTS);
 	double * env = malloc(sizeof(double) * 10000);
 
-	FILE * file = fopen("~/libcint/molecules/h2/basis.txt", "r");
+	FILE * file = fopen("/u/jpmedina/libcint/molecules/h2/basis.txt", "r");
  	read_arrays(file, natm, nbas, &atm, &bas, &env);
 	
 	int di, dj;
