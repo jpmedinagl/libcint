@@ -79,6 +79,8 @@ int main(int argc, char ** argv)
 		for (int j = 0; j < nbas; j++) {
 			for (int k = 0; k < nbas; k++) {
 				for (int l = 0; l < nbas; l++) {
+					// printf("%d %d %d %d\n", i, j, k, l);
+					
 					shls[0] = i; di = CINTcgto_cart(i, bas);
 					shls[1] = j; dj = CINTcgto_cart(j, bas);
 					shls[2] = k; dk = CINTcgto_cart(k, bas);
@@ -96,15 +98,13 @@ int main(int argc, char ** argv)
 					for (int m = 28; m < 34; m++) {
                         			printf("%f ", denv[m]);
                     			}
+					printf("\n");
 
 					free(buf);
 			        	free(denv);
 				}
-				printf("\n");
 			}
-			printf("\n");
 		}
-		printf("\n");
 	}
 	printf("\n");
 
