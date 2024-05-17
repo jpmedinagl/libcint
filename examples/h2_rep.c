@@ -3,11 +3,6 @@
 #include <math.h>
 #include "cint.h"
 
-// int cint2e_cart(double *buf, int *atm, int natm, int *bas, int nbas, 
-// 				double *env, CINTOpt * opt);
-
-// typedef int (* Int_cart)(double *buf, int *atm, int natm, int *bas, int nbas, 
-// 						double *env, CINTOpt * opt);
 
 void read_arrays(FILE * file, int natm, int nbas, int ** atm, int ** bas, double ** env)
 {
@@ -67,8 +62,8 @@ int main(int argc, char ** argv)
 					buf = malloc(sizeof(double) * di * dj * dk * dl);
 					cint2e_cart(buf, shls, atm, natm, bas, nbas, env, NULL);
 
-					for (int k = 0; k < di * dj * dk * dl; k++) {
-						printf("%f ", buf[k]);
+					for (int m = 0; m < di * dj * dk * dl; m++) {
+						printf("%f ", buf[m]);
 					}
 					free(buf);
 				}
