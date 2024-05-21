@@ -298,16 +298,16 @@ double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, in
 int main()
 {
     int natm = 2;
-	int nbas = 2;
+    int nbas = 2;
     int nelec = 1; // ?
     int nshells = 1; // ?
 
-	int * atm = malloc(sizeof(int) * natm * ATM_SLOTS);
-	int * bas = malloc(sizeof(int) * nbas * BAS_SLOTS);
-	double * env = malloc(sizeof(double) * 10000);
+    int * atm = malloc(sizeof(int) * natm * ATM_SLOTS);
+    int * bas = malloc(sizeof(int) * nbas * BAS_SLOTS);
+    double * env = malloc(sizeof(double) * 10000);
 
     FILE * file = fopen("/u/jpmedina/libcint/molecules/h2/basis.txt", "r");
- 	read_arrays(file, natm, nbas, &atm, &bas, &env);
+    read_arrays(file, natm, nbas, &atm, &bas, &env);
 
-
+    // RHF
 }
