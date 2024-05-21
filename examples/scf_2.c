@@ -7,13 +7,13 @@
 #define N_STO 3
 
 typedef struct array {
-    double * matrix;
+    double * m;
     int row;
     int col;
 } Array;
 
 typedef struct array_two {
-    double * matrix;
+    double * m;
     int x;
     int y;
     int w;
@@ -54,7 +54,7 @@ Array * c_arr(int x, int y)
     double * mat = malloc(sizeof(double) * (x * y));
     memset(mat, 0, sizeof(double) * (x * y));
 
-    arr->matrix = mat;
+    arr->m = mat;
     arr->row = x;
     arr->col = y;
 
@@ -68,7 +68,7 @@ Array_t * c_arr_doub(int x, int y, int w, int z)
     double * mat = malloc(sizeof(double) * (x * y * w * z));
     memset(mat, 0, sizeof(double) * (x * y * w * z));
 
-    arr->matrix = mat;
+    arr->m = mat;
     arr->x = x;
     arr->y = y;
     arr->w = w;
@@ -109,16 +109,16 @@ void integrals(int natm, int nbas, int * atm, int * bas, double * env, Array ** 
 
             buf = malloc(sizeof(double) * di * dj);
             cint1e_ovlp_cart(buf, shls, atm, natm, bas, nbas, env);
-            (*S)->matrix[i * (*S)->row + j] = buf[0]; // what if di and dj are > than 1 ???
+            (*S)->m[i * (*S)->row + j] = buf[0];
 
             cint1e_kin_cart(buf, shls, atm, natm, bas, nbas, env);
-            (*T)->matrix[i * (*T)->row + j] = buf[0];
+            (*T)->m[i * (*T)->row + j] = buf[0];
 
             cint1e_nuc_cart(buf, shls, atm, natm, bas, nbas, env);
-            (*V)->matrix[i * (*V)->row + j] = buf[0];
+            (*V)->m[i * (*V)->row + j] = buf[0];
             free(buf);
 
-            (*H)->matrix[i * (*T)->row + j] = (*T)->matrix[i * (*T)->row + j] + (*V)->matrix[i * (*V)->row + j];
+            (*H)->m[i * (*T)->row + j] = (*T)->m[i * (*T)->row + j] + (*V)->m[i * (*V)->row + j];
 
             for (int k = 0; k < nbas; k++) {
                 for (int l = 0; l < nbas; l++) {
@@ -127,8 +127,7 @@ void integrals(int natm, int nbas, int * atm, int * bas, double * env, Array ** 
 
                     buf = malloc(sizeof(double) * di * dj * dk * dl);
                     cint2e_cart(buf, shls, atm, natm, bas, nbas, env, NULL);
-                    // (*two)->matrix[(i * (*two)->x) + (j * (*two)->y) + (k * (*two)->w)]
-                    // how ??
+                    (*two)->m[(int) (i*pow(nbas, 3) + j*pow(nbas, 2) + k*nbas + l)];
                     free(buf);
                 }
             }
@@ -136,7 +135,7 @@ void integrals(int natm, int nbas, int * atm, int * bas, double * env, Array ** 
     }
 }
 
-void find_X(double ** S, double *** X, double *** X_dag) 
+void find_X(Array S, Array * X, Array * X_dag) 
 {
     // sval, U = np.linalg.eig(S)
     // # X = np.matmul(U,np.linalg.inv(s**0.5)) # canonical orthonogalization
@@ -155,46 +154,80 @@ void calc_F(int nbas, Array P, Array_t two, Array H, Array ** G, Array ** F)
         for (int nu = 0; nu < nbas; nu++) {
             for (int la = 0; la < nbas; la++) {
                 for (int sig = 0; sig < nbas; sig++) {
-                    (*G)->matrix[mu * (*G)->row + nu] += P.matrix[la * P.row + sig]; // ?????? * (two[mu][nu][sig][la] - 0.5 * two[mu][la][sig][nu]);
+                    (*G)->m[mu * (*G)->row + nu] += P.m[la * P.row + sig] 
+                        * (two.m[(int) (mu*pow(nbas, 3) + nu*pow(nbas, 2) + sig*nbas + la)] 
+                        - 0.5 * two.m[(int) (mu*pow(nbas, 3) + la*pow(nbas, 2) + sig*nbas + nu)]);
                 }
             }
 
-            (*F)->matrix[mu * (*F)->row + nu] += (*G)->matrix[mu * (*G)->row + nu] + H.matrix[mu * H.row + nu];
+            (*F)->m[mu * (*F)->row + nu] += (*G)->m[mu * (*G)->row + nu] + H.m[mu * H.row + nu];
         }
     }
 }
 
-void calc_Fprime(double ** F, double ** X, double ** X_dag, double *** Fprime) 
+void calc_Fprime(Array F, Array X, Array X_dag, Array ** Fprime) 
 {
-    return NULL;
+    // Fprime = np.matmul(np.matmul(Xdag, F), X)
+
+    Array * inter = c_arr(X_dag.row, F.col);
+    CINTdgemm_NN(X_dag.row, F.row, F.col, X_dag.m, F.m, inter->m);
+
+    *Fprime = c_arr(inter->row, X.col);
+    CINTdgemm_NN(inter->row, X.row, X.col, inter->m, X.m, (*Fprime)->m);
+
+    // free intermediate !!
 }
 
-void diag_F(double ** Fprime, double ** X, double *** C, double *** epsilon)
+void diag_F(Array Fprime, Array X, Array ** C, Array ** epsilon)
 {
+    Array * U = c_arr(Fprime.row, Fprime.col);
     // U = np.linalg.eig(Fprime)[1]
+    // (how do I get [1] from eig) ??
+    // use _CINTdiagonalize ??
+
+    Array * Udag = c_arr(U->row, U->col);
     // Udag = np.transpose(U)
+    CINTdmat_transpose(Udag->m, U->m, U->row, U->col);
+    
+    Array * inter = c_arr(Udag->row, Fprime.col);
+    // np.matmul(Udag, Fprime)
+    CINTdgemm_NN(Udag->row, Fprime.row, Fprime.col, Udag->m, Fprime.m, inter->m);
+    
+    Array * f = c_arr(inter->row, U->col);
     // f = np.matmul(np.matmul(Udag, Fprime), U)
+    CINTdgemm_NN(inter->row, U->row, U->col, inter->m, U->m, f->m);
+
+    Array * Cprime = c_arr(U->row, U->col);
     // Cprime = U
+    memcpy(Cprime->m, U->m, sizeof(U->m));
+
+    *epsilon = c_arr(f->row, f->col);
     // epsilon = f
+    memcpy((*epsilon)->m, f->m, sizeof(f->m));
+
+    *C = c_arr(X.row, Cprime->col);
     // C = np.matmul(X, Cprime)
+    CINTdgemm_NN(X.row, Cprime->row, Cprime->col, X.m, Cprime->m, (*C)->m);
+    
     // return C, epsilon
-    return NULL;
+
+    // free U, Udag, intermediate, f, Cprime !! 
 }
 
-double ** calc_P(int nbas, int nelec, double ** C) 
+Array * calc_P(int nbas, int nelec, Array C) 
 {
-    double ** P = c_arr(nbas, nbas);
+    Array * P = c_arr(nbas, nbas);
     for (int mu = 0; mu < nbas; mu++) {
         for (int nu = 0; nu < nbas; nu++) {
             for (int i = 0; i < (nelec / 2); i++) {
-                P[mu][nu] += 2.0 * C[mu][i] * C[nu][i];
+                P->m[mu * P->row + nu] += 2.0 * C.m[mu * C.row + i] * C.m[nu * C.row + i];
             }
         }
     }
     return P;
 }
 
-double f_delta(int nbas, double ** P, double ** P_old) 
+double f_delta(int nbas, Array P, Array P_old) 
 {
     double delta = 0;
     for (int mu = 0; mu < nbas; mu++) {
@@ -206,46 +239,42 @@ double f_delta(int nbas, double ** P, double ** P_old)
     return delta;
 }
 
-double RHF(int natm, int nbas, int * atm, int * bas, double * env, int imax, double conv)
+double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, int imax, double conv)
 {   
-    double ** S, ** T, ** V, ** H;
-    double **** two;
+    Array S, T, V, H;
+    Array_t two;
     integrals(natm, nbas, atm, bas, env, &S, &T, &V, &H, &two);
 
-    double ** X, ** X_dag;
+    Array X, X_dag;
     find_X(S, &X, &X_dag);
 
     // P is identity
-    double ** P = c_arr(nbas, nbas);
+    Array * P = c_arr(nbas, nbas);
     for (int i = 0; i < nbas; i++) {
         for (int j = 0; j < nbas; j++) {
             if (i == j) {
-                P[i][j] = 1.0;
+                P->m[i * P->row + j] = 1.0;
             }
         }
     }
 
-    int nelec = 8;
-
     int i = 0;
     double delta = 1.0;
 
-    double ** P, ** Pold;
+    Array * Pold;
+    Array G, F;
+    Array Fprime;
+    Array C, epsilon;
     while (delta > conv && i < imax) {
         Pold = P;
         
-        double ** G, ** F;
-        calc_F(nbas, P, two, H, &G, &F);
-
-        double ** Fprime;
+        calc_F(nbas, *P, two, H, &G, &F);
         calc_Fprime(F, X, X_dag, &Fprime);
-
-        double ** C, ** epsilon;
         diag_F(Fprime, X, &C, &epsilon);
 
         P = calc_P(nbas, nelec, C);
 
-        delta = f_delta(nbas, P, Pold);
+        delta = f_delta(nbas, *P, *Pold);
         i++;
     }
 
@@ -256,7 +285,7 @@ double RHF(int natm, int nbas, int * atm, int * bas, double * env, int imax, dou
     double E0 = 0.0;
     for (int mu = 0; mu < nbas; mu++) {
         for (int nu = 0; nu < nbas; nu++) {
-            E0 += 0.5 * P[mu][nu] * (H[mu][nu] + F[mu][nu]);
+            E0 += 0.5 * P->m[mu * P->row + nu] * (H.m[mu * H.row + nu] + F.m[mu * F.row + nu]);
         }
     }
 
@@ -270,6 +299,8 @@ int main()
 {
     int natm = 2;
 	int nbas = 2;
+    int nelec = 1; // ?
+    int nshells = 1; // ?
 
 	int * atm = malloc(sizeof(int) * natm * ATM_SLOTS);
 	int * bas = malloc(sizeof(int) * nbas * BAS_SLOTS);
