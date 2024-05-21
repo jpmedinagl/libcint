@@ -85,34 +85,34 @@ void integrals(int natm, int nbas, int * atm, int * bas, double * env, double **
     *two = c_arr_doub(nbas, nbas, nbas, nbas);
 
     int di, dj, dk, dl;
-	int shls[4];
-
-	double * buf;
+    int shls[4];
+    
+    double * buf;
     for (int i = 0; i < nbas; i++) {
 		for (int j = 0; j < nbas; j++) {
-			shls[0] = i; di = CINTcgto_cart(i, bas);
-			shls[1] = j; dj = CINTcgto_cart(j, bas);
+            shls[0] = i; di = CINTcgto_cart(i, bas);
+            shls[1] = j; dj = CINTcgto_cart(j, bas);
 
-			buf = malloc(sizeof(double) * di * dj);
-			cint1e_ovlp_cart(buf, shls, atm, natm, bas, nbas, env);
+            buf = malloc(sizeof(double) * di * dj);
+            cint1e_ovlp_cart(buf, shls, atm, natm, bas, nbas, env);
             (*S)[i][j] = buf[0]; // what if di and dj are > than 1 ???
-			
-			cint1e_kin_cart(buf, shls, atm, natm, bas, nbas, env);
+
+            cint1e_kin_cart(buf, shls, atm, natm, bas, nbas, env);
             (*T)[i][j] = buf[0];
-			
-			cint1e_nuc_cart(buf, shls, atm, natm, bas, nbas, env);
+
+            cint1e_nuc_cart(buf, shls, atm, natm, bas, nbas, env);
             (*V)[i][j] = buf[0];
-			free(buf);
+            free(buf);
 
             (*H)[i][j] = (*T)[i][j] + (*V)[i][j];
 
             for (int k = 0; k < nbas; k++) {
-				for (int l = 0; l < nbas; l++) {
+                for (int l = 0; l < nbas; l++) {
                     shls[2] = k; dk = CINTcgto_cart(k, bas);
-					shls[3] = l; dl = CINTcgto_cart(l, bas);
+                    shls[3] = l; dl = CINTcgto_cart(l, bas);
 
                     buf = malloc(sizeof(double) * di * dj * dk * dl);
-					cint2e_cart(buf, shls, atm, natm, bas, nbas, env, NULL);
+                    cint2e_cart(buf, shls, atm, natm, bas, nbas, env, NULL);
                     free(buf);
                 }
             }
