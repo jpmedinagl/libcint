@@ -89,7 +89,7 @@ void integrals(int natm, int nbas, int * atm, int * bas, double * env, double **
     
     double * buf;
     for (int i = 0; i < nbas; i++) {
-		for (int j = 0; j < nbas; j++) {
+        for (int j = 0; j < nbas; j++) {
             shls[0] = i; di = CINTcgto_cart(i, bas);
             shls[1] = j; dj = CINTcgto_cart(j, bas);
 
@@ -116,8 +116,8 @@ void integrals(int natm, int nbas, int * atm, int * bas, double * env, double **
                     free(buf);
                 }
             }
-		}
-	}
+        }
+    }
 }
 
 void find_X(double ** S, double *** X, double *** X_dag) 
