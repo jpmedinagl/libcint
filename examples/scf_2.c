@@ -146,7 +146,7 @@ void find_X(double ** S, double *** X, double *** X_dag)
     return NULL;
 }
 
-void calc_F(int nbas, double ** P, double **** two, double ** H, double *** G, double *** F) 
+void calc_F(int nbas, Array P, Array_t two, Array H, Array ** G, Array ** F) 
 {
     *G = c_arr(nbas, nbas);
     *F = c_arr(nbas, nbas);
@@ -155,11 +155,11 @@ void calc_F(int nbas, double ** P, double **** two, double ** H, double *** G, d
         for (int nu = 0; nu < nbas; nu++) {
             for (int la = 0; la < nbas; la++) {
                 for (int sig = 0; sig < nbas; sig++) {
-                    (*G)[mu][nu] += P[la][sig] * (two[mu][nu][sig][la] - 0.5 * two[mu][la][sig][nu]);
+                    (*G)->matrix[mu * (*G)->row + nu] += P.matrix[la * P.row + sig]; // ?????? * (two[mu][nu][sig][la] - 0.5 * two[mu][la][sig][nu]);
                 }
             }
 
-            (*F)[mu][nu] += (*G)[mu][nu] + (*H)[mu][nu];
+            (*F)->matrix[mu * (*F)->row + nu] += (*G)->matrix[mu * (*G)->row + nu] + H.matrix[mu * H.row + nu];
         }
     }
 }
