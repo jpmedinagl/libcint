@@ -20,6 +20,16 @@ typedef struct array_two {
     int z;
 } Array_t;
 
+void free_arr(Array * arr) {
+    free(arr->m);
+    free(arr);
+}
+
+void free_arr_t(Array_t * arr) {
+    free(arr->m);
+    free(arr);
+}
+
 void read_arrays(FILE * file, int natm, int nbas, int ** atm, int ** bas, double ** env)
 {
 	double num;
@@ -135,14 +145,44 @@ void integrals(int natm, int nbas, int * atm, int * bas, double * env, Array ** 
     }
 }
 
-void find_X(Array S, Array * X, Array * X_dag) 
+void find_X(Array S, Array ** X, Array ** X_dag) 
 {
     // sval, U = np.linalg.eig(S)
-    // # X = np.matmul(U,np.linalg.inv(s**0.5)) # canonical orthonogalization
+
+    Array * diag = c_arr(S.row, 1);
+    Array * diag_off = c_arr(S.row - 1, 1);
+    for (int i = 0; i < S.row; i++) {
+        for(int j = 0; j < S.col; j++) {
+            if (i == j) {
+                diag->m[i] = S.m[i * S.row + j];
+            } else if (i - 1 == j) {
+                diag_off->m[i] = S.m[i * S.row + j];
+            }
+        }
+    }
+    
+    Array * eig = c_arr(1, S.col);
+    Array * U = c_arr(S.row, S.col);
+    _CINTdiagonalize(S.row, diag->m, diag_off->m, eig->m, U->m);
+
+    Array * diag_eig = c_arr(S.col, S.col);
+    for (int i = 0; i < S.col; i++) {
+        for (int j = 0; j < S.col; j++) {
+            if (i == j) {
+                diag_eig->m[i] = pow(eig->m[i], -0.5);
+            }
+        }
+    }
+
     // X = np.matmul(U, np.diag(sval ** (-0.5)))  # symmetric orthogonalization
+    *X = c_arr(U->row, diag_eig->row);
+    CINTdgemm_NN(U->row, diag_eig->row, diag_eig->col, U->m, diag_eig->m, (*X)->m);
+
     // Xdag = X.T
+    *X_dag = c_arr((*X)->row, (*X)->col);
+    CINTdmat_transpose((*X_dag)->m, (*X)->m, (*X)->row, (*X)->col);
+    
     // return X, Xdag
-    return NULL;
 }
 
 void calc_F(int nbas, Array P, Array_t two, Array H, Array ** G, Array ** F) 
@@ -175,15 +215,31 @@ void calc_Fprime(Array F, Array X, Array X_dag, Array ** Fprime)
     *Fprime = c_arr(inter->row, X.col);
     CINTdgemm_NN(inter->row, X.row, X.col, inter->m, X.m, (*Fprime)->m);
 
-    // free intermediate !!
+    // free intermediate
+    free_arr(inter);
 }
 
 void diag_F(Array Fprime, Array X, Array ** C, Array ** epsilon)
 {
-    Array * U = c_arr(Fprime.row, Fprime.col);
+    // Array * U = c_arr(Fprime.row, Fprime.col);
     // U = np.linalg.eig(Fprime)[1]
-    // (how do I get [1] from eig) ??
-    // use _CINTdiagonalize ??
+
+    // Array * eig = c_arr(1, Fprime.col);
+    // don't need the eigenvalues
+    Array * diag = c_arr(Fprime.row, 1);
+    Array * diag_off = c_arr(Fprime.row - 1, 1);
+    for (int i = 0; i < Fprime.row; i++) {
+        for(int j = 0; j < Fprime.col; j++) {
+            if (i == j) {
+                diag->m[i] = Fprime.m[i * Fprime.row + j];
+            } else if (i - 1 == j) {
+                diag_off->m[i] = Fprime.m[i * Fprime.row + j];
+            }
+        }
+    }
+
+    Array * U = c_arr(Fprime.row, Fprime.col);
+    _CINTdiagonalize(Fprime.row, Fprime.m, diag, diag_off, NULL, U->m);
 
     Array * Udag = c_arr(U->row, U->col);
     // Udag = np.transpose(U)
@@ -211,7 +267,12 @@ void diag_F(Array Fprime, Array X, Array ** C, Array ** epsilon)
     
     // return C, epsilon
 
-    // free U, Udag, intermediate, f, Cprime !! 
+    // free U, Udag, intermediate, f, Cprime
+    free_arr(U);
+    free_arr(Udag);
+    free_arr(inter);
+    free_arr(f);
+    free_arr(Cprime);
 }
 
 Array * calc_P(int nbas, int nelec, Array C) 
@@ -232,11 +293,25 @@ double f_delta(int nbas, Array P, Array P_old)
     double delta = 0;
     for (int mu = 0; mu < nbas; mu++) {
         for (int nu = 0; nu < nbas; nu++) {
-            delta += 0.0; // np.power(P[mu][nu] - P_old[mu][nu], 2.0)
+            delta += pow(P.m[mu * P.row + nu] - P_old.m[mu * P.row + nu], 2.0);
         }
     }
     delta = pow(delta, 0.5) / 2.0;
     return delta;
+}
+
+double norm(int * atm, double * env, int i, int j) 
+{
+    double xi = env[atm[i*6 + 1]];
+    double xj = env[atm[j*6 + 1]];
+
+    double yi = env[atm[i*6 + 1] + 1];
+    double yj = env[atm[j*6 + 1] + 1];
+
+    double zi = env[atm[i*6 + 1] + 2];
+    double zj = env[atm[j*6 + 1] + 2];
+
+    return pow(pow(xi - xj, 2) + pow(yi - yj, 2) + pow(zi - zj, 2), 0.5); 
 }
 
 double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, int imax, double conv)
@@ -289,17 +364,25 @@ double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, in
         }
     }
 
-    // get nuclear energy 
-    // is R in env ?
+    double Enuc = 0.0;
+    for (int i = 0; i < natm; i++) {
+        for (int j = 0; j < natm; j++) {
+            if (i > j) {
+                Enuc += ((double) (atm[i*6 + 0] * atm[j*6 + 0]))/(norm(atm, env, i, j));
+            }
+        }
+    }
 
-    return E0;
+    double Etot = Enuc + E0;
+    return Etot;
 }
 
 int main()
 {
     int natm = 2;
     int nbas = 2;
-    int nelec = 1; // ?
+    
+    int nelec = 2; // ?
     int nshells = 1; // ?
 
     int * atm = malloc(sizeof(int) * natm * ATM_SLOTS);
@@ -310,4 +393,23 @@ int main()
     read_arrays(file, natm, nbas, &atm, &bas, &env);
 
     // RHF
+    int imax = 20;
+    double conv = 0.000001;
+
+    double Rs[43] = {0.7, 0.8, 0.9, 1. , 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9,
+       2. , 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3. , 3.1, 3.2,
+       3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4. , 4.1, 4.2, 4.3, 4.4, 4.5,
+       4.6, 4.7, 4.8, 4.9
+    };
+
+    double Etot;
+
+    printf("Etot: \n");
+    for (int d = 0; d < 43; d++) {
+        Etot = RHF(natm, nbas, nelec, atm, bas, env, imax, conv);
+
+        printf("%lf ", Etot);
+    }
+
+    return 0;
 }
