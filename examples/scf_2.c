@@ -6,6 +6,21 @@
 
 #define N_STO 3
 
+int cint1e_ovlp_cart(double *buf, int *shls,
+                    int *atm, int natm, int *bas, int nbas, double *env);
+
+int cint1e_kin_cart(double *buf, int *shls,
+                    int *atm, int natm, int *bas, int nbas, double *env);
+
+int cint1e_nuc_cart(double *buf, int *shls,
+                    int *atm, int natm, int *bas, int nbas, double *env);
+
+int _CINTdiagonalize(int n, double *diag, double *diag_off1, double *eig, double *vec);
+
+void CINTdgemm_NN(FINT m, FINT n, FINT k, double *a, double *b, double *c);
+
+void CINTdmat_transpose(double *a_t, double *a, FINT m, FINT n);
+
 typedef struct array {
     double * m;
     int row;
@@ -137,7 +152,7 @@ void integrals(int natm, int nbas, int * atm, int * bas, double * env, Array ** 
 
                     buf = malloc(sizeof(double) * di * dj * dk * dl);
                     cint2e_cart(buf, shls, atm, natm, bas, nbas, env, NULL);
-                    (*two)->m[(int) (i*pow(nbas, 3) + j*pow(nbas, 2) + k*nbas + l)];
+                    (*two)->m[(int) (i*pow(nbas, 3) + j*pow(nbas, 2) + k*nbas + l)] = buf[0];
                     free(buf);
                 }
             }
@@ -239,7 +254,7 @@ void diag_F(Array Fprime, Array X, Array ** C, Array ** epsilon)
     }
 
     Array * U = c_arr(Fprime.row, Fprime.col);
-    _CINTdiagonalize(Fprime.row, Fprime.m, diag, diag_off, NULL, U->m);
+    _CINTdiagonalize(Fprime.row, diag->m, diag_off->m, NULL, U->m);
 
     Array * Udag = c_arr(U->row, U->col);
     // Udag = np.transpose(U)
@@ -316,12 +331,12 @@ double norm(int * atm, double * env, int i, int j)
 
 double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, int imax, double conv)
 {   
-    Array S, T, V, H;
-    Array_t two;
+    Array *S, *T, *V, *H;
+    Array_t *two;
     integrals(natm, nbas, atm, bas, env, &S, &T, &V, &H, &two);
 
-    Array X, X_dag;
-    find_X(S, &X, &X_dag);
+    Array *X, *X_dag;
+    find_X(*S, &X, &X_dag);
 
     // P is identity
     Array * P = c_arr(nbas, nbas);
@@ -337,17 +352,17 @@ double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, in
     double delta = 1.0;
 
     Array * Pold;
-    Array G, F;
-    Array Fprime;
-    Array C, epsilon;
+    Array *G, *F;
+    Array *Fprime;
+    Array *C, *epsilon;
     while (delta > conv && i < imax) {
         Pold = P;
         
-        calc_F(nbas, *P, two, H, &G, &F);
-        calc_Fprime(F, X, X_dag, &Fprime);
-        diag_F(Fprime, X, &C, &epsilon);
+        calc_F(nbas, *P, *two, *H, &G, &F);
+        calc_Fprime(*F, *X, *X_dag, &Fprime);
+        diag_F(*Fprime, *X, &C, &epsilon);
 
-        P = calc_P(nbas, nelec, C);
+        P = calc_P(nbas, nelec, *C);
 
         delta = f_delta(nbas, *P, *Pold);
         i++;
@@ -360,7 +375,7 @@ double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, in
     double E0 = 0.0;
     for (int mu = 0; mu < nbas; mu++) {
         for (int nu = 0; nu < nbas; nu++) {
-            E0 += 0.5 * P->m[mu * P->row + nu] * (H.m[mu * H.row + nu] + F.m[mu * F.row + nu]);
+            E0 += 0.5 * P->m[mu * P->row + nu] * (H->m[mu * H->row + nu] + F->m[mu * F->row + nu]);
         }
     }
 
