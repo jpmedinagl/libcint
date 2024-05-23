@@ -4,6 +4,9 @@
 #include <math.h>
 #include "cint.h"
 
+// #include "f2c.h"
+// #include "blaswrap.h"
+
 #define N_STO 3
 
 int cint1e_ovlp_cart(double *buf, int *shls,
@@ -20,6 +23,10 @@ int _CINTdiagonalize(int n, double *diag, double *diag_off1, double *eig, double
 void CINTdgemm_NN(FINT m, FINT n, FINT k, double *a, double *b, double *c);
 
 void CINTdmat_transpose(double *a_t, double *a, FINT m, FINT n);
+
+// extern int dsyev_(char *jobz, char *uplo, integer *n, doublereal *a, 
+//     integer *lda, doublereal *w, doublereal *work, integer *lwork, 
+// 	integer *info);
 
 typedef struct array {
     double * m;
@@ -176,9 +183,20 @@ void find_X(Array S, Array ** X, Array ** X_dag)
         }
     }
     
+    // ERROR 1
     Array * eig = c_arr(1, S.col);
     Array * U = c_arr(S.row, S.col);
     _CINTdiagonalize(S.row, diag->m, diag_off->m, eig->m, U->m);
+
+    printf("Eig Vec\n");
+    for (int i = 0; i < S.row; i++) {
+        printf("%lf\n", eig->m[i]);
+        for (int j = 0; j < S.row; j++) {
+            printf("%lf ", U->m[i * U->row + j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
 
     Array * diag_eig = c_arr(S.col, S.col);
     for (int i = 0; i < S.col; i++) {
@@ -253,8 +271,9 @@ void diag_F(Array Fprime, Array X, Array ** C, Array ** epsilon)
         }
     }
 
+    Array * eig = c_arr(1, Fprime.col);
     Array * U = c_arr(Fprime.row, Fprime.col);
-    _CINTdiagonalize(Fprime.row, diag->m, diag_off->m, NULL, U->m);
+    _CINTdiagonalize(Fprime.row, diag->m, diag_off->m, eig->m, U->m);
 
     Array * Udag = c_arr(U->row, U->col);
     // Udag = np.transpose(U)
@@ -270,11 +289,13 @@ void diag_F(Array Fprime, Array X, Array ** C, Array ** epsilon)
 
     Array * Cprime = c_arr(U->row, U->col);
     // Cprime = U
-    memcpy(Cprime->m, U->m, sizeof(U->m));
+    memcpy(Cprime->m, U->m, U->row * U->col);
+
+    // ERROR 2: memcpy is not correct
 
     *epsilon = c_arr(f->row, f->col);
     // epsilon = f
-    memcpy((*epsilon)->m, f->m, sizeof(f->m));
+    memcpy((*epsilon)->m, f->m, f->row * f->col);
 
     *C = c_arr(X.row, Cprime->col);
     // C = np.matmul(X, Cprime)
@@ -334,9 +355,28 @@ double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, in
     Array *S, *T, *V, *H;
     Array_t *two;
     integrals(natm, nbas, atm, bas, env, &S, &T, &V, &H, &two);
+    printf("S T V\n");
+    for (int i = 0; i < nbas * nbas; i++) {
+        printf("%lf %lf %lf\n", S->m[i], T->m[i], V->m[i]);
+    }
+    printf("\n");
+
+    printf("two");
+    for (int i = 0; i < nbas * nbas * nbas * nbas; i++) {
+        if (i % 4 == 0) {
+            printf("\n");
+        }
+        printf("%lf ", two->m[i]);
+    }
+    printf("\n\n");
 
     Array *X, *X_dag;
     find_X(*S, &X, &X_dag);
+    printf("X Xdag\n");
+    for (int i = 0; i < nbas * nbas; i++) {
+        printf("%lf %lf\n", X->m[i], X_dag->m[i]);
+    }
+    printf("\n");
 
     // P is identity
     Array * P = c_arr(nbas, nbas);
@@ -348,6 +388,15 @@ double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, in
         }
     }
 
+    printf("P:\n");
+    for (int i = 0; i < nbas; i++) {
+        for (int j = 0; j < nbas; j++) {
+            printf("%lf ", P->m[i * P->row + j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+
     int i = 0;
     double delta = 1.0;
 
@@ -355,6 +404,7 @@ double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, in
     Array *G, *F;
     Array *Fprime;
     Array *C, *epsilon;
+    
     while (delta > conv && i < imax) {
         Pold = P;
         
@@ -367,6 +417,15 @@ double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, in
         delta = f_delta(nbas, *P, *Pold);
         i++;
     }
+
+    printf("Conv P:\n");
+    for (int i = 0; i < nbas; i++) {
+        for (int j = 0; j < nbas; j++) {
+            printf("%lf ", P->m[i * P->row + j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
 
     if (delta > conv && i == imax) {
         printf("did not converge\n");
@@ -411,20 +470,9 @@ int main()
     int imax = 20;
     double conv = 0.000001;
 
-    double Rs[43] = {0.7, 0.8, 0.9, 1. , 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9,
-       2. , 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3. , 3.1, 3.2,
-       3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4. , 4.1, 4.2, 4.3, 4.4, 4.5,
-       4.6, 4.7, 4.8, 4.9
-    };
+    double Etot = RHF(natm, nbas, nelec, atm, bas, env, imax, conv);
 
-    double Etot;
-
-    printf("Etot: \n");
-    for (int d = 0; d < 43; d++) {
-        Etot = RHF(natm, nbas, nelec, atm, bas, env, imax, conv);
-
-        printf("%lf ", Etot);
-    }
+    printf("Etot: %lf \n", Etot);
 
     return 0;
 }

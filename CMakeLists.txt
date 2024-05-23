@@ -13,6 +13,7 @@ message("set clang")
 
 if ("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto") # --save-temps -fuse-ld=lld")
+    # set(CMAKE_C_FLAGS "-g")
     message("Clang found")
 endif ()
 
@@ -53,6 +54,18 @@ message("found dir ${Enzyme_DIR}")
 message("found ${Enzyme_FOUND}")
 get_property(importTargetsAfter DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY IMPORTED_TARGETS)
 message("imported targets ${importTargetsAfter}")
+
+# /u/jpmedina/clapack/build
+
+# find_package(CLAPACK REQUIRED CONFIG NO_DEFAULT_PATH)
+# message("found dir ${CLAPACK_DIR}")
+# message("found ${CLAPACK_FOUND}")
+# get_property(importTargetsAfter DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY IMPORTED_TARGETS)
+# message("imported targets ${importTargetsAfter}")
+
+# find_library(${CLAPACK_DIR})
+#target_include_directories(CLAPACK PUBLIC "/u/jpmedina/clapack/INCLUDE")
+#target_link_directories(CLAPACK PUBLIC "/u/jpmedina/clapack/build")
 
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
@@ -184,15 +197,17 @@ if(ENABLE_STATIC)
   set(BUILD_SHARED_LIBS 0)
 endif()
 
+#add_subdirectory(diag)
+
 add_library(cint ${cintSrc})
 set_target_properties(cint PROPERTIES
   VERSION ${cint_VERSION}
   SOVERSION ${cint_SOVERSION}
   LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 if(QUADMATH_FOUND)
-	target_link_libraries(cint quadmath -flto LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
+	target_link_libraries(cint quadmath -flto LLDEnzymeFlags)# diag) #LLDEnzymeLooseTypeFlags)
 endif()
-target_link_libraries(cint "-lm" -flto LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
+target_link_libraries(cint "-lm" -flto LLDEnzymeFlags)# diag) #LLDEnzymeLooseTypeFlags)
 
 set(CintHeaders
   ${PROJECT_SOURCE_DIR}/include/cint_funcs.h
@@ -201,6 +216,9 @@ set(CintHeaders
 install(TARGETS cint DESTINATION "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" COMPONENT "lib")
 install(FILES ${CintHeaders} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR} COMPONENT "dev")
 
+# add_subdirectory(diag)
+
+# add_subdirectory(grad)
 
 if(ENABLE_EXAMPLE)
   enable_language(Fortran)
