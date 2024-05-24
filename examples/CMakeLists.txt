@@ -27,5 +27,7 @@
 
 # add_subdirectory(diag)
 
-add_executable(scf_2 scf_2.c)
-target_link_libraries(scf_2 cint m)
+add_executable(scf scf.c)
+add_executable(eig eig.c)
+target_link_libraries(scf diag cint m)
+target_link_libraries(eig diag cint m)
