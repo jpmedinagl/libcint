@@ -11,6 +11,8 @@ set(cint_SOVERSION "${cint_VERSION_MAJOR}")
 # set(CMAKE_C_COMPILER "/u/jpmedina/llvm-project-14.0.6/build/bin/clang")
 message("set clang")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 if ("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto") # --save-temps -fuse-ld=lld")
     # set(CMAKE_C_FLAGS "-g")
@@ -197,7 +199,8 @@ if(ENABLE_STATIC)
   set(BUILD_SHARED_LIBS 0)
 endif()
 
-#add_subdirectory(diag)
+add_subdirectory(diagonal)
+# add_subdirectory(grad)
 
 add_library(cint ${cintSrc})
 set_target_properties(cint PROPERTIES
@@ -205,9 +208,9 @@ set_target_properties(cint PROPERTIES
   SOVERSION ${cint_SOVERSION}
   LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 if(QUADMATH_FOUND)
-	target_link_libraries(cint quadmath -flto LLDEnzymeFlags)# diag) #LLDEnzymeLooseTypeFlags)
+	target_link_libraries(cint quadmath -flto LLDEnzymeFlags) #diag) #LLDEnzymeLooseTypeFlags)
 endif()
-target_link_libraries(cint "-lm" -flto LLDEnzymeFlags)# diag) #LLDEnzymeLooseTypeFlags)
+target_link_libraries(cint "-lm" -flto LLDEnzymeFlags) #diag) #LLDEnzymeLooseTypeFlags)
 
 set(CintHeaders
   ${PROJECT_SOURCE_DIR}/include/cint_funcs.h
@@ -216,9 +219,6 @@ set(CintHeaders
 install(TARGETS cint DESTINATION "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" COMPONENT "lib")
 install(FILES ${CintHeaders} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR} COMPONENT "dev")
 
-# add_subdirectory(diag)
-
-# add_subdirectory(grad)
 
 if(ENABLE_EXAMPLE)
   enable_language(Fortran)
