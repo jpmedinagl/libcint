@@ -381,9 +381,6 @@ void energy(double * E, int natm, int nbas, int * atm, int * bas, double * env, 
     Array_two *two;
     integrals(natm, nbas, atm, bas, env, &S, &T, &V, &H, &two);
 
-    Array * X, * X_dag;
-    find_X(*S, &X, &X_dag);
-
     Array * G, * F;    
     calc_F(nbas, *P, *two, *H, &G, &F);
 
