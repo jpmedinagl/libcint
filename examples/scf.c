@@ -175,7 +175,6 @@ void integrals(int natm, int nbas, int * atm, int * bas, double * env, Array ** 
 
 void find_X(Array S, Array ** X, Array ** X_dag) 
 {
-    // sval, U = np.linalg.eig(S)
     Array * eig = c_arr(1, S.col);
     Array * U = c_arr(S.row, S.col);
     dcopy(U, S);
@@ -202,15 +201,11 @@ void find_X(Array S, Array ** X, Array ** X_dag)
         }
     }
 
-    // X = np.matmul(U, np.diag(sval ** (-0.5)))  # symmetric orthogonalization
     *X = c_arr(U->row, diag_eig->row);
     matmult(U->row, U->m, diag_eig->m, (*X)->m);
 
-    // Xdag = X.T
     *X_dag = c_arr((*X)->row, (*X)->col);
     transpose((*X)->row, (*X)->m, (*X_dag)->m);
-    
-    // return X, Xdag
 }
 
 void calc_F(int nbas, Array P, Array_two two, Array H, Array ** G, Array ** F) 
@@ -235,22 +230,17 @@ void calc_F(int nbas, Array P, Array_two two, Array H, Array ** G, Array ** F)
 
 void calc_Fprime(Array F, Array X, Array X_dag, Array ** Fprime) 
 {
-    // Fprime = np.matmul(np.matmul(Xdag, F), X)
-
     Array * inter = c_arr(X_dag.row, F.col);
     matmult(X_dag.row, X_dag.m, F.m, inter->m);
 
     *Fprime = c_arr(inter->row, X.col);
     matmult(inter->row, inter->m, X.m, (*Fprime)->m);
 
-    // free intermediate
     free_arr(inter);
 }
 
 void diag_F(Array Fprime, Array X, Array ** C, Array ** epsilon)
 {
-    // U = np.linalg.eig(Fprime)[1]
-
     Array * U = c_arr(Fprime.row, Fprime.col);
     dcopy(U, Fprime);
 
@@ -269,28 +259,20 @@ void diag_F(Array Fprime, Array X, Array ** C, Array ** epsilon)
     transpose(Udag->row, U->m, Udag->m);
     
     Array * inter = c_arr(Udag->row, Fprime.col);
-    // np.matmul(Udag, Fprime)
     matmult(Udag->row, Udag->m, Fprime.m, inter->m);
     
     Array * f = c_arr(inter->row, U->col);
-    // f = np.matmul(np.matmul(Udag, Fprime), U)
     matmult(inter->row, inter->m, U->m, f->m);
 
     Array * Cprime = c_arr(U->row, U->col);
-    // Cprime = U
     dcopy(Cprime, *U);
 
     *epsilon = c_arr(f->row, f->col);
-    // epsilon = f
     dcopy(*epsilon, *f);
 
     *C = c_arr(X.row, Cprime->col);
-    // C = np.matmul(X, Cprime)
     matmult(X.row, X.m, Cprime->m, (*C)->m);
     
-    // return C, epsilon
-
-    // free U, Udag, intermediate, f, Cprime
     free_arr(U);
     free_arr(Udag);
     free_arr(inter);
@@ -349,7 +331,6 @@ double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, in
     Array * X, * X_dag;
     find_X(*S, &X, &X_dag);
 
-    // P is identity
     Array * P = c_arr(nbas, nbas);
     for (int i = 0; i < nbas; i++) {
         for (int j = 0; j < nbas; j++) {
