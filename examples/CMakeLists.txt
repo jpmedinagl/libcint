@@ -28,6 +28,6 @@
 # add_subdirectory(diag)
 
 add_executable(scf scf.c)
-add_executable(eig eig.c)
+add_executable(scf_grad scf_grad.c)
 target_link_libraries(scf diag cint m)
-target_link_libraries(eig diag cint m)
+target_link_libraries(scf_grad PUBLIC cint m LLDEnzymeFlags diag)
