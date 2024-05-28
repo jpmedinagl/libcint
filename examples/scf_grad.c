@@ -439,9 +439,6 @@ int main()
     Array * P = RHF(natm, nbas, nelec, atm, bas, env, imax, conv);
 
     double E;
-    // energy(&E, natm, nbas, atm, bas, env, P);
-    // printf("Etot: %lf\n", E);
-
     double dE = 1.0;
     double * denv = malloc(sizeof(double) * 10000);
 
