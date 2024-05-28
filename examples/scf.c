@@ -18,12 +18,6 @@ int cint1e_kin_cart(double *buf, int *shls,
 int cint1e_nuc_cart(double *buf, int *shls,
                     int *atm, int natm, int *bas, int nbas, double *env);
 
-int _CINTdiagonalize(int n, double *diag, double *diag_off1, double *eig, double *vec);
-
-void CINTdgemm_NN(FINT m, FINT n, FINT k, double *a, double *b, double *c);
-
-void CINTdmat_transpose(double *a_t, double *a, FINT m, FINT n);
-
 extern int dsyev_(char *jobz, char *uplo, integer *n, doublereal *a, 
     integer *lda, doublereal *w, doublereal *work, integer *lwork, 
 	integer *info);
@@ -34,20 +28,20 @@ typedef struct array {
     int col;
 } Array;
 
-typedef struct array_two {
+typedef struct Array_two {
     double * m;
     int x;
     int y;
     int w;
     int z;
-} Array_t;
+} Array_two;
 
 void free_arr(Array * arr) {
     free(arr->m);
     free(arr);
 }
 
-void free_arr_t(Array_t * arr) {
+void free_arr_two(Array_two * arr) {
     free(arr->m);
     free(arr);
 }
@@ -93,9 +87,9 @@ Array * c_arr(int x, int y)
     return arr;
 }
 
-Array_t * c_arr_doub(int x, int y, int w, int z) 
+Array_two * c_arr_doub(int x, int y, int w, int z) 
 {   
-    Array_t * arr = malloc(sizeof(Array_t));
+    Array_two * arr = malloc(sizeof(Array_two));
 
     double * mat = malloc(sizeof(double) * (x * y * w * z));
     memset(mat, 0, sizeof(double) * (x * y * w * z));
@@ -109,20 +103,32 @@ Array_t * c_arr_doub(int x, int y, int w, int z)
     return arr;
 }
 
-// STO_NG ?? information already in env, atm, bas
+void dcopy(Array * dest, Array source) {
+    for (int i = 0; i < source.col * source.row; i++) {
+        dest->m[i] = source.m[i];
+    }
+}
 
-// void STO_NG(int nbas, double * zeta, double *** alpha, double *** D)
-// {
-//     *alpha = c_arr(nbas, N_STO);
-//     *D = c_arr(nbas, N_STO);
-    
-//     for (int i = 0; i < nbas, i++) {
-//         alpha
-//     }
-// }
+void matmult(int n, double * A, double * B, double * C) {
+    // cij = aik bkj
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            for (int k = 0; k < n; k++) {
+                C[i * n + j] += A[i * n + k] * B[k * n + j];
+            }
+        }
+    }
+}
 
+void transpose(int n, double * C, double * Ct) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            Ct[i * n + j] = C[j * n + i];
+        }
+    }
+}
 
-void integrals(int natm, int nbas, int * atm, int * bas, double * env, Array ** S, Array ** T, Array ** V, Array ** H, Array_t ** two) 
+void integrals(int natm, int nbas, int * atm, int * bas, double * env, Array ** S, Array ** T, Array ** V, Array ** H, Array_two ** two) 
 {   
     *S = c_arr(nbas, nbas);
     *T = c_arr(nbas, nbas);
@@ -170,72 +176,44 @@ void integrals(int natm, int nbas, int * atm, int * bas, double * env, Array ** 
 void find_X(Array S, Array ** X, Array ** X_dag) 
 {
     // sval, U = np.linalg.eig(S)
-
-    Array * diag = c_arr(S.row, 1);
-    Array * diag_off = c_arr(S.row - 1, 1);
-    for (int i = 0; i < S.row; i++) {
-        for(int j = 0; j < S.col; j++) {
-            if (i == j) {
-                diag->m[i] = S.m[i * S.row + j];
-            } else if (i - 1 == j) {
-                diag_off->m[i] = S.m[i * S.row + j];
-            }
-        }
-    }
-    
-    // ERROR 1
     Array * eig = c_arr(1, S.col);
     Array * U = c_arr(S.row, S.col);
+    dcopy(U, S);
 
-    // char jobz='V',uplo='U';
-    // integer lda=3,n=3,info=8,lwork=9;
+    char jobz = 'V', uplo = 'U';
+    integer lda = 2, n = 2, info = 8, lwork = 6;
+    double w[2], work[6];
 
-    // int i;
-    // double w[3], work[9];
+    dsyev_(&jobz, &uplo, &n, U->m, &lda, w, work, &lwork, &info);
 
-    // double a[9] = {
-    // 3,2,4,
-    // 2,0,2,
-    // 4,2,3
-    // };
-
-
-    // //info=LAPACKE_dsyev(LAPACK_ROW_MAJOR,jobz,uplo,  n  ,a,  lda  , w);
-    // dsyev_( &jobz,&uplo,&n, a, &lda, w,work , &lwork, &info );
-
-    _CINTdiagonalize(S.row, diag->m, diag_off->m, eig->m, U->m);
-
-    printf("Eig Vec\n");
-    for (int i = 0; i < S.row; i++) {
-        printf("%lf\n", eig->m[i]);
-        for (int j = 0; j < S.row; j++) {
-            printf("%lf ", U->m[i * U->row + j]);
-        }
-        printf("\n");
+    if(info > 0) {
+        printf("The algorithm failed to compute eigenvalues.\n");
+        exit(1);
     }
-    printf("\n");
+
+    eig->m = w;
 
     Array * diag_eig = c_arr(S.col, S.col);
     for (int i = 0; i < S.col; i++) {
         for (int j = 0; j < S.col; j++) {
             if (i == j) {
-                diag_eig->m[i] = pow(eig->m[i], -0.5);
+                diag_eig->m[2*i + j] = pow(eig->m[i], -0.5);
             }
         }
     }
 
     // X = np.matmul(U, np.diag(sval ** (-0.5)))  # symmetric orthogonalization
     *X = c_arr(U->row, diag_eig->row);
-    CINTdgemm_NN(U->row, diag_eig->row, diag_eig->col, U->m, diag_eig->m, (*X)->m);
+    matmult(U->row, U->m, diag_eig->m, (*X)->m);
 
     // Xdag = X.T
     *X_dag = c_arr((*X)->row, (*X)->col);
-    CINTdmat_transpose((*X_dag)->m, (*X)->m, (*X)->row, (*X)->col);
+    transpose((*X)->row, (*X)->m, (*X_dag)->m);
     
     // return X, Xdag
 }
 
-void calc_F(int nbas, Array P, Array_t two, Array H, Array ** G, Array ** F) 
+void calc_F(int nbas, Array P, Array_two two, Array H, Array ** G, Array ** F) 
 {
     *G = c_arr(nbas, nbas);
     *F = c_arr(nbas, nbas);
@@ -260,10 +238,10 @@ void calc_Fprime(Array F, Array X, Array X_dag, Array ** Fprime)
     // Fprime = np.matmul(np.matmul(Xdag, F), X)
 
     Array * inter = c_arr(X_dag.row, F.col);
-    CINTdgemm_NN(X_dag.row, F.row, F.col, X_dag.m, F.m, inter->m);
+    matmult(X_dag.row, X_dag.m, F.m, inter->m);
 
     *Fprime = c_arr(inter->row, X.col);
-    CINTdgemm_NN(inter->row, X.row, X.col, inter->m, X.m, (*Fprime)->m);
+    matmult(inter->row, inter->m, X.m, (*Fprime)->m);
 
     // free intermediate
     free_arr(inter);
@@ -271,52 +249,44 @@ void calc_Fprime(Array F, Array X, Array X_dag, Array ** Fprime)
 
 void diag_F(Array Fprime, Array X, Array ** C, Array ** epsilon)
 {
-    // Array * U = c_arr(Fprime.row, Fprime.col);
     // U = np.linalg.eig(Fprime)[1]
 
-    // Array * eig = c_arr(1, Fprime.col);
-    // don't need the eigenvalues
-    Array * diag = c_arr(Fprime.row, 1);
-    Array * diag_off = c_arr(Fprime.row - 1, 1);
-    for (int i = 0; i < Fprime.row; i++) {
-        for(int j = 0; j < Fprime.col; j++) {
-            if (i == j) {
-                diag->m[i] = Fprime.m[i * Fprime.row + j];
-            } else if (i - 1 == j) {
-                diag_off->m[i] = Fprime.m[i * Fprime.row + j];
-            }
-        }
+    Array * U = c_arr(Fprime.row, Fprime.col);
+    dcopy(U, Fprime);
+
+    char jobz = 'V', uplo = 'U';
+    integer lda = 2, n = 2, info = 8, lwork = 6;
+    double w[2], work[6];
+
+    dsyev_(&jobz, &uplo, &n, U->m, &lda, w, work, &lwork, &info);
+
+    if(info > 0) {
+        printf("The algorithm failed to compute eigenvalues.\n");
+        exit(1);
     }
 
-    Array * eig = c_arr(1, Fprime.col);
-    Array * U = c_arr(Fprime.row, Fprime.col);
-    _CINTdiagonalize(Fprime.row, diag->m, diag_off->m, eig->m, U->m);
-
     Array * Udag = c_arr(U->row, U->col);
-    // Udag = np.transpose(U)
-    CINTdmat_transpose(Udag->m, U->m, U->row, U->col);
+    transpose(Udag->row, U->m, Udag->m);
     
     Array * inter = c_arr(Udag->row, Fprime.col);
     // np.matmul(Udag, Fprime)
-    CINTdgemm_NN(Udag->row, Fprime.row, Fprime.col, Udag->m, Fprime.m, inter->m);
+    matmult(Udag->row, Udag->m, Fprime.m, inter->m);
     
     Array * f = c_arr(inter->row, U->col);
     // f = np.matmul(np.matmul(Udag, Fprime), U)
-    CINTdgemm_NN(inter->row, U->row, U->col, inter->m, U->m, f->m);
+    matmult(inter->row, inter->m, U->m, f->m);
 
     Array * Cprime = c_arr(U->row, U->col);
     // Cprime = U
-    memcpy(Cprime->m, U->m, U->row * U->col);
-
-    // ERROR 2: memcpy is not correct
+    dcopy(Cprime, *U);
 
     *epsilon = c_arr(f->row, f->col);
     // epsilon = f
-    memcpy((*epsilon)->m, f->m, f->row * f->col);
+    dcopy(*epsilon, *f);
 
     *C = c_arr(X.row, Cprime->col);
     // C = np.matmul(X, Cprime)
-    CINTdgemm_NN(X.row, Cprime->row, Cprime->col, X.m, Cprime->m, (*C)->m);
+    matmult(X.row, X.m, Cprime->m, (*C)->m);
     
     // return C, epsilon
 
@@ -334,10 +304,12 @@ Array * calc_P(int nbas, int nelec, Array C)
     for (int mu = 0; mu < nbas; mu++) {
         for (int nu = 0; nu < nbas; nu++) {
             for (int i = 0; i < (nelec / 2); i++) {
+                // printf("%lf\n", 2.0 * C.m[mu * C.row + i] * C.m[nu * C.row + i]);
                 P->m[mu * P->row + nu] += 2.0 * C.m[mu * C.row + i] * C.m[nu * C.row + i];
             }
         }
     }
+
     return P;
 }
 
@@ -350,6 +322,7 @@ double f_delta(int nbas, Array P, Array P_old)
         }
     }
     delta = pow(delta, 0.5) / 2.0;
+
     return delta;
 }
 
@@ -369,31 +342,12 @@ double norm(int * atm, double * env, int i, int j)
 
 double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, int imax, double conv)
 {   
-    Array *S, *T, *V, *H;
-    Array_t *two;
+    Array * S, * T, * V, * H;
+    Array_two *two;
     integrals(natm, nbas, atm, bas, env, &S, &T, &V, &H, &two);
-    printf("S T V\n");
-    for (int i = 0; i < nbas * nbas; i++) {
-        printf("%lf %lf %lf\n", S->m[i], T->m[i], V->m[i]);
-    }
-    printf("\n");
 
-    printf("two");
-    for (int i = 0; i < nbas * nbas * nbas * nbas; i++) {
-        if (i % 4 == 0) {
-            printf("\n");
-        }
-        printf("%lf ", two->m[i]);
-    }
-    printf("\n\n");
-
-    Array *X, *X_dag;
+    Array * X, * X_dag;
     find_X(*S, &X, &X_dag);
-    printf("X Xdag\n");
-    for (int i = 0; i < nbas * nbas; i++) {
-        printf("%lf %lf\n", X->m[i], X_dag->m[i]);
-    }
-    printf("\n");
 
     // P is identity
     Array * P = c_arr(nbas, nbas);
@@ -405,22 +359,13 @@ double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, in
         }
     }
 
-    printf("P:\n");
-    for (int i = 0; i < nbas; i++) {
-        for (int j = 0; j < nbas; j++) {
-            printf("%lf ", P->m[i * P->row + j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-
     int i = 0;
     double delta = 1.0;
 
     Array * Pold;
-    Array *G, *F;
-    Array *Fprime;
-    Array *C, *epsilon;
+    Array * G, * F;
+    Array * Fprime;
+    Array * C, * epsilon;
     
     while (delta > conv && i < imax) {
         Pold = P;
@@ -446,6 +391,7 @@ double RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, in
 
     if (delta > conv && i == imax) {
         printf("did not converge\n");
+        exit(1);
     }
 
     double E0 = 0.0;
@@ -488,7 +434,6 @@ int main()
     double conv = 0.000001;
 
     double Etot = RHF(natm, nbas, nelec, atm, bas, env, imax, conv);
-
     printf("Etot: %lf \n", Etot);
 
     return 0;
