@@ -447,5 +447,24 @@ int main()
     }
     printf("\n");
 
+    printf("finite diff:\n");
+    
+    double grad;
+    double E1, E2;
+    double h = 0.000001;
+    
+    for (int k = 28; k < 34; k++) {
+        env[k] += h;
+        energy(&E1, natm, nbas, atm, bas, env, P);
+        env[k] -= 2.0*h;
+        energy(&E2, natm, nbas, atm, bas, env, P);
+        env[k] += h;
+
+        grad = (E1 - E2)/(2.0*h);
+
+        printf("%lf ", grad);
+    }
+    printf("\n");
+
     return 0;
 }
