@@ -5696,15 +5696,15 @@ unsafe extern "C" fn R_lsmit(
     let mut i: libc::c_int = 0;
     let mut j: libc::c_int = 0;
     let mut k: libc::c_int = 0;
-    let mut fac: f128 = f128::ZERO;
-    let mut dot: f128 = f128::ZERO;
-    let mut tmp: f128 = f128::ZERO;
-    let mut v: [f128; 32] = [f128::ZERO; 32];
+    let mut fac: f128 = 0.0f128;
+    let mut dot: f128 = 0.0f128;
+    let mut tmp: f128 = 0.0f128;
+    let mut v: [f128; 32] = [0.0f128; 32];
     fac = -*fmt_ints.offset(1 as libc::c_int as isize)
         / *fmt_ints.offset(0 as libc::c_int as isize);
     tmp = *fmt_ints.offset(2 as libc::c_int as isize)
         + fac * *fmt_ints.offset(1 as libc::c_int as isize);
-    if tmp <= f128::new(0 as libc::c_int) {
+    if tmp <= 0.0f128 {
         fprintf(
             stderr,
             b"libcint::rys_roots negative value in sqrtl for roots %d (j=1)\n\0"
@@ -5715,7 +5715,7 @@ unsafe extern "C" fn R_lsmit(
         while k < n {
             i = 0 as libc::c_int;
             while i < n {
-                *cs.offset((i + k * n) as isize) = f128::new(0 as libc::c_int);
+                *cs.offset((i + k * n) as isize) = 0.0f128;
                 i += 1;
                 i;
             }
@@ -5736,14 +5736,14 @@ unsafe extern "C" fn R_lsmit(
     while j < n {
         k = 0 as libc::c_int;
         while k < j {
-            v[k as usize] = f128::new(0 as libc::c_int);
+            v[k as usize] = 0.0f128;
             k += 1;
             k;
         }
         fac = *fmt_ints.offset((j + j) as isize);
         k = 0 as libc::c_int;
         while k < j {
-            dot = f128::new(0 as libc::c_int);
+            dot = 0.0f128;
             i = 0 as libc::c_int;
             while i <= k {
                 dot
@@ -5762,19 +5762,19 @@ unsafe extern "C" fn R_lsmit(
             k += 1;
             k;
         }
-        if fac <= f128::new(0 as libc::c_int) {
+        if fac <= 0.0f128 {
             k = j;
             while k < n {
                 i = 0 as libc::c_int;
                 while i < n {
-                    *cs.offset((i + k * n) as isize) = f128::new(0 as libc::c_int);
+                    *cs.offset((i + k * n) as isize) = 0.0f128;
                     i += 1;
                     i;
                 }
                 k += 1;
                 k;
             }
-            if fac == f128::new(0 as libc::c_int) {
+            if fac == 0.0f128 {
                 return 0 as libc::c_int;
             }
             fprintf(
@@ -5838,7 +5838,7 @@ pub unsafe extern "C" fn CINTlrys_schmidt(
             nroots * 2 as libc::c_int,
         );
     }
-    if fmt_ints[0 as libc::c_int as usize] == f128::new(0 as libc::c_int) {
+    if fmt_ints[0 as libc::c_int as usize] == 0.0f128 {
         k = 0 as libc::c_int;
         while k < nroots {
             *roots.offset(k as isize) = 0 as libc::c_int as libc::c_double;
