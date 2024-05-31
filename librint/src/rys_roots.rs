@@ -1,8 +1,6 @@
 #![allow(dead_code, mutable_transmutes, non_camel_case_types, non_snake_case, non_upper_case_globals, unused_assignments, unused_mut)]
 
-// use std::f128;
-
-// use num_traits::ToPrimitive;
+// use crate::rys_wheeler::CINTlrys_laguerre;
 
 extern "C" {
     pub type _IO_wide_data;
@@ -13,7 +11,7 @@ extern "C" {
     fn exit(_: libc::c_int) -> !;
     fn exp(_: libc::c_double) -> libc::c_double;
     fn pow(_: libc::c_double, _: libc::c_double) -> libc::c_double;
-    fn sqrtl(_: f128) -> f128;
+    fn sqrtl(_: f64) -> f64;
     fn sqrt(_: libc::c_double) -> libc::c_double;
     fn CINTlrys_laguerre(
         n: libc::c_int,
@@ -37,7 +35,7 @@ extern "C" {
         weights: *mut libc::c_double,
     ) -> libc::c_int;
     fn gamma_inc_like(f: *mut libc::c_double, t: libc::c_double, m: libc::c_int);
-    fn lgamma_inc_like(f: *mut f128, t: f128, m: libc::c_int);
+    fn lgamma_inc_like(f: *mut f64, t: f64, m: libc::c_int);
     fn fmt_erfc_like(
         f: *mut libc::c_double,
         t: libc::c_double,
@@ -45,9 +43,9 @@ extern "C" {
         m: libc::c_int,
     );
     fn fmt_lerfc_like(
-        f: *mut f128,
-        t: f128,
-        lower: f128,
+        f: *mut f64,
+        t: f64,
+        lower: f64,
         m: libc::c_int,
     );
     fn _CINT_polynomial_roots(
@@ -5689,22 +5687,22 @@ pub unsafe extern "C" fn CINTrys_schmidt(
     return _rdk_rys_roots(nroots, fmt_ints.as_mut_ptr(), roots, weights);
 }
 unsafe extern "C" fn R_lsmit(
-    mut cs: *mut f128,
-    mut fmt_ints: *mut f128,
+    mut cs: *mut f64,
+    mut fmt_ints: *mut f64,
     mut n: libc::c_int,
 ) -> libc::c_int {
     let mut i: libc::c_int = 0;
     let mut j: libc::c_int = 0;
     let mut k: libc::c_int = 0;
-    let mut fac: f128 = 0.0f128;
-    let mut dot: f128 = 0.0f128;
-    let mut tmp: f128 = 0.0f128;
-    let mut v: [f128; 32] = [0.0f128; 32];
+    let mut fac: f64 = 0.0f64;
+    let mut dot: f64 = 0.0f64;
+    let mut tmp: f64 = 0.0f64;
+    let mut v: [f64; 32] = [0.0f64; 32];
     fac = -*fmt_ints.offset(1 as libc::c_int as isize)
         / *fmt_ints.offset(0 as libc::c_int as isize);
     tmp = *fmt_ints.offset(2 as libc::c_int as isize)
         + fac * *fmt_ints.offset(1 as libc::c_int as isize);
-    if tmp <= 0.0f128 {
+    if tmp <= 0.0f64 {
         fprintf(
             stderr,
             b"libcint::rys_roots negative value in sqrtl for roots %d (j=1)\n\0"
@@ -5715,7 +5713,7 @@ unsafe extern "C" fn R_lsmit(
         while k < n {
             i = 0 as libc::c_int;
             while i < n {
-                *cs.offset((i + k * n) as isize) = 0.0f128;
+                *cs.offset((i + k * n) as isize) = 0.0f64;
                 i += 1;
                 i;
             }
@@ -5724,11 +5722,11 @@ unsafe extern "C" fn R_lsmit(
         }
         return 1 as libc::c_int;
     }
-    tmp = f128::new(1 as libc::c_int) / sqrtl(tmp);
+    tmp = 1.0f64 / sqrtl(tmp);
     *cs
         .offset(
             (0 as libc::c_int + 0 as libc::c_int * n) as isize,
-        ) = f128::new(1 as libc::c_int)
+        ) = 1.0f64
         / sqrtl(*fmt_ints.offset(0 as libc::c_int as isize));
     *cs.offset((0 as libc::c_int + 1 as libc::c_int * n) as isize) = fac * tmp;
     *cs.offset((1 as libc::c_int + 1 as libc::c_int * n) as isize) = tmp;
@@ -5736,14 +5734,14 @@ unsafe extern "C" fn R_lsmit(
     while j < n {
         k = 0 as libc::c_int;
         while k < j {
-            v[k as usize] = 0.0f128;
+            v[k as usize] = 0.0f64;
             k += 1;
             k;
         }
         fac = *fmt_ints.offset((j + j) as isize);
         k = 0 as libc::c_int;
         while k < j {
-            dot = 0.0f128;
+            dot = 0.0f64;
             i = 0 as libc::c_int;
             while i <= k {
                 dot
@@ -5762,19 +5760,19 @@ unsafe extern "C" fn R_lsmit(
             k += 1;
             k;
         }
-        if fac <= 0.0f128 {
+        if fac <= 0.0f64 {
             k = j;
             while k < n {
                 i = 0 as libc::c_int;
                 while i < n {
-                    *cs.offset((i + k * n) as isize) = 0.0f128;
+                    *cs.offset((i + k * n) as isize) = 0.0f64;
                     i += 1;
                     i;
                 }
                 k += 1;
                 k;
             }
-            if fac == 0.0f128 {
+            if fac == 0.0f64 {
                 return 0 as libc::c_int;
             }
             fprintf(
@@ -5786,7 +5784,7 @@ unsafe extern "C" fn R_lsmit(
             );
             return j;
         }
-        fac = f128::new(1 as libc::c_int) / sqrtl(fac);
+        fac = 1.0f64 / sqrtl(fac);
         *cs.offset((j + j * n) as isize) = fac;
         k = 0 as libc::c_int;
         while k < j {
@@ -5802,8 +5800,8 @@ unsafe extern "C" fn R_lsmit(
 #[no_mangle]
 pub unsafe extern "C" fn CINTlrys_schmidt(
     mut nroots: libc::c_int,
-    mut x: libc::c_double,
-    mut lower: libc::c_double,
+    mut x: f64,
+    mut lower: f64,
     mut roots: *mut libc::c_double,
     mut weights: *mut libc::c_double,
 ) -> libc::c_int {
@@ -5813,8 +5811,8 @@ pub unsafe extern "C" fn CINTlrys_schmidt(
     let mut order: libc::c_int = 0;
     let mut error: libc::c_int = 0;
     let mut nroots1: libc::c_int = nroots + 1 as libc::c_int;
-    let mut fmt_ints: [f128; 1088] = [f128::ZERO; 1088];
-    let mut qcs: *mut f128 = fmt_ints
+    let mut fmt_ints: [f64; 1088] = [0.0f64; 1088];
+    let mut qcs: *mut f64 = fmt_ints
         .as_mut_ptr()
         .offset((nroots1 * 2 as libc::c_int) as isize);
     let mut rt: [libc::c_double; 1056] = [0.; 1056];
@@ -5827,18 +5825,18 @@ pub unsafe extern "C" fn CINTlrys_schmidt(
     if lower == 0 as libc::c_int as libc::c_double {
         lgamma_inc_like(
             fmt_ints.as_mut_ptr(),
-            f128::new(x),
+            x,
             nroots * 2 as libc::c_int,
         );
     } else {
         fmt_lerfc_like(
             fmt_ints.as_mut_ptr(),
-            f128::new(x),
-            f128::new(lower),
+            x,
+            lower,
             nroots * 2 as libc::c_int,
         );
     }
-    if fmt_ints[0 as libc::c_int as usize] == 0.0f128 {
+    if fmt_ints[0 as libc::c_int as usize] == 0.0f64 {
         k = 0 as libc::c_int;
         while k < nroots {
             *roots.offset(k as isize) = 0 as libc::c_int as libc::c_double;
@@ -5852,8 +5850,7 @@ pub unsafe extern "C" fn CINTlrys_schmidt(
         rt[0 as libc::c_int
             as usize] = (fmt_ints[1 as libc::c_int as usize]
             / fmt_ints[0 as libc::c_int as usize])
-            .to_f64()
-            .unwrap();
+            ;//.unwrap();
     } else {
         error = R_lsmit(qcs, fmt_ints.as_mut_ptr(), nroots1);
         if error != 0 {
@@ -5866,7 +5863,7 @@ pub unsafe extern "C" fn CINTlrys_schmidt(
                 *cs
                     .offset(
                         (k * nroots1 + i) as isize,
-                    ) = (*qcs.offset((k * nroots1 + i) as isize)).to_f64().unwrap();
+                    ) = (*qcs.offset((k * nroots1 + i) as isize)); //.unwrap();
                 i += 1;
                 i;
             }
@@ -5878,9 +5875,8 @@ pub unsafe extern "C" fn CINTlrys_schmidt(
             return error;
         }
     }
-    dum0 = (f128::new(1 as libc::c_int) / fmt_ints[0 as libc::c_int as usize])
-        .to_f64()
-        .unwrap();
+    dum0 = (1.0f64 / fmt_ints[0 as libc::c_int as usize])
+        ;//.unwrap();
     k = 0 as libc::c_int;
     while k < nroots {
         root = rt[k as usize];
