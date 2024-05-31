@@ -13,3 +13,4 @@ pub mod fblas;
 pub mod g1e;
 pub mod g2e;
 pub mod rys_roots;
+pub mod rys_wheeler;
