@@ -4,8 +4,18 @@ use crate::cint_bas::CINTlen_spinor;
 // use crate::cint_bas::CINTcgto_cart;
 use crate::cint_bas::CINTcgto_spheric;
 use crate::cint_bas::CINTcgto_spinor;
+use crate::cint_bas::CINTtot_pgto_spheric;
+use crate::cint_bas::CINTtot_pgto_spinor;
+use crate::cint_bas::CINTtot_cgto_cart;
+use crate::cint_bas::CINTtot_cgto_spheric;
+use crate::cint_bas::CINTtot_cgto_spinor;
+use crate::cint_bas::CINTshells_cart_offset;
+use crate::cint_bas::CINTshells_spheric_offset;
+use crate::cint_bas::CINTshells_spinor_offset;
+use crate::misc::CINTgto_norm;
+use crate::optimizer::CINTinit_2e_optimizer;
+use crate::optimizer::CINTdel_2e_optimizer;
 
-use crate::cint::PairData;
 use crate::cint::CINTOpt;
 
 extern "C" {
@@ -13,36 +23,36 @@ extern "C" {
     fn CINTcgto_cart(bas_id: libc::c_int, bas: *const libc::c_int) -> libc::c_int;
     // fn CINTcgto_spheric(bas_id: libc::c_int, bas: *const libc::c_int) -> libc::c_int;
     // fn CINTcgto_spinor(bas_id: libc::c_int, bas: *const libc::c_int) -> libc::c_int;
-    fn CINTtot_pgto_spheric(bas: *const libc::c_int, nbas: libc::c_int) -> libc::c_int;
-    fn CINTtot_pgto_spinor(bas: *const libc::c_int, nbas: libc::c_int) -> libc::c_int;
-    fn CINTtot_cgto_cart(bas: *const libc::c_int, nbas: libc::c_int) -> libc::c_int;
-    fn CINTtot_cgto_spheric(bas: *const libc::c_int, nbas: libc::c_int) -> libc::c_int;
-    fn CINTtot_cgto_spinor(bas: *const libc::c_int, nbas: libc::c_int) -> libc::c_int;
-    fn CINTshells_cart_offset(
-        ao_loc: *mut libc::c_int,
-        bas: *const libc::c_int,
-        nbas: libc::c_int,
-    );
-    fn CINTshells_spheric_offset(
-        ao_loc: *mut libc::c_int,
-        bas: *const libc::c_int,
-        nbas: libc::c_int,
-    );
-    fn CINTshells_spinor_offset(
-        ao_loc: *mut libc::c_int,
-        bas: *const libc::c_int,
-        nbas: libc::c_int,
-    );
-    fn CINTgto_norm(n: libc::c_int, a: libc::c_double) -> libc::c_double;
-    fn CINTinit_2e_optimizer(
-        opt: *mut *mut CINTOpt,
-        atm: *mut libc::c_int,
-        natm: libc::c_int,
-        bas: *mut libc::c_int,
-        nbas: libc::c_int,
-        env: *mut libc::c_double,
-    );
-    fn CINTdel_2e_optimizer(opt: *mut *mut CINTOpt);
+    // fn CINTtot_pgto_spheric(bas: *const libc::c_int, nbas: libc::c_int) -> libc::c_int;
+    // fn CINTtot_pgto_spinor(bas: *const libc::c_int, nbas: libc::c_int) -> libc::c_int;
+    // fn CINTtot_cgto_cart(bas: *const libc::c_int, nbas: libc::c_int) -> libc::c_int;
+    // fn CINTtot_cgto_spheric(bas: *const libc::c_int, nbas: libc::c_int) -> libc::c_int;
+    // fn CINTtot_cgto_spinor(bas: *const libc::c_int, nbas: libc::c_int) -> libc::c_int;
+    // fn CINTshells_cart_offset(
+    //     ao_loc: *mut libc::c_int,
+    //     bas: *const libc::c_int,
+    //     nbas: libc::c_int,
+    // );
+    // fn CINTshells_spheric_offset(
+    //     ao_loc: *mut libc::c_int,
+    //     bas: *const libc::c_int,
+    //     nbas: libc::c_int,
+    // );
+    // fn CINTshells_spinor_offset(
+    //     ao_loc: *mut libc::c_int,
+    //     bas: *const libc::c_int,
+    //     nbas: libc::c_int,
+    // );
+    // fn CINTgto_norm(n: libc::c_int, a: libc::c_double) -> libc::c_double;
+    // fn CINTinit_2e_optimizer(
+    //     opt: *mut *mut CINTOpt,
+    //     atm: *mut libc::c_int,
+    //     natm: libc::c_int,
+    //     bas: *mut libc::c_int,
+    //     nbas: libc::c_int,
+    //     env: *mut libc::c_double,
+    // );
+    // fn CINTdel_2e_optimizer(opt: *mut *mut CINTOpt);
 }
 // #[derive(Copy, Clone)]
 // #[repr(C)]
