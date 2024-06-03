@@ -14,3 +14,6 @@ pub mod g1e;
 pub mod g2e;
 pub mod rys_roots;
 pub mod rys_wheeler;
+pub mod find_roots;
+pub mod fmt;
+pub mod eigh;
