@@ -208,9 +208,9 @@ set_target_properties(cint PROPERTIES
   SOVERSION ${cint_SOVERSION}
   LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 if(QUADMATH_FOUND)
-	target_link_libraries(cint quadmath -flto LLDEnzymeFlags) #diag) #LLDEnzymeLooseTypeFlags)
+	target_link_libraries(cint quadmath -flto LLDEnzymeFlags LLDEnzymeLooseTypeFlags) #diag
 endif()
-target_link_libraries(cint "-lm" -flto LLDEnzymeFlags) #diag) #LLDEnzymeLooseTypeFlags)
+target_link_libraries(cint "-lm" -flto LLDEnzymeFlags LLDEnzymeLooseTypeFlags) #diag
 
 set(CintHeaders
   ${PROJECT_SOURCE_DIR}/include/cint_funcs.h
