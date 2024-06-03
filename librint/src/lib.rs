@@ -17,3 +17,4 @@ pub mod rys_wheeler;
 pub mod find_roots;
 pub mod fmt;
 pub mod eigh;
+pub mod misc;

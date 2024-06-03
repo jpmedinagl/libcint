@@ -1,6 +1,5 @@
 #![allow(dead_code, mutable_transmutes, non_camel_case_types, non_snake_case, non_upper_case_globals, unused_assignments, unused_mut)]
 
-// use num_traits::ToPrimitive;
 use crate::fmt::fmt_lerfc_like;
 use crate::fmt::fmt_erfc_like;
 use crate::eigh::_CINTdiagonalize;
