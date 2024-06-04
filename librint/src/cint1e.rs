@@ -12,8 +12,8 @@ use crate::g1e::CINTcommon_fac_sp;
 use crate::g1e::CINTprim_to_ctr_0;
 use crate::g1e::CINTprim_to_ctr_1;
 use crate::fblas::CINTdmat_transpose;
-// use crate::cart2sph::c2s_sph_1e;
-// use crate::cart2sph::c2s_cart_1e;
+use crate::cart2sph::c2s_sph_1e;
+use crate::cart2sph::c2s_cart_1e;
 use crate::cart2sph::c2s_dset0;
 
 // Union, Structs
@@ -27,20 +27,6 @@ pub type uintptr_t = libc::c_ulong;
 extern "C" {
     fn malloc(_: libc::c_ulong) -> *mut libc::c_void;
     fn free(__ptr: *mut libc::c_void);
-    fn c2s_sph_1e(
-        opij: *mut libc::c_double,
-        gctr: *mut libc::c_double,
-        dims: *mut libc::c_int,
-        envs: *mut CINTEnvVars,
-        cache: *mut libc::c_double,
-    );
-    fn c2s_cart_1e(
-        opij: *mut libc::c_double,
-        gctr: *mut libc::c_double,
-        dims: *mut libc::c_int,
-        envs: *mut CINTEnvVars,
-        cache: *mut libc::c_double,
-    );
 }
 
 #[no_mangle]
@@ -430,8 +416,9 @@ pub unsafe extern "C" fn CINT1e_drv(
     }
     counts[2 as libc::c_int as usize] = 1 as libc::c_int;
     counts[3 as libc::c_int as usize] = 1 as libc::c_int;
-    let mut nout: libc::c_int = *dims.offset(0 as libc::c_int as isize)
-        * *dims.offset(1 as libc::c_int as isize);
+    // let mut nout: libc::c_int = *dims.offset(0 as libc::c_int as isize)
+    //     * *dims.offset(1 as libc::c_int as isize);
+    let mut nout: libc::c_int = 1;
     let mut n: libc::c_int = 0;
     if has_value != 0 {
         n = 0 as libc::c_int;
@@ -450,14 +437,12 @@ pub unsafe extern "C" fn CINT1e_drv(
                 cache,
             );
             n += 1;
-            n;
         }
     } else {
         n = 0 as libc::c_int;
         while n < n_comp {
             c2s_dset0(out.offset((nout * n) as isize), dims, counts.as_mut_ptr());
             n += 1;
-            n;
         }
     }
     if !stack.is_null() {
