@@ -33,17 +33,18 @@ fn main() -> io::Result<()> {
             
             let di = CINTcgto_cart(i, &bas_arr);
             let dj = CINTcgto_cart(j, &bas_arr);
-            
-            println!("{} {}", i, j);
-            println!("{} {}", di, dj);
 
             let mut buf = vec![0.0; (di * dj) as usize];
 
+            for i in 0..((di*dj) as usize) {
+                println!("{} ", buf[i]);
+            }
+
             cint1e_ovlp_cart(&mut buf, &mut shls_arr, &mut atm_arr, natm as i32, &mut bas_arr, nbas as i32, &mut env_arr);
 
-            // for i in 0..(34) {
-            //     println!("{} ", buf[i]);
-            // }
+            for i in 0..((di*dj) as usize) {
+                println!("{} ", buf[i]);
+            }
         }
     }
     Ok(())
