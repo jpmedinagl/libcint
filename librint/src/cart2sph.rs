@@ -12,14 +12,14 @@ pub type uintptr_t = libc::c_ulong;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cart2sp_t {
-    pub cart2sph: *mut libc::c_double,
-    pub cart2j_lt_lR: *mut libc::c_double,
-    pub cart2j_lt_lI: *mut libc::c_double,
-    pub cart2j_gt_lR: *mut libc::c_double,
-    pub cart2j_gt_lI: *mut libc::c_double,
+    pub cart2sph: *mut f64,
+    pub cart2j_lt_lR: *mut f64,
+    pub cart2j_lt_lI: *mut f64,
+    pub cart2j_gt_lR: *mut f64,
+    pub cart2j_gt_lI: *mut f64,
 }
 
-static mut g_trans_cart2sph: [libc::c_double; 19176] = [
+static mut g_trans_cart2sph: [f64; 19176] = [
     1.0f64,
     1.0f64,
     0.0f64,
@@ -19197,7 +19197,7 @@ static mut g_trans_cart2sph: [libc::c_double; 19176] = [
     0.0f64,
     0.0f64,
 ];
-static mut g_trans_cart2jR: [libc::c_double; 34580] = [
+static mut g_trans_cart2jR: [f64; 34580] = [
     0.0f64,
     1.0f64,
     1.0f64,
@@ -53779,7 +53779,7 @@ static mut g_trans_cart2jR: [libc::c_double; 34580] = [
     0.0f64,
     0.0f64,
 ];
-static mut g_trans_cart2jI: [libc::c_double; 34580] = [
+static mut g_trans_cart2jI: [f64; 34580] = [
     0.0f64,
     0.0f64,
     0.0f64,
@@ -88362,91 +88362,91 @@ static mut g_trans_cart2jI: [libc::c_double; 34580] = [
     0.0f64,
 ];
 unsafe extern "C" fn _len_spinor(
-    mut kappa: libc::c_int,
-    mut l: libc::c_int,
-) -> libc::c_int {
-    if 0 as libc::c_int == kappa {
-        return 4 as libc::c_int * l + 2 as libc::c_int
-    } else if kappa < 0 as libc::c_int {
-        return 2 as libc::c_int * l + 2 as libc::c_int
+    mut kappa: i32,
+    mut l: i32,
+) -> i32 {
+    if 0 as i32 == kappa {
+        return 4 as i32 * l + 2 as i32
+    } else if kappa < 0 as i32 {
+        return 2 as i32 * l + 2 as i32
     } else {
-        return 2 as libc::c_int * l
+        return 2 as i32 * l
     };
 }
-static mut _len_cart: [libc::c_int; 16] = [
-    1 as libc::c_int,
-    3 as libc::c_int,
-    6 as libc::c_int,
-    10 as libc::c_int,
-    15 as libc::c_int,
-    21 as libc::c_int,
-    28 as libc::c_int,
-    36 as libc::c_int,
-    45 as libc::c_int,
-    55 as libc::c_int,
-    66 as libc::c_int,
-    78 as libc::c_int,
-    91 as libc::c_int,
-    105 as libc::c_int,
-    120 as libc::c_int,
-    136 as libc::c_int,
+static mut _len_cart: [i32; 16] = [
+    1 as i32,
+    3 as i32,
+    6 as i32,
+    10 as i32,
+    15 as i32,
+    21 as i32,
+    28 as i32,
+    36 as i32,
+    45 as i32,
+    55 as i32,
+    66 as i32,
+    78 as i32,
+    91 as i32,
+    105 as i32,
+    120 as i32,
+    136 as i32,
 ];
 static mut g_c2s: [cart2sp_t; 16] = [cart2sp_t {
-    cart2sph: 0 as *mut libc::c_double,
-    cart2j_lt_lR: 0 as *mut libc::c_double,
-    cart2j_lt_lI: 0 as *mut libc::c_double,
-    cart2j_gt_lR: 0 as *mut libc::c_double,
-    cart2j_gt_lI: 0 as *mut libc::c_double,
+    cart2sph: 0 as *mut f64,
+    cart2j_lt_lR: 0 as *mut f64,
+    cart2j_lt_lI: 0 as *mut f64,
+    cart2j_gt_lR: 0 as *mut f64,
+    cart2j_gt_lI: 0 as *mut f64,
 }; 16];
 unsafe extern "C" fn a_bra_cart2spheric(
-    mut gsph: *mut libc::c_double,
-    mut nket: libc::c_int,
-    mut gcart: *mut libc::c_double,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
-    let mut nf: libc::c_int = _len_cart[l as usize];
-    let mut nd: libc::c_int = l * 2 as libc::c_int + 1 as libc::c_int;
+    mut gsph: *mut f64,
+    mut nket: i32,
+    mut gcart: *mut f64,
+    mut l: i32,
+) -> *mut f64 {
+    let mut nf: i32 = _len_cart[l as usize];
+    let mut nd: i32 = l * 2 as i32 + 1 as i32;
     CINTdgemm_TN(nd, nket, nf, g_c2s[l as usize].cart2sph, gcart, gsph);
     return gsph;
 }
 unsafe extern "C" fn a_ket_cart2spheric(
-    mut gsph: *mut libc::c_double,
-    mut gcart: *mut libc::c_double,
-    mut lds: libc::c_int,
-    mut nbra: libc::c_int,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
-    let mut nf: libc::c_int = _len_cart[l as usize];
-    let mut nd: libc::c_int = l * 2 as libc::c_int + 1 as libc::c_int;
+    mut gsph: *mut f64,
+    mut gcart: *mut f64,
+    mut lds: i32,
+    mut nbra: i32,
+    mut l: i32,
+) -> *mut f64 {
+    let mut nf: i32 = _len_cart[l as usize];
+    let mut nd: i32 = l * 2 as i32 + 1 as i32;
     CINTdgemm_NN1(nbra, nd, nf, gcart, g_c2s[l as usize].cart2sph, gsph, lds);
     return gsph;
 }
 unsafe extern "C" fn s_bra_cart2spheric(
-    mut gsph: *mut libc::c_double,
-    mut nket: libc::c_int,
-    mut gcart: *mut libc::c_double,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
+    mut gsph: *mut f64,
+    mut nket: i32,
+    mut gcart: *mut f64,
+    mut l: i32,
+) -> *mut f64 {
     return gcart;
 }
 unsafe extern "C" fn s_ket_cart2spheric(
-    mut gsph: *mut libc::c_double,
-    mut gcart: *mut libc::c_double,
-    mut lds: libc::c_int,
-    mut nbra: libc::c_int,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
+    mut gsph: *mut f64,
+    mut gcart: *mut f64,
+    mut lds: i32,
+    mut nbra: i32,
+    mut l: i32,
+) -> *mut f64 {
     return gcart;
 }
 unsafe extern "C" fn s_ket_cart2spheric_copy(
-    mut gsph: *mut libc::c_double,
-    mut gcart: *mut libc::c_double,
-    mut lds: libc::c_int,
-    mut nbra: libc::c_int,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
-    let mut i: libc::c_int = 0;
-    i = 0 as libc::c_int;
+    mut gsph: *mut f64,
+    mut gcart: *mut f64,
+    mut lds: i32,
+    mut nbra: i32,
+    mut l: i32,
+) -> *mut f64 {
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < nbra {
         *gsph.offset(i as isize) = *gcart.offset(i as isize);
         i += 1;
@@ -88455,573 +88455,573 @@ unsafe extern "C" fn s_ket_cart2spheric_copy(
     return gsph;
 }
 unsafe extern "C" fn p_bra_cart2spheric(
-    mut gsph: *mut libc::c_double,
-    mut nket: libc::c_int,
-    mut gcart: *mut libc::c_double,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
+    mut gsph: *mut f64,
+    mut nket: i32,
+    mut gcart: *mut f64,
+    mut l: i32,
+) -> *mut f64 {
     return gcart;
 }
 unsafe extern "C" fn p_ket_cart2spheric(
-    mut gsph: *mut libc::c_double,
-    mut gcart: *mut libc::c_double,
-    mut lds: libc::c_int,
-    mut nbra: libc::c_int,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
+    mut gsph: *mut f64,
+    mut gcart: *mut f64,
+    mut lds: i32,
+    mut nbra: i32,
+    mut l: i32,
+) -> *mut f64 {
     return gcart;
 }
 unsafe extern "C" fn p_ket_cart2spheric_copy(
-    mut gsph: *mut libc::c_double,
-    mut gcart: *mut libc::c_double,
-    mut lds: libc::c_int,
-    mut nbra: libc::c_int,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
-    let mut i: libc::c_int = 0;
-    i = 0 as libc::c_int;
+    mut gsph: *mut f64,
+    mut gcart: *mut f64,
+    mut lds: i32,
+    mut nbra: i32,
+    mut l: i32,
+) -> *mut f64 {
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (0 as libc::c_int * lds + i) as isize,
-            ) = *gcart.offset((0 as libc::c_int * nbra + i) as isize);
+                (0 as i32 * lds + i) as isize,
+            ) = *gcart.offset((0 as i32 * nbra + i) as isize);
         *gsph
             .offset(
-                (1 as libc::c_int * lds + i) as isize,
-            ) = *gcart.offset((1 as libc::c_int * nbra + i) as isize);
+                (1 as i32 * lds + i) as isize,
+            ) = *gcart.offset((1 as i32 * nbra + i) as isize);
         *gsph
             .offset(
-                (2 as libc::c_int * lds + i) as isize,
-            ) = *gcart.offset((2 as libc::c_int * nbra + i) as isize);
+                (2 as i32 * lds + i) as isize,
+            ) = *gcart.offset((2 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
     return gsph;
 }
 unsafe extern "C" fn d_bra_cart2spheric(
-    mut gsph: *mut libc::c_double,
-    mut nket: libc::c_int,
-    mut gcart: *mut libc::c_double,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
-    let mut coeff_c2s: *mut libc::c_double = g_c2s[2 as libc::c_int as usize].cart2sph;
-    let mut pgsph: *mut libc::c_double = gsph;
-    let mut i: libc::c_int = 0;
-    i = 0 as libc::c_int;
+    mut gsph: *mut f64,
+    mut nket: i32,
+    mut gcart: *mut f64,
+    mut l: i32,
+) -> *mut f64 {
+    let mut coeff_c2s: *mut f64 = g_c2s[2 as i32 as usize].cart2sph;
+    let mut pgsph: *mut f64 = gsph;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < nket {
         *gsph
             .offset(
-                0 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(1 as libc::c_int as isize)
-            * *gcart.offset(1 as libc::c_int as isize);
+                0 as i32 as isize,
+            ) = *coeff_c2s.offset(1 as i32 as isize)
+            * *gcart.offset(1 as i32 as isize);
         *gsph
             .offset(
-                1 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(10 as libc::c_int as isize)
-            * *gcart.offset(4 as libc::c_int as isize);
+                1 as i32 as isize,
+            ) = *coeff_c2s.offset(10 as i32 as isize)
+            * *gcart.offset(4 as i32 as isize);
         *gsph
             .offset(
-                2 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(12 as libc::c_int as isize)
-            * *gcart.offset(0 as libc::c_int as isize)
-            + *coeff_c2s.offset(15 as libc::c_int as isize)
-                * *gcart.offset(3 as libc::c_int as isize)
-            + *coeff_c2s.offset(17 as libc::c_int as isize)
-                * *gcart.offset(5 as libc::c_int as isize);
+                2 as i32 as isize,
+            ) = *coeff_c2s.offset(12 as i32 as isize)
+            * *gcart.offset(0 as i32 as isize)
+            + *coeff_c2s.offset(15 as i32 as isize)
+                * *gcart.offset(3 as i32 as isize)
+            + *coeff_c2s.offset(17 as i32 as isize)
+                * *gcart.offset(5 as i32 as isize);
         *gsph
             .offset(
-                3 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(20 as libc::c_int as isize)
-            * *gcart.offset(2 as libc::c_int as isize);
+                3 as i32 as isize,
+            ) = *coeff_c2s.offset(20 as i32 as isize)
+            * *gcart.offset(2 as i32 as isize);
         *gsph
             .offset(
-                4 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(24 as libc::c_int as isize)
-            * *gcart.offset(0 as libc::c_int as isize)
-            + *coeff_c2s.offset(27 as libc::c_int as isize)
-                * *gcart.offset(3 as libc::c_int as isize);
-        gsph = gsph.offset(5 as libc::c_int as isize);
-        gcart = gcart.offset(6 as libc::c_int as isize);
+                4 as i32 as isize,
+            ) = *coeff_c2s.offset(24 as i32 as isize)
+            * *gcart.offset(0 as i32 as isize)
+            + *coeff_c2s.offset(27 as i32 as isize)
+                * *gcart.offset(3 as i32 as isize);
+        gsph = gsph.offset(5 as i32 as isize);
+        gcart = gcart.offset(6 as i32 as isize);
         i += 1;
         i;
     }
     return pgsph;
 }
 unsafe extern "C" fn d_ket_cart2spheric(
-    mut gsph: *mut libc::c_double,
-    mut gcart: *mut libc::c_double,
-    mut lds: libc::c_int,
-    mut nbra: libc::c_int,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
-    let mut coeff_c2s: *mut libc::c_double = g_c2s[2 as libc::c_int as usize].cart2sph;
-    let mut pgsph: *mut libc::c_double = gsph;
-    let mut i: libc::c_int = 0;
-    i = 0 as libc::c_int;
+    mut gsph: *mut f64,
+    mut gcart: *mut f64,
+    mut lds: i32,
+    mut nbra: i32,
+    mut l: i32,
+) -> *mut f64 {
+    let mut coeff_c2s: *mut f64 = g_c2s[2 as i32 as usize].cart2sph;
+    let mut pgsph: *mut f64 = gsph;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (0 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(1 as libc::c_int as isize)
-            * *gcart.offset((1 as libc::c_int * nbra + i) as isize);
+                (0 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(1 as i32 as isize)
+            * *gcart.offset((1 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (1 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(10 as libc::c_int as isize)
-            * *gcart.offset((4 as libc::c_int * nbra + i) as isize);
+                (1 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(10 as i32 as isize)
+            * *gcart.offset((4 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (2 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(12 as libc::c_int as isize)
-            * *gcart.offset((0 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(15 as libc::c_int as isize)
-                * *gcart.offset((3 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(17 as libc::c_int as isize)
-                * *gcart.offset((5 as libc::c_int * nbra + i) as isize);
+                (2 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(12 as i32 as isize)
+            * *gcart.offset((0 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(15 as i32 as isize)
+                * *gcart.offset((3 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(17 as i32 as isize)
+                * *gcart.offset((5 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (3 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(20 as libc::c_int as isize)
-            * *gcart.offset((2 as libc::c_int * nbra + i) as isize);
+                (3 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(20 as i32 as isize)
+            * *gcart.offset((2 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (4 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(24 as libc::c_int as isize)
-            * *gcart.offset((0 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(27 as libc::c_int as isize)
-                * *gcart.offset((3 as libc::c_int * nbra + i) as isize);
+                (4 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(24 as i32 as isize)
+            * *gcart.offset((0 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(27 as i32 as isize)
+                * *gcart.offset((3 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
     return pgsph;
 }
 unsafe extern "C" fn f_bra_cart2spheric(
-    mut gsph: *mut libc::c_double,
-    mut nket: libc::c_int,
-    mut gcart: *mut libc::c_double,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
-    let mut coeff_c2s: *mut libc::c_double = g_c2s[3 as libc::c_int as usize].cart2sph;
-    let mut pgsph: *mut libc::c_double = gsph;
-    let mut i: libc::c_int = 0;
-    i = 0 as libc::c_int;
+    mut gsph: *mut f64,
+    mut nket: i32,
+    mut gcart: *mut f64,
+    mut l: i32,
+) -> *mut f64 {
+    let mut coeff_c2s: *mut f64 = g_c2s[3 as i32 as usize].cart2sph;
+    let mut pgsph: *mut f64 = gsph;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < nket {
         *gsph
             .offset(
-                0 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(1 as libc::c_int as isize)
-            * *gcart.offset(1 as libc::c_int as isize)
-            + *coeff_c2s.offset(6 as libc::c_int as isize)
-                * *gcart.offset(6 as libc::c_int as isize);
+                0 as i32 as isize,
+            ) = *coeff_c2s.offset(1 as i32 as isize)
+            * *gcart.offset(1 as i32 as isize)
+            + *coeff_c2s.offset(6 as i32 as isize)
+                * *gcart.offset(6 as i32 as isize);
         *gsph
             .offset(
-                1 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(14 as libc::c_int as isize)
-            * *gcart.offset(4 as libc::c_int as isize);
+                1 as i32 as isize,
+            ) = *coeff_c2s.offset(14 as i32 as isize)
+            * *gcart.offset(4 as i32 as isize);
         *gsph
             .offset(
-                2 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(21 as libc::c_int as isize)
-            * *gcart.offset(1 as libc::c_int as isize)
-            + *coeff_c2s.offset(26 as libc::c_int as isize)
-                * *gcart.offset(6 as libc::c_int as isize)
-            + *coeff_c2s.offset(28 as libc::c_int as isize)
-                * *gcart.offset(8 as libc::c_int as isize);
+                2 as i32 as isize,
+            ) = *coeff_c2s.offset(21 as i32 as isize)
+            * *gcart.offset(1 as i32 as isize)
+            + *coeff_c2s.offset(26 as i32 as isize)
+                * *gcart.offset(6 as i32 as isize)
+            + *coeff_c2s.offset(28 as i32 as isize)
+                * *gcart.offset(8 as i32 as isize);
         *gsph
             .offset(
-                3 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(32 as libc::c_int as isize)
-            * *gcart.offset(2 as libc::c_int as isize)
-            + *coeff_c2s.offset(37 as libc::c_int as isize)
-                * *gcart.offset(7 as libc::c_int as isize)
-            + *coeff_c2s.offset(39 as libc::c_int as isize)
-                * *gcart.offset(9 as libc::c_int as isize);
+                3 as i32 as isize,
+            ) = *coeff_c2s.offset(32 as i32 as isize)
+            * *gcart.offset(2 as i32 as isize)
+            + *coeff_c2s.offset(37 as i32 as isize)
+                * *gcart.offset(7 as i32 as isize)
+            + *coeff_c2s.offset(39 as i32 as isize)
+                * *gcart.offset(9 as i32 as isize);
         *gsph
             .offset(
-                4 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(40 as libc::c_int as isize)
-            * *gcart.offset(0 as libc::c_int as isize)
-            + *coeff_c2s.offset(43 as libc::c_int as isize)
-                * *gcart.offset(3 as libc::c_int as isize)
-            + *coeff_c2s.offset(45 as libc::c_int as isize)
-                * *gcart.offset(5 as libc::c_int as isize);
+                4 as i32 as isize,
+            ) = *coeff_c2s.offset(40 as i32 as isize)
+            * *gcart.offset(0 as i32 as isize)
+            + *coeff_c2s.offset(43 as i32 as isize)
+                * *gcart.offset(3 as i32 as isize)
+            + *coeff_c2s.offset(45 as i32 as isize)
+                * *gcart.offset(5 as i32 as isize);
         *gsph
             .offset(
-                5 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(52 as libc::c_int as isize)
-            * *gcart.offset(2 as libc::c_int as isize)
-            + *coeff_c2s.offset(57 as libc::c_int as isize)
-                * *gcart.offset(7 as libc::c_int as isize);
+                5 as i32 as isize,
+            ) = *coeff_c2s.offset(52 as i32 as isize)
+            * *gcart.offset(2 as i32 as isize)
+            + *coeff_c2s.offset(57 as i32 as isize)
+                * *gcart.offset(7 as i32 as isize);
         *gsph
             .offset(
-                6 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(60 as libc::c_int as isize)
-            * *gcart.offset(0 as libc::c_int as isize)
-            + *coeff_c2s.offset(63 as libc::c_int as isize)
-                * *gcart.offset(3 as libc::c_int as isize);
-        gsph = gsph.offset(7 as libc::c_int as isize);
-        gcart = gcart.offset(10 as libc::c_int as isize);
+                6 as i32 as isize,
+            ) = *coeff_c2s.offset(60 as i32 as isize)
+            * *gcart.offset(0 as i32 as isize)
+            + *coeff_c2s.offset(63 as i32 as isize)
+                * *gcart.offset(3 as i32 as isize);
+        gsph = gsph.offset(7 as i32 as isize);
+        gcart = gcart.offset(10 as i32 as isize);
         i += 1;
         i;
     }
     return pgsph;
 }
 unsafe extern "C" fn f_ket_cart2spheric(
-    mut gsph: *mut libc::c_double,
-    mut gcart: *mut libc::c_double,
-    mut lds: libc::c_int,
-    mut nbra: libc::c_int,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
-    let mut coeff_c2s: *mut libc::c_double = g_c2s[3 as libc::c_int as usize].cart2sph;
-    let mut pgsph: *mut libc::c_double = gsph;
-    let mut i: libc::c_int = 0;
-    i = 0 as libc::c_int;
+    mut gsph: *mut f64,
+    mut gcart: *mut f64,
+    mut lds: i32,
+    mut nbra: i32,
+    mut l: i32,
+) -> *mut f64 {
+    let mut coeff_c2s: *mut f64 = g_c2s[3 as i32 as usize].cart2sph;
+    let mut pgsph: *mut f64 = gsph;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (0 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(1 as libc::c_int as isize)
-            * *gcart.offset((1 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(6 as libc::c_int as isize)
-                * *gcart.offset((6 as libc::c_int * nbra + i) as isize);
+                (0 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(1 as i32 as isize)
+            * *gcart.offset((1 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(6 as i32 as isize)
+                * *gcart.offset((6 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (1 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(14 as libc::c_int as isize)
-            * *gcart.offset((4 as libc::c_int * nbra + i) as isize);
+                (1 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(14 as i32 as isize)
+            * *gcart.offset((4 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (2 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(21 as libc::c_int as isize)
-            * *gcart.offset((1 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(26 as libc::c_int as isize)
-                * *gcart.offset((6 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(28 as libc::c_int as isize)
-                * *gcart.offset((8 as libc::c_int * nbra + i) as isize);
+                (2 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(21 as i32 as isize)
+            * *gcart.offset((1 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(26 as i32 as isize)
+                * *gcart.offset((6 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(28 as i32 as isize)
+                * *gcart.offset((8 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (3 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(32 as libc::c_int as isize)
-            * *gcart.offset((2 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(37 as libc::c_int as isize)
-                * *gcart.offset((7 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(39 as libc::c_int as isize)
-                * *gcart.offset((9 as libc::c_int * nbra + i) as isize);
+                (3 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(32 as i32 as isize)
+            * *gcart.offset((2 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(37 as i32 as isize)
+                * *gcart.offset((7 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(39 as i32 as isize)
+                * *gcart.offset((9 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (4 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(40 as libc::c_int as isize)
-            * *gcart.offset((0 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(43 as libc::c_int as isize)
-                * *gcart.offset((3 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(45 as libc::c_int as isize)
-                * *gcart.offset((5 as libc::c_int * nbra + i) as isize);
+                (4 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(40 as i32 as isize)
+            * *gcart.offset((0 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(43 as i32 as isize)
+                * *gcart.offset((3 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(45 as i32 as isize)
+                * *gcart.offset((5 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (5 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(52 as libc::c_int as isize)
-            * *gcart.offset((2 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(57 as libc::c_int as isize)
-                * *gcart.offset((7 as libc::c_int * nbra + i) as isize);
+                (5 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(52 as i32 as isize)
+            * *gcart.offset((2 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(57 as i32 as isize)
+                * *gcart.offset((7 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (6 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(60 as libc::c_int as isize)
-            * *gcart.offset((0 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(63 as libc::c_int as isize)
-                * *gcart.offset((3 as libc::c_int * nbra + i) as isize);
+                (6 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(60 as i32 as isize)
+            * *gcart.offset((0 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(63 as i32 as isize)
+                * *gcart.offset((3 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
     return pgsph;
 }
 unsafe extern "C" fn g_bra_cart2spheric(
-    mut gsph: *mut libc::c_double,
-    mut nket: libc::c_int,
-    mut gcart: *mut libc::c_double,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
-    let mut coeff_c2s: *mut libc::c_double = g_c2s[4 as libc::c_int as usize].cart2sph;
-    let mut pgsph: *mut libc::c_double = gsph;
-    let mut i: libc::c_int = 0;
-    i = 0 as libc::c_int;
+    mut gsph: *mut f64,
+    mut nket: i32,
+    mut gcart: *mut f64,
+    mut l: i32,
+) -> *mut f64 {
+    let mut coeff_c2s: *mut f64 = g_c2s[4 as i32 as usize].cart2sph;
+    let mut pgsph: *mut f64 = gsph;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < nket {
         *gsph
             .offset(
-                0 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(1 as libc::c_int as isize)
-            * *gcart.offset(1 as libc::c_int as isize)
-            + *coeff_c2s.offset(6 as libc::c_int as isize)
-                * *gcart.offset(6 as libc::c_int as isize);
+                0 as i32 as isize,
+            ) = *coeff_c2s.offset(1 as i32 as isize)
+            * *gcart.offset(1 as i32 as isize)
+            + *coeff_c2s.offset(6 as i32 as isize)
+                * *gcart.offset(6 as i32 as isize);
         *gsph
             .offset(
-                1 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(19 as libc::c_int as isize)
-            * *gcart.offset(4 as libc::c_int as isize)
-            + *coeff_c2s.offset(26 as libc::c_int as isize)
-                * *gcart.offset(11 as libc::c_int as isize);
+                1 as i32 as isize,
+            ) = *coeff_c2s.offset(19 as i32 as isize)
+            * *gcart.offset(4 as i32 as isize)
+            + *coeff_c2s.offset(26 as i32 as isize)
+                * *gcart.offset(11 as i32 as isize);
         *gsph
             .offset(
-                2 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(31 as libc::c_int as isize)
-            * *gcart.offset(1 as libc::c_int as isize)
-            + *coeff_c2s.offset(36 as libc::c_int as isize)
-                * *gcart.offset(6 as libc::c_int as isize)
-            + *coeff_c2s.offset(38 as libc::c_int as isize)
-                * *gcart.offset(8 as libc::c_int as isize);
+                2 as i32 as isize,
+            ) = *coeff_c2s.offset(31 as i32 as isize)
+            * *gcart.offset(1 as i32 as isize)
+            + *coeff_c2s.offset(36 as i32 as isize)
+                * *gcart.offset(6 as i32 as isize)
+            + *coeff_c2s.offset(38 as i32 as isize)
+                * *gcart.offset(8 as i32 as isize);
         *gsph
             .offset(
-                3 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(49 as libc::c_int as isize)
-            * *gcart.offset(4 as libc::c_int as isize)
-            + *coeff_c2s.offset(56 as libc::c_int as isize)
-                * *gcart.offset(11 as libc::c_int as isize)
-            + *coeff_c2s.offset(58 as libc::c_int as isize)
-                * *gcart.offset(13 as libc::c_int as isize);
+                3 as i32 as isize,
+            ) = *coeff_c2s.offset(49 as i32 as isize)
+            * *gcart.offset(4 as i32 as isize)
+            + *coeff_c2s.offset(56 as i32 as isize)
+                * *gcart.offset(11 as i32 as isize)
+            + *coeff_c2s.offset(58 as i32 as isize)
+                * *gcart.offset(13 as i32 as isize);
         *gsph
             .offset(
-                4 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(60 as libc::c_int as isize)
-            * *gcart.offset(0 as libc::c_int as isize)
-            + *coeff_c2s.offset(63 as libc::c_int as isize)
-                * *gcart.offset(3 as libc::c_int as isize)
-            + *coeff_c2s.offset(65 as libc::c_int as isize)
-                * *gcart.offset(5 as libc::c_int as isize)
-            + *coeff_c2s.offset(70 as libc::c_int as isize)
-                * *gcart.offset(10 as libc::c_int as isize)
-            + *coeff_c2s.offset(72 as libc::c_int as isize)
-                * *gcart.offset(12 as libc::c_int as isize)
-            + *coeff_c2s.offset(74 as libc::c_int as isize)
-                * *gcart.offset(14 as libc::c_int as isize);
+                4 as i32 as isize,
+            ) = *coeff_c2s.offset(60 as i32 as isize)
+            * *gcart.offset(0 as i32 as isize)
+            + *coeff_c2s.offset(63 as i32 as isize)
+                * *gcart.offset(3 as i32 as isize)
+            + *coeff_c2s.offset(65 as i32 as isize)
+                * *gcart.offset(5 as i32 as isize)
+            + *coeff_c2s.offset(70 as i32 as isize)
+                * *gcart.offset(10 as i32 as isize)
+            + *coeff_c2s.offset(72 as i32 as isize)
+                * *gcart.offset(12 as i32 as isize)
+            + *coeff_c2s.offset(74 as i32 as isize)
+                * *gcart.offset(14 as i32 as isize);
         *gsph
             .offset(
-                5 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(77 as libc::c_int as isize)
-            * *gcart.offset(2 as libc::c_int as isize)
-            + *coeff_c2s.offset(82 as libc::c_int as isize)
-                * *gcart.offset(7 as libc::c_int as isize)
-            + *coeff_c2s.offset(84 as libc::c_int as isize)
-                * *gcart.offset(9 as libc::c_int as isize);
+                5 as i32 as isize,
+            ) = *coeff_c2s.offset(77 as i32 as isize)
+            * *gcart.offset(2 as i32 as isize)
+            + *coeff_c2s.offset(82 as i32 as isize)
+                * *gcart.offset(7 as i32 as isize)
+            + *coeff_c2s.offset(84 as i32 as isize)
+                * *gcart.offset(9 as i32 as isize);
         *gsph
             .offset(
-                6 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(90 as libc::c_int as isize)
-            * *gcart.offset(0 as libc::c_int as isize)
-            + *coeff_c2s.offset(95 as libc::c_int as isize)
-                * *gcart.offset(5 as libc::c_int as isize)
-            + *coeff_c2s.offset(100 as libc::c_int as isize)
-                * *gcart.offset(10 as libc::c_int as isize)
-            + *coeff_c2s.offset(102 as libc::c_int as isize)
-                * *gcart.offset(12 as libc::c_int as isize);
+                6 as i32 as isize,
+            ) = *coeff_c2s.offset(90 as i32 as isize)
+            * *gcart.offset(0 as i32 as isize)
+            + *coeff_c2s.offset(95 as i32 as isize)
+                * *gcart.offset(5 as i32 as isize)
+            + *coeff_c2s.offset(100 as i32 as isize)
+                * *gcart.offset(10 as i32 as isize)
+            + *coeff_c2s.offset(102 as i32 as isize)
+                * *gcart.offset(12 as i32 as isize);
         *gsph
             .offset(
-                7 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(107 as libc::c_int as isize)
-            * *gcart.offset(2 as libc::c_int as isize)
-            + *coeff_c2s.offset(112 as libc::c_int as isize)
-                * *gcart.offset(7 as libc::c_int as isize);
+                7 as i32 as isize,
+            ) = *coeff_c2s.offset(107 as i32 as isize)
+            * *gcart.offset(2 as i32 as isize)
+            + *coeff_c2s.offset(112 as i32 as isize)
+                * *gcart.offset(7 as i32 as isize);
         *gsph
             .offset(
-                8 as libc::c_int as isize,
-            ) = *coeff_c2s.offset(120 as libc::c_int as isize)
-            * *gcart.offset(0 as libc::c_int as isize)
-            + *coeff_c2s.offset(123 as libc::c_int as isize)
-                * *gcart.offset(3 as libc::c_int as isize)
-            + *coeff_c2s.offset(130 as libc::c_int as isize)
-                * *gcart.offset(10 as libc::c_int as isize);
-        gsph = gsph.offset(9 as libc::c_int as isize);
-        gcart = gcart.offset(15 as libc::c_int as isize);
+                8 as i32 as isize,
+            ) = *coeff_c2s.offset(120 as i32 as isize)
+            * *gcart.offset(0 as i32 as isize)
+            + *coeff_c2s.offset(123 as i32 as isize)
+                * *gcart.offset(3 as i32 as isize)
+            + *coeff_c2s.offset(130 as i32 as isize)
+                * *gcart.offset(10 as i32 as isize);
+        gsph = gsph.offset(9 as i32 as isize);
+        gcart = gcart.offset(15 as i32 as isize);
         i += 1;
         i;
     }
     return pgsph;
 }
 unsafe extern "C" fn g_ket_cart2spheric(
-    mut gsph: *mut libc::c_double,
-    mut gcart: *mut libc::c_double,
-    mut lds: libc::c_int,
-    mut nbra: libc::c_int,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
-    let mut coeff_c2s: *mut libc::c_double = g_c2s[4 as libc::c_int as usize].cart2sph;
-    let mut pgsph: *mut libc::c_double = gsph;
-    let mut i: libc::c_int = 0;
-    i = 0 as libc::c_int;
+    mut gsph: *mut f64,
+    mut gcart: *mut f64,
+    mut lds: i32,
+    mut nbra: i32,
+    mut l: i32,
+) -> *mut f64 {
+    let mut coeff_c2s: *mut f64 = g_c2s[4 as i32 as usize].cart2sph;
+    let mut pgsph: *mut f64 = gsph;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (0 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(1 as libc::c_int as isize)
-            * *gcart.offset((1 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(6 as libc::c_int as isize)
-                * *gcart.offset((6 as libc::c_int * nbra + i) as isize);
+                (0 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(1 as i32 as isize)
+            * *gcart.offset((1 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(6 as i32 as isize)
+                * *gcart.offset((6 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (1 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(19 as libc::c_int as isize)
-            * *gcart.offset((4 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(26 as libc::c_int as isize)
-                * *gcart.offset((11 as libc::c_int * nbra + i) as isize);
+                (1 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(19 as i32 as isize)
+            * *gcart.offset((4 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(26 as i32 as isize)
+                * *gcart.offset((11 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (2 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(31 as libc::c_int as isize)
-            * *gcart.offset((1 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(36 as libc::c_int as isize)
-                * *gcart.offset((6 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(38 as libc::c_int as isize)
-                * *gcart.offset((8 as libc::c_int * nbra + i) as isize);
+                (2 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(31 as i32 as isize)
+            * *gcart.offset((1 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(36 as i32 as isize)
+                * *gcart.offset((6 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(38 as i32 as isize)
+                * *gcart.offset((8 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (3 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(49 as libc::c_int as isize)
-            * *gcart.offset((4 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(56 as libc::c_int as isize)
-                * *gcart.offset((11 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(58 as libc::c_int as isize)
-                * *gcart.offset((13 as libc::c_int * nbra + i) as isize);
+                (3 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(49 as i32 as isize)
+            * *gcart.offset((4 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(56 as i32 as isize)
+                * *gcart.offset((11 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(58 as i32 as isize)
+                * *gcart.offset((13 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (4 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(60 as libc::c_int as isize)
-            * *gcart.offset((0 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(63 as libc::c_int as isize)
-                * *gcart.offset((3 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(65 as libc::c_int as isize)
-                * *gcart.offset((5 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(70 as libc::c_int as isize)
-                * *gcart.offset((10 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(72 as libc::c_int as isize)
-                * *gcart.offset((12 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(74 as libc::c_int as isize)
-                * *gcart.offset((14 as libc::c_int * nbra + i) as isize);
+                (4 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(60 as i32 as isize)
+            * *gcart.offset((0 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(63 as i32 as isize)
+                * *gcart.offset((3 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(65 as i32 as isize)
+                * *gcart.offset((5 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(70 as i32 as isize)
+                * *gcart.offset((10 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(72 as i32 as isize)
+                * *gcart.offset((12 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(74 as i32 as isize)
+                * *gcart.offset((14 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (5 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(77 as libc::c_int as isize)
-            * *gcart.offset((2 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(82 as libc::c_int as isize)
-                * *gcart.offset((7 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(84 as libc::c_int as isize)
-                * *gcart.offset((9 as libc::c_int * nbra + i) as isize);
+                (5 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(77 as i32 as isize)
+            * *gcart.offset((2 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(82 as i32 as isize)
+                * *gcart.offset((7 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(84 as i32 as isize)
+                * *gcart.offset((9 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (6 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(90 as libc::c_int as isize)
-            * *gcart.offset((0 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(95 as libc::c_int as isize)
-                * *gcart.offset((5 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(100 as libc::c_int as isize)
-                * *gcart.offset((10 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(102 as libc::c_int as isize)
-                * *gcart.offset((12 as libc::c_int * nbra + i) as isize);
+                (6 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(90 as i32 as isize)
+            * *gcart.offset((0 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(95 as i32 as isize)
+                * *gcart.offset((5 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(100 as i32 as isize)
+                * *gcart.offset((10 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(102 as i32 as isize)
+                * *gcart.offset((12 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (7 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(107 as libc::c_int as isize)
-            * *gcart.offset((2 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(112 as libc::c_int as isize)
-                * *gcart.offset((7 as libc::c_int * nbra + i) as isize);
+                (7 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(107 as i32 as isize)
+            * *gcart.offset((2 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(112 as i32 as isize)
+                * *gcart.offset((7 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < nbra {
         *gsph
             .offset(
-                (8 as libc::c_int * lds + i) as isize,
-            ) = *coeff_c2s.offset(120 as libc::c_int as isize)
-            * *gcart.offset((0 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(123 as libc::c_int as isize)
-                * *gcart.offset((3 as libc::c_int * nbra + i) as isize)
-            + *coeff_c2s.offset(130 as libc::c_int as isize)
-                * *gcart.offset((10 as libc::c_int * nbra + i) as isize);
+                (8 as i32 * lds + i) as isize,
+            ) = *coeff_c2s.offset(120 as i32 as isize)
+            * *gcart.offset((0 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(123 as i32 as isize)
+                * *gcart.offset((3 as i32 * nbra + i) as isize)
+            + *coeff_c2s.offset(130 as i32 as isize)
+                * *gcart.offset((10 as i32 * nbra + i) as isize);
         i += 1;
         i;
     }
@@ -89029,343 +89029,343 @@ unsafe extern "C" fn g_ket_cart2spheric(
 }
 #[no_mangle]
 pub static mut c2s_bra_sph: [Option::<
-    unsafe extern "C" fn() -> *mut libc::c_double,
+    unsafe extern "C" fn() -> *mut f64,
 >; 16] = unsafe {
     [
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 s_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 p_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 d_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 f_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 g_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 a_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 a_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 a_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 a_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 a_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 a_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 a_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 a_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 a_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 a_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    libc::c_int,
-                    *mut libc::c_double,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    i32,
+                    *mut f64,
+                    i32,
+                ) -> *mut f64,
             >,
-            Option::<unsafe extern "C" fn() -> *mut libc::c_double>,
+            Option::<unsafe extern "C" fn() -> *mut f64>,
         >(
             Some(
                 a_bra_cart2spheric
                     as unsafe extern "C" fn(
-                        *mut libc::c_double,
-                        libc::c_int,
-                        *mut libc::c_double,
-                        libc::c_int,
-                    ) -> *mut libc::c_double,
+                        *mut f64,
+                        i32,
+                        *mut f64,
+                        i32,
+                    ) -> *mut f64,
             ),
         ),
     ]
@@ -89373,408 +89373,408 @@ pub static mut c2s_bra_sph: [Option::<
 #[no_mangle]
 pub static mut c2s_ket_sph: [Option::<
     unsafe extern "C" fn(
-        *mut libc::c_double,
-        *mut libc::c_double,
-        libc::c_int,
-        libc::c_int,
-        libc::c_int,
-    ) -> *mut libc::c_double,
+        *mut f64,
+        *mut f64,
+        i32,
+        i32,
+        i32,
+    ) -> *mut f64,
 >; 16] = unsafe {
     [
         Some(
             s_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             p_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             d_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             f_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             g_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
     ]
 };
 #[no_mangle]
 pub static mut c2s_ket_sph1: [Option::<
     unsafe extern "C" fn(
-        *mut libc::c_double,
-        *mut libc::c_double,
-        libc::c_int,
-        libc::c_int,
-        libc::c_int,
-    ) -> *mut libc::c_double,
+        *mut f64,
+        *mut f64,
+        i32,
+        i32,
+        i32,
+    ) -> *mut f64,
 >; 16] = unsafe {
     [
         Some(
             s_ket_cart2spheric_copy
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             p_ket_cart2spheric_copy
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             d_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             f_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             g_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
         Some(
             a_ket_cart2spheric
                 as unsafe extern "C" fn(
-                    *mut libc::c_double,
-                    *mut libc::c_double,
-                    libc::c_int,
-                    libc::c_int,
-                    libc::c_int,
-                ) -> *mut libc::c_double,
+                    *mut f64,
+                    *mut f64,
+                    i32,
+                    i32,
+                    i32,
+                ) -> *mut f64,
         ),
     ]
 };
 unsafe extern "C" fn a_bra_cart2spinor_si(
-    mut gspR: *mut libc::c_double,
-    mut gspI: *mut libc::c_double,
-    mut gx: *mut libc::c_double,
-    mut gy: *mut libc::c_double,
-    mut gz: *mut libc::c_double,
-    mut g1: *mut libc::c_double,
-    mut nket: libc::c_int,
-    mut kappa: libc::c_int,
-    mut l: libc::c_int,
+    mut gspR: *mut f64,
+    mut gspI: *mut f64,
+    mut gx: *mut f64,
+    mut gy: *mut f64,
+    mut gz: *mut f64,
+    mut g1: *mut f64,
+    mut nket: i32,
+    mut kappa: i32,
+    mut l: i32,
 ) {
-    let mut nf: libc::c_int = _len_cart[l as usize];
-    let mut nd: libc::c_int = _len_spinor(kappa, l);
-    let mut gspaR: *mut libc::c_double = gspR;
-    let mut gspaI: *mut libc::c_double = gspI;
-    let mut gspbR: *mut libc::c_double = gspR.offset((nket * nd) as isize);
-    let mut gspbI: *mut libc::c_double = gspI.offset((nket * nd) as isize);
-    let mut coeffR: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut coeffI: *mut libc::c_double = 0 as *mut libc::c_double;
-    if kappa < 0 as libc::c_int {
+    let mut nf: i32 = _len_cart[l as usize];
+    let mut nd: i32 = _len_spinor(kappa, l);
+    let mut gspaR: *mut f64 = gspR;
+    let mut gspaI: *mut f64 = gspI;
+    let mut gspbR: *mut f64 = gspR.offset((nket * nd) as isize);
+    let mut gspbI: *mut f64 = gspI.offset((nket * nd) as isize);
+    let mut coeffR: *mut f64 = 0 as *mut f64;
+    let mut coeffI: *mut f64 = 0 as *mut f64;
+    if kappa < 0 as i32 {
         coeffR = g_c2s[l as usize].cart2j_gt_lR;
         coeffI = g_c2s[l as usize].cart2j_gt_lI;
     } else {
         coeffR = g_c2s[l as usize].cart2j_lt_lR;
         coeffI = g_c2s[l as usize].cart2j_lt_lI;
     }
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    let mut n: libc::c_int = 0;
-    let mut saR: libc::c_double = 0.;
-    let mut saI: libc::c_double = 0.;
-    let mut sbR: libc::c_double = 0.;
-    let mut sbI: libc::c_double = 0.;
-    let mut caR: libc::c_double = 0.;
-    let mut caI: libc::c_double = 0.;
-    let mut cbR: libc::c_double = 0.;
-    let mut cbI: libc::c_double = 0.;
-    let mut v1: libc::c_double = 0.;
-    let mut vx: libc::c_double = 0.;
-    let mut vy: libc::c_double = 0.;
-    let mut vz: libc::c_double = 0.;
-    j = 0 as libc::c_int;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut n: i32 = 0;
+    let mut saR: f64 = 0.;
+    let mut saI: f64 = 0.;
+    let mut sbR: f64 = 0.;
+    let mut sbI: f64 = 0.;
+    let mut caR: f64 = 0.;
+    let mut caI: f64 = 0.;
+    let mut cbR: f64 = 0.;
+    let mut cbI: f64 = 0.;
+    let mut v1: f64 = 0.;
+    let mut vx: f64 = 0.;
+    let mut vy: f64 = 0.;
+    let mut vz: f64 = 0.;
+    j = 0 as i32;
     while j < nket {
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while i < nd {
             saR = 0.0f64;
             saI = 0.0f64;
             sbR = 0.0f64;
             sbI = 0.0f64;
-            n = 0 as libc::c_int;
+            n = 0 as i32;
             while n < nf {
                 v1 = *g1.offset((j * nf + n) as isize);
                 vx = *gx.offset((j * nf + n) as isize);
                 vy = *gy.offset((j * nf + n) as isize);
                 vz = *gz.offset((j * nf + n) as isize);
-                caR = *coeffR.offset((i * nf * 2 as libc::c_int + n) as isize);
-                caI = *coeffI.offset((i * nf * 2 as libc::c_int + n) as isize);
-                cbR = *coeffR.offset((i * nf * 2 as libc::c_int + nf + n) as isize);
-                cbI = *coeffI.offset((i * nf * 2 as libc::c_int + nf + n) as isize);
+                caR = *coeffR.offset((i * nf * 2 as i32 + n) as isize);
+                caI = *coeffI.offset((i * nf * 2 as i32 + n) as isize);
+                cbR = *coeffR.offset((i * nf * 2 as i32 + nf + n) as isize);
+                cbI = *coeffI.offset((i * nf * 2 as i32 + nf + n) as isize);
                 saR += caR * v1 + caI * vz - cbR * vy + cbI * vx;
                 saI += -caI * v1 + caR * vz + cbI * vy + cbR * vx;
                 sbR += cbR * v1 - cbI * vz + caR * vy + caI * vx;
@@ -89794,58 +89794,58 @@ unsafe extern "C" fn a_bra_cart2spinor_si(
     }
 }
 unsafe extern "C" fn a_bra_cart2spinor_sf(
-    mut gspR: *mut libc::c_double,
-    mut gspI: *mut libc::c_double,
-    mut gx: *mut libc::c_double,
-    mut gy: *mut libc::c_double,
-    mut gz: *mut libc::c_double,
-    mut g1: *mut libc::c_double,
-    mut nket: libc::c_int,
-    mut kappa: libc::c_int,
-    mut l: libc::c_int,
+    mut gspR: *mut f64,
+    mut gspI: *mut f64,
+    mut gx: *mut f64,
+    mut gy: *mut f64,
+    mut gz: *mut f64,
+    mut g1: *mut f64,
+    mut nket: i32,
+    mut kappa: i32,
+    mut l: i32,
 ) {
-    let mut nf: libc::c_int = _len_cart[l as usize];
-    let mut nd: libc::c_int = _len_spinor(kappa, l);
-    let mut gspaR: *mut libc::c_double = gspR;
-    let mut gspaI: *mut libc::c_double = gspI;
-    let mut gspbR: *mut libc::c_double = gspR.offset((nket * nd) as isize);
-    let mut gspbI: *mut libc::c_double = gspI.offset((nket * nd) as isize);
-    let mut coeffR: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut coeffI: *mut libc::c_double = 0 as *mut libc::c_double;
-    if kappa < 0 as libc::c_int {
+    let mut nf: i32 = _len_cart[l as usize];
+    let mut nd: i32 = _len_spinor(kappa, l);
+    let mut gspaR: *mut f64 = gspR;
+    let mut gspaI: *mut f64 = gspI;
+    let mut gspbR: *mut f64 = gspR.offset((nket * nd) as isize);
+    let mut gspbI: *mut f64 = gspI.offset((nket * nd) as isize);
+    let mut coeffR: *mut f64 = 0 as *mut f64;
+    let mut coeffI: *mut f64 = 0 as *mut f64;
+    if kappa < 0 as i32 {
         coeffR = g_c2s[l as usize].cart2j_gt_lR;
         coeffI = g_c2s[l as usize].cart2j_gt_lI;
     } else {
         coeffR = g_c2s[l as usize].cart2j_lt_lR;
         coeffI = g_c2s[l as usize].cart2j_lt_lI;
     }
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    let mut n: libc::c_int = 0;
-    let mut saR: libc::c_double = 0.;
-    let mut saI: libc::c_double = 0.;
-    let mut sbR: libc::c_double = 0.;
-    let mut sbI: libc::c_double = 0.;
-    let mut caR: libc::c_double = 0.;
-    let mut caI: libc::c_double = 0.;
-    let mut cbR: libc::c_double = 0.;
-    let mut cbI: libc::c_double = 0.;
-    let mut v1: libc::c_double = 0.;
-    j = 0 as libc::c_int;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut n: i32 = 0;
+    let mut saR: f64 = 0.;
+    let mut saI: f64 = 0.;
+    let mut sbR: f64 = 0.;
+    let mut sbI: f64 = 0.;
+    let mut caR: f64 = 0.;
+    let mut caI: f64 = 0.;
+    let mut cbR: f64 = 0.;
+    let mut cbI: f64 = 0.;
+    let mut v1: f64 = 0.;
+    j = 0 as i32;
     while j < nket {
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while i < nd {
             saR = 0.0f64;
             saI = 0.0f64;
             sbR = 0.0f64;
             sbI = 0.0f64;
-            n = 0 as libc::c_int;
+            n = 0 as i32;
             while n < nf {
                 v1 = *g1.offset((j * nf + n) as isize);
-                caR = *coeffR.offset((i * nf * 2 as libc::c_int + n) as isize);
-                caI = *coeffI.offset((i * nf * 2 as libc::c_int + n) as isize);
-                cbR = *coeffR.offset((i * nf * 2 as libc::c_int + nf + n) as isize);
-                cbI = *coeffI.offset((i * nf * 2 as libc::c_int + nf + n) as isize);
+                caR = *coeffR.offset((i * nf * 2 as i32 + n) as isize);
+                caI = *coeffI.offset((i * nf * 2 as i32 + n) as isize);
+                cbR = *coeffR.offset((i * nf * 2 as i32 + nf + n) as isize);
+                cbI = *coeffI.offset((i * nf * 2 as i32 + nf + n) as isize);
                 saR += caR * v1;
                 saI += -caI * v1;
                 sbR += cbR * v1;
@@ -89865,48 +89865,48 @@ unsafe extern "C" fn a_bra_cart2spinor_sf(
     }
 }
 unsafe extern "C" fn a_bra1_cart2spinor_si(
-    mut gspR: *mut libc::c_double,
-    mut gspI: *mut libc::c_double,
-    mut gx: *mut libc::c_double,
-    mut gy: *mut libc::c_double,
-    mut gz: *mut libc::c_double,
-    mut g1: *mut libc::c_double,
-    mut ngrids: libc::c_int,
-    mut nket: libc::c_int,
-    mut kappa: libc::c_int,
-    mut l: libc::c_int,
+    mut gspR: *mut f64,
+    mut gspI: *mut f64,
+    mut gx: *mut f64,
+    mut gy: *mut f64,
+    mut gz: *mut f64,
+    mut g1: *mut f64,
+    mut ngrids: i32,
+    mut nket: i32,
+    mut kappa: i32,
+    mut l: i32,
 ) {
-    let mut nf: libc::c_int = _len_cart[l as usize];
-    let mut nd: libc::c_int = _len_spinor(kappa, l);
-    let mut ndg: libc::c_int = nd * ngrids;
-    let mut gspaR: *mut libc::c_double = gspR;
-    let mut gspaI: *mut libc::c_double = gspI;
-    let mut gspbR: *mut libc::c_double = gspR.offset((nket * ndg) as isize);
-    let mut gspbI: *mut libc::c_double = gspI.offset((nket * ndg) as isize);
-    let mut coeffR: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut coeffI: *mut libc::c_double = 0 as *mut libc::c_double;
-    if kappa < 0 as libc::c_int {
+    let mut nf: i32 = _len_cart[l as usize];
+    let mut nd: i32 = _len_spinor(kappa, l);
+    let mut ndg: i32 = nd * ngrids;
+    let mut gspaR: *mut f64 = gspR;
+    let mut gspaI: *mut f64 = gspI;
+    let mut gspbR: *mut f64 = gspR.offset((nket * ndg) as isize);
+    let mut gspbI: *mut f64 = gspI.offset((nket * ndg) as isize);
+    let mut coeffR: *mut f64 = 0 as *mut f64;
+    let mut coeffI: *mut f64 = 0 as *mut f64;
+    if kappa < 0 as i32 {
         coeffR = g_c2s[l as usize].cart2j_gt_lR;
         coeffI = g_c2s[l as usize].cart2j_gt_lI;
     } else {
         coeffR = g_c2s[l as usize].cart2j_lt_lR;
         coeffI = g_c2s[l as usize].cart2j_lt_lI;
     }
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    let mut n: libc::c_int = 0;
-    let mut m: libc::c_int = 0;
-    let mut caR: libc::c_double = 0.;
-    let mut caI: libc::c_double = 0.;
-    let mut cbR: libc::c_double = 0.;
-    let mut cbI: libc::c_double = 0.;
-    let mut v1: libc::c_double = 0.;
-    let mut vx: libc::c_double = 0.;
-    let mut vy: libc::c_double = 0.;
-    let mut vz: libc::c_double = 0.;
-    j = 0 as libc::c_int;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut n: i32 = 0;
+    let mut m: i32 = 0;
+    let mut caR: f64 = 0.;
+    let mut caI: f64 = 0.;
+    let mut cbR: f64 = 0.;
+    let mut cbI: f64 = 0.;
+    let mut v1: f64 = 0.;
+    let mut vx: f64 = 0.;
+    let mut vy: f64 = 0.;
+    let mut vz: f64 = 0.;
+    j = 0 as i32;
     while j < nket {
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while i < ndg {
             *gspaR.offset((j * ndg + i) as isize) = 0.0f64;
             *gspaI.offset((j * ndg + i) as isize) = 0.0f64;
@@ -89915,15 +89915,15 @@ unsafe extern "C" fn a_bra1_cart2spinor_si(
             i += 1;
             i;
         }
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while i < nd {
-            n = 0 as libc::c_int;
+            n = 0 as i32;
             while n < nf {
-                caR = *coeffR.offset((i * nf * 2 as libc::c_int + n) as isize);
-                caI = *coeffI.offset((i * nf * 2 as libc::c_int + n) as isize);
-                cbR = *coeffR.offset((i * nf * 2 as libc::c_int + nf + n) as isize);
-                cbI = *coeffI.offset((i * nf * 2 as libc::c_int + nf + n) as isize);
-                m = 0 as libc::c_int;
+                caR = *coeffR.offset((i * nf * 2 as i32 + n) as isize);
+                caI = *coeffI.offset((i * nf * 2 as i32 + n) as isize);
+                cbR = *coeffR.offset((i * nf * 2 as i32 + nf + n) as isize);
+                cbI = *coeffI.offset((i * nf * 2 as i32 + nf + n) as isize);
+                m = 0 as i32;
                 while m < ngrids {
                     v1 = *g1.offset(((j * nf + n) * ngrids + m) as isize);
                     vx = *gx.offset(((j * nf + n) * ngrids + m) as isize);
@@ -89951,45 +89951,45 @@ unsafe extern "C" fn a_bra1_cart2spinor_si(
     }
 }
 unsafe extern "C" fn a_bra1_cart2spinor_sf(
-    mut gspR: *mut libc::c_double,
-    mut gspI: *mut libc::c_double,
-    mut gx: *mut libc::c_double,
-    mut gy: *mut libc::c_double,
-    mut gz: *mut libc::c_double,
-    mut g1: *mut libc::c_double,
-    mut ngrids: libc::c_int,
-    mut nket: libc::c_int,
-    mut kappa: libc::c_int,
-    mut l: libc::c_int,
+    mut gspR: *mut f64,
+    mut gspI: *mut f64,
+    mut gx: *mut f64,
+    mut gy: *mut f64,
+    mut gz: *mut f64,
+    mut g1: *mut f64,
+    mut ngrids: i32,
+    mut nket: i32,
+    mut kappa: i32,
+    mut l: i32,
 ) {
-    let mut nf: libc::c_int = _len_cart[l as usize];
-    let mut nd: libc::c_int = _len_spinor(kappa, l);
-    let mut ndg: libc::c_int = nd * ngrids;
-    let mut gspaR: *mut libc::c_double = gspR;
-    let mut gspaI: *mut libc::c_double = gspI;
-    let mut gspbR: *mut libc::c_double = gspR.offset((nket * ndg) as isize);
-    let mut gspbI: *mut libc::c_double = gspI.offset((nket * ndg) as isize);
-    let mut coeffR: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut coeffI: *mut libc::c_double = 0 as *mut libc::c_double;
-    if kappa < 0 as libc::c_int {
+    let mut nf: i32 = _len_cart[l as usize];
+    let mut nd: i32 = _len_spinor(kappa, l);
+    let mut ndg: i32 = nd * ngrids;
+    let mut gspaR: *mut f64 = gspR;
+    let mut gspaI: *mut f64 = gspI;
+    let mut gspbR: *mut f64 = gspR.offset((nket * ndg) as isize);
+    let mut gspbI: *mut f64 = gspI.offset((nket * ndg) as isize);
+    let mut coeffR: *mut f64 = 0 as *mut f64;
+    let mut coeffI: *mut f64 = 0 as *mut f64;
+    if kappa < 0 as i32 {
         coeffR = g_c2s[l as usize].cart2j_gt_lR;
         coeffI = g_c2s[l as usize].cart2j_gt_lI;
     } else {
         coeffR = g_c2s[l as usize].cart2j_lt_lR;
         coeffI = g_c2s[l as usize].cart2j_lt_lI;
     }
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    let mut n: libc::c_int = 0;
-    let mut m: libc::c_int = 0;
-    let mut caR: libc::c_double = 0.;
-    let mut caI: libc::c_double = 0.;
-    let mut cbR: libc::c_double = 0.;
-    let mut cbI: libc::c_double = 0.;
-    let mut v1: libc::c_double = 0.;
-    j = 0 as libc::c_int;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut n: i32 = 0;
+    let mut m: i32 = 0;
+    let mut caR: f64 = 0.;
+    let mut caI: f64 = 0.;
+    let mut cbR: f64 = 0.;
+    let mut cbI: f64 = 0.;
+    let mut v1: f64 = 0.;
+    j = 0 as i32;
     while j < nket {
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while i < ndg {
             *gspaR.offset((j * ndg + i) as isize) = 0.0f64;
             *gspaI.offset((j * ndg + i) as isize) = 0.0f64;
@@ -89998,15 +89998,15 @@ unsafe extern "C" fn a_bra1_cart2spinor_sf(
             i += 1;
             i;
         }
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while i < nd {
-            n = 0 as libc::c_int;
+            n = 0 as i32;
             while n < nf {
-                caR = *coeffR.offset((i * nf * 2 as libc::c_int + n) as isize);
-                caI = *coeffI.offset((i * nf * 2 as libc::c_int + n) as isize);
-                cbR = *coeffR.offset((i * nf * 2 as libc::c_int + nf + n) as isize);
-                cbI = *coeffI.offset((i * nf * 2 as libc::c_int + nf + n) as isize);
-                m = 0 as libc::c_int;
+                caR = *coeffR.offset((i * nf * 2 as i32 + n) as isize);
+                caI = *coeffI.offset((i * nf * 2 as i32 + n) as isize);
+                cbR = *coeffR.offset((i * nf * 2 as i32 + nf + n) as isize);
+                cbI = *coeffI.offset((i * nf * 2 as i32 + nf + n) as isize);
+                m = 0 as i32;
                 while m < ngrids {
                     v1 = *g1.offset(((j * nf + n) * ngrids + m) as isize);
                     *gspaR.offset(((j * nd + i) * ngrids + m) as isize) += caR * v1;
@@ -90027,68 +90027,68 @@ unsafe extern "C" fn a_bra1_cart2spinor_sf(
     }
 }
 unsafe extern "C" fn a_bra1_cart2spinor_zi(
-    mut gspR: *mut libc::c_double,
-    mut gspI: *mut libc::c_double,
-    mut gx: *mut libc::c_double,
-    mut gy: *mut libc::c_double,
-    mut gz: *mut libc::c_double,
-    mut g1: *mut libc::c_double,
-    mut ngrids: libc::c_int,
-    mut nket: libc::c_int,
-    mut kappa: libc::c_int,
-    mut l: libc::c_int,
+    mut gspR: *mut f64,
+    mut gspI: *mut f64,
+    mut gx: *mut f64,
+    mut gy: *mut f64,
+    mut gz: *mut f64,
+    mut g1: *mut f64,
+    mut ngrids: i32,
+    mut nket: i32,
+    mut kappa: i32,
+    mut l: i32,
 ) {
-    let mut nf: libc::c_int = _len_cart[l as usize];
-    let mut nd: libc::c_int = _len_spinor(kappa, l);
-    let mut ndg: libc::c_int = nd * ngrids;
-    let mut gspaR: *mut libc::c_double = gspR;
-    let mut gspaI: *mut libc::c_double = gspI;
-    let mut gspbR: *mut libc::c_double = gspR.offset((nket * ndg) as isize);
-    let mut gspbI: *mut libc::c_double = gspI.offset((nket * ndg) as isize);
-    let mut gxR: *mut libc::c_double = gx;
-    let mut gyR: *mut libc::c_double = gy;
-    let mut gzR: *mut libc::c_double = gz;
-    let mut g1R: *mut libc::c_double = g1;
-    let mut gxI: *mut libc::c_double = gx.offset((nket * nf * ngrids) as isize);
-    let mut gyI: *mut libc::c_double = gy.offset((nket * nf * ngrids) as isize);
-    let mut gzI: *mut libc::c_double = gz.offset((nket * nf * ngrids) as isize);
-    let mut g1I: *mut libc::c_double = g1.offset((nket * nf * ngrids) as isize);
-    let mut coeffR: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut coeffI: *mut libc::c_double = 0 as *mut libc::c_double;
-    if kappa < 0 as libc::c_int {
+    let mut nf: i32 = _len_cart[l as usize];
+    let mut nd: i32 = _len_spinor(kappa, l);
+    let mut ndg: i32 = nd * ngrids;
+    let mut gspaR: *mut f64 = gspR;
+    let mut gspaI: *mut f64 = gspI;
+    let mut gspbR: *mut f64 = gspR.offset((nket * ndg) as isize);
+    let mut gspbI: *mut f64 = gspI.offset((nket * ndg) as isize);
+    let mut gxR: *mut f64 = gx;
+    let mut gyR: *mut f64 = gy;
+    let mut gzR: *mut f64 = gz;
+    let mut g1R: *mut f64 = g1;
+    let mut gxI: *mut f64 = gx.offset((nket * nf * ngrids) as isize);
+    let mut gyI: *mut f64 = gy.offset((nket * nf * ngrids) as isize);
+    let mut gzI: *mut f64 = gz.offset((nket * nf * ngrids) as isize);
+    let mut g1I: *mut f64 = g1.offset((nket * nf * ngrids) as isize);
+    let mut coeffR: *mut f64 = 0 as *mut f64;
+    let mut coeffI: *mut f64 = 0 as *mut f64;
+    if kappa < 0 as i32 {
         coeffR = g_c2s[l as usize].cart2j_gt_lR;
         coeffI = g_c2s[l as usize].cart2j_gt_lI;
     } else {
         coeffR = g_c2s[l as usize].cart2j_lt_lR;
         coeffI = g_c2s[l as usize].cart2j_lt_lI;
     }
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    let mut n: libc::c_int = 0;
-    let mut m: libc::c_int = 0;
-    let mut caR: libc::c_double = 0.;
-    let mut caI: libc::c_double = 0.;
-    let mut cbR: libc::c_double = 0.;
-    let mut cbI: libc::c_double = 0.;
-    let mut v1R: libc::c_double = 0.;
-    let mut vxR: libc::c_double = 0.;
-    let mut vyR: libc::c_double = 0.;
-    let mut vzR: libc::c_double = 0.;
-    let mut v1I: libc::c_double = 0.;
-    let mut vxI: libc::c_double = 0.;
-    let mut vyI: libc::c_double = 0.;
-    let mut vzI: libc::c_double = 0.;
-    let mut v11R: libc::c_double = 0.;
-    let mut v12R: libc::c_double = 0.;
-    let mut v21R: libc::c_double = 0.;
-    let mut v22R: libc::c_double = 0.;
-    let mut v11I: libc::c_double = 0.;
-    let mut v12I: libc::c_double = 0.;
-    let mut v21I: libc::c_double = 0.;
-    let mut v22I: libc::c_double = 0.;
-    j = 0 as libc::c_int;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut n: i32 = 0;
+    let mut m: i32 = 0;
+    let mut caR: f64 = 0.;
+    let mut caI: f64 = 0.;
+    let mut cbR: f64 = 0.;
+    let mut cbI: f64 = 0.;
+    let mut v1R: f64 = 0.;
+    let mut vxR: f64 = 0.;
+    let mut vyR: f64 = 0.;
+    let mut vzR: f64 = 0.;
+    let mut v1I: f64 = 0.;
+    let mut vxI: f64 = 0.;
+    let mut vyI: f64 = 0.;
+    let mut vzI: f64 = 0.;
+    let mut v11R: f64 = 0.;
+    let mut v12R: f64 = 0.;
+    let mut v21R: f64 = 0.;
+    let mut v22R: f64 = 0.;
+    let mut v11I: f64 = 0.;
+    let mut v12I: f64 = 0.;
+    let mut v21I: f64 = 0.;
+    let mut v22I: f64 = 0.;
+    j = 0 as i32;
     while j < nket {
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while i < ndg {
             *gspaR.offset((j * ndg + i) as isize) = 0.0f64;
             *gspaI.offset((j * ndg + i) as isize) = 0.0f64;
@@ -90097,15 +90097,15 @@ unsafe extern "C" fn a_bra1_cart2spinor_zi(
             i += 1;
             i;
         }
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while i < nd {
-            n = 0 as libc::c_int;
+            n = 0 as i32;
             while n < nf {
-                caR = *coeffR.offset((i * nf * 2 as libc::c_int + n) as isize);
-                caI = *coeffI.offset((i * nf * 2 as libc::c_int + n) as isize);
-                cbR = *coeffR.offset((i * nf * 2 as libc::c_int + nf + n) as isize);
-                cbI = *coeffI.offset((i * nf * 2 as libc::c_int + nf + n) as isize);
-                m = 0 as libc::c_int;
+                caR = *coeffR.offset((i * nf * 2 as i32 + n) as isize);
+                caI = *coeffI.offset((i * nf * 2 as i32 + n) as isize);
+                cbR = *coeffR.offset((i * nf * 2 as i32 + nf + n) as isize);
+                cbI = *coeffI.offset((i * nf * 2 as i32 + nf + n) as isize);
+                m = 0 as i32;
                 while m < ngrids {
                     v11R = *g1R.offset(((j * nf + n) * ngrids + m) as isize)
                         - *gzI.offset(((j * nf + n) * ngrids + m) as isize);
@@ -90145,48 +90145,48 @@ unsafe extern "C" fn a_bra1_cart2spinor_zi(
     }
 }
 unsafe extern "C" fn a_bra1_cart2spinor_zf(
-    mut gspR: *mut libc::c_double,
-    mut gspI: *mut libc::c_double,
-    mut gx: *mut libc::c_double,
-    mut gy: *mut libc::c_double,
-    mut gz: *mut libc::c_double,
-    mut g1: *mut libc::c_double,
-    mut ngrids: libc::c_int,
-    mut nket: libc::c_int,
-    mut kappa: libc::c_int,
-    mut l: libc::c_int,
+    mut gspR: *mut f64,
+    mut gspI: *mut f64,
+    mut gx: *mut f64,
+    mut gy: *mut f64,
+    mut gz: *mut f64,
+    mut g1: *mut f64,
+    mut ngrids: i32,
+    mut nket: i32,
+    mut kappa: i32,
+    mut l: i32,
 ) {
-    let mut nf: libc::c_int = _len_cart[l as usize];
-    let mut nd: libc::c_int = _len_spinor(kappa, l);
-    let mut ndg: libc::c_int = nd * ngrids;
-    let mut gspaR: *mut libc::c_double = gspR;
-    let mut gspaI: *mut libc::c_double = gspI;
-    let mut gspbR: *mut libc::c_double = gspR.offset((nket * ndg) as isize);
-    let mut gspbI: *mut libc::c_double = gspI.offset((nket * ndg) as isize);
-    let mut g1R: *mut libc::c_double = g1;
-    let mut g1I: *mut libc::c_double = g1.offset((nket * nf * ngrids) as isize);
-    let mut coeffR: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut coeffI: *mut libc::c_double = 0 as *mut libc::c_double;
-    if kappa < 0 as libc::c_int {
+    let mut nf: i32 = _len_cart[l as usize];
+    let mut nd: i32 = _len_spinor(kappa, l);
+    let mut ndg: i32 = nd * ngrids;
+    let mut gspaR: *mut f64 = gspR;
+    let mut gspaI: *mut f64 = gspI;
+    let mut gspbR: *mut f64 = gspR.offset((nket * ndg) as isize);
+    let mut gspbI: *mut f64 = gspI.offset((nket * ndg) as isize);
+    let mut g1R: *mut f64 = g1;
+    let mut g1I: *mut f64 = g1.offset((nket * nf * ngrids) as isize);
+    let mut coeffR: *mut f64 = 0 as *mut f64;
+    let mut coeffI: *mut f64 = 0 as *mut f64;
+    if kappa < 0 as i32 {
         coeffR = g_c2s[l as usize].cart2j_gt_lR;
         coeffI = g_c2s[l as usize].cart2j_gt_lI;
     } else {
         coeffR = g_c2s[l as usize].cart2j_lt_lR;
         coeffI = g_c2s[l as usize].cart2j_lt_lI;
     }
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    let mut n: libc::c_int = 0;
-    let mut m: libc::c_int = 0;
-    let mut caR: libc::c_double = 0.;
-    let mut caI: libc::c_double = 0.;
-    let mut cbR: libc::c_double = 0.;
-    let mut cbI: libc::c_double = 0.;
-    let mut v1R: libc::c_double = 0.;
-    let mut v1I: libc::c_double = 0.;
-    j = 0 as libc::c_int;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut n: i32 = 0;
+    let mut m: i32 = 0;
+    let mut caR: f64 = 0.;
+    let mut caI: f64 = 0.;
+    let mut cbR: f64 = 0.;
+    let mut cbI: f64 = 0.;
+    let mut v1R: f64 = 0.;
+    let mut v1I: f64 = 0.;
+    j = 0 as i32;
     while j < nket {
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while i < ndg {
             *gspaR.offset((j * ndg + i) as isize) = 0.0f64;
             *gspaI.offset((j * ndg + i) as isize) = 0.0f64;
@@ -90195,15 +90195,15 @@ unsafe extern "C" fn a_bra1_cart2spinor_zf(
             i += 1;
             i;
         }
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while i < nd {
-            n = 0 as libc::c_int;
+            n = 0 as i32;
             while n < nf {
-                caR = *coeffR.offset((i * nf * 2 as libc::c_int + n) as isize);
-                caI = *coeffI.offset((i * nf * 2 as libc::c_int + n) as isize);
-                cbR = *coeffR.offset((i * nf * 2 as libc::c_int + nf + n) as isize);
-                cbI = *coeffI.offset((i * nf * 2 as libc::c_int + nf + n) as isize);
-                m = 0 as libc::c_int;
+                caR = *coeffR.offset((i * nf * 2 as i32 + n) as isize);
+                caI = *coeffI.offset((i * nf * 2 as i32 + n) as isize);
+                cbR = *coeffR.offset((i * nf * 2 as i32 + nf + n) as isize);
+                cbI = *coeffI.offset((i * nf * 2 as i32 + nf + n) as isize);
+                m = 0 as i32;
                 while m < ngrids {
                     v1R = *g1R.offset(((j * nf + n) * ngrids + m) as isize);
                     v1I = *g1I.offset(((j * nf + n) * ngrids + m) as isize);
@@ -90229,49 +90229,49 @@ unsafe extern "C" fn a_bra1_cart2spinor_zf(
     }
 }
 unsafe extern "C" fn a_ket_cart2spinor(
-    mut gspR: *mut libc::c_double,
-    mut gspI: *mut libc::c_double,
-    mut gcartR: *mut libc::c_double,
-    mut gcartI: *mut libc::c_double,
-    mut nbra: libc::c_int,
-    mut kappa: libc::c_int,
-    mut l: libc::c_int,
+    mut gspR: *mut f64,
+    mut gspI: *mut f64,
+    mut gcartR: *mut f64,
+    mut gcartI: *mut f64,
+    mut nbra: i32,
+    mut kappa: i32,
+    mut l: i32,
 ) {
-    let mut nf: libc::c_int = _len_cart[l as usize];
-    let mut nf2: libc::c_int = nf * 2 as libc::c_int;
-    let mut nd: libc::c_int = _len_spinor(kappa, l);
-    let mut coeffR: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut coeffI: *mut libc::c_double = 0 as *mut libc::c_double;
-    if kappa < 0 as libc::c_int {
+    let mut nf: i32 = _len_cart[l as usize];
+    let mut nf2: i32 = nf * 2 as i32;
+    let mut nd: i32 = _len_spinor(kappa, l);
+    let mut coeffR: *mut f64 = 0 as *mut f64;
+    let mut coeffI: *mut f64 = 0 as *mut f64;
+    if kappa < 0 as i32 {
         coeffR = g_c2s[l as usize].cart2j_gt_lR;
         coeffI = g_c2s[l as usize].cart2j_gt_lI;
     } else {
         coeffR = g_c2s[l as usize].cart2j_lt_lR;
         coeffI = g_c2s[l as usize].cart2j_lt_lI;
     }
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    let mut n: libc::c_int = 0;
-    let mut cR: libc::c_double = 0.;
-    let mut cI: libc::c_double = 0.;
-    let mut gR: libc::c_double = 0.;
-    let mut gI: libc::c_double = 0.;
-    i = 0 as libc::c_int;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut n: i32 = 0;
+    let mut cR: f64 = 0.;
+    let mut cI: f64 = 0.;
+    let mut gR: f64 = 0.;
+    let mut gI: f64 = 0.;
+    i = 0 as i32;
     while i < nd {
-        j = 0 as libc::c_int;
+        j = 0 as i32;
         while j < nbra {
             *gspR.offset((j + i * nbra) as isize) = 0.0f64;
             *gspI.offset((j + i * nbra) as isize) = 0.0f64;
             j += 1;
             j;
         }
-        n = 0 as libc::c_int;
+        n = 0 as i32;
         while n < nf2 {
             cR = *coeffR.offset((i * nf2 + n) as isize);
             cI = *coeffI.offset((i * nf2 + n) as isize);
             if cR != 0.0f64 {
                 if cI != 0.0f64 {
-                    j = 0 as libc::c_int;
+                    j = 0 as i32;
                     while j < nbra {
                         gR = *gcartR.offset((j + n * nbra) as isize);
                         gI = *gcartI.offset((j + n * nbra) as isize);
@@ -90281,7 +90281,7 @@ unsafe extern "C" fn a_ket_cart2spinor(
                         j;
                     }
                 } else {
-                    j = 0 as libc::c_int;
+                    j = 0 as i32;
                     while j < nbra {
                         gR = *gcartR.offset((j + n * nbra) as isize);
                         gI = *gcartI.offset((j + n * nbra) as isize);
@@ -90292,7 +90292,7 @@ unsafe extern "C" fn a_ket_cart2spinor(
                     }
                 }
             } else if cI != 0.0f64 {
-                j = 0 as libc::c_int;
+                j = 0 as i32;
                 while j < nbra {
                     gR = *gcartR.offset((j + n * nbra) as isize);
                     gI = *gcartI.offset((j + n * nbra) as isize);
@@ -90310,18 +90310,18 @@ unsafe extern "C" fn a_ket_cart2spinor(
     }
 }
 unsafe extern "C" fn a_iket_cart2spinor(
-    mut gspR: *mut libc::c_double,
-    mut gspI: *mut libc::c_double,
-    mut gcartR: *mut libc::c_double,
-    mut gcartI: *mut libc::c_double,
-    mut nbra: libc::c_int,
-    mut kappa: libc::c_int,
-    mut l: libc::c_int,
+    mut gspR: *mut f64,
+    mut gspI: *mut f64,
+    mut gcartR: *mut f64,
+    mut gcartI: *mut f64,
+    mut nbra: i32,
+    mut kappa: i32,
+    mut l: i32,
 ) {
     a_ket_cart2spinor(gspI, gspR, gcartR, gcartI, nbra, kappa, l);
-    let mut size: libc::c_int = _len_spinor(kappa, l) * nbra;
-    let mut i: libc::c_int = 0;
-    i = 0 as libc::c_int;
+    let mut size: i32 = _len_spinor(kappa, l) * nbra;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < size {
         *gspR.offset(i as isize) = -*gspR.offset(i as isize);
         i += 1;
@@ -90329,50 +90329,50 @@ unsafe extern "C" fn a_iket_cart2spinor(
     }
 }
 unsafe extern "C" fn a_ket1_cart2spinor(
-    mut gspR: *mut libc::c_double,
-    mut gspI: *mut libc::c_double,
-    mut gcartR: *mut libc::c_double,
-    mut gcartI: *mut libc::c_double,
-    mut nbra: libc::c_int,
-    mut counts: libc::c_int,
-    mut kappa: libc::c_int,
-    mut l: libc::c_int,
+    mut gspR: *mut f64,
+    mut gspI: *mut f64,
+    mut gcartR: *mut f64,
+    mut gcartI: *mut f64,
+    mut nbra: i32,
+    mut counts: i32,
+    mut kappa: i32,
+    mut l: i32,
 ) {
-    let mut nf: libc::c_int = _len_cart[l as usize];
-    let mut nf2: libc::c_int = nf * 2 as libc::c_int;
-    let mut nd: libc::c_int = _len_spinor(kappa, l);
-    let mut nds: libc::c_int = nd * nbra;
-    let mut nfs: libc::c_int = nf * nbra;
-    let mut gcartaR: *mut libc::c_double = gcartR;
-    let mut gcartaI: *mut libc::c_double = gcartI;
-    let mut gcartbR: *mut libc::c_double = gcartaR.offset((nfs * counts) as isize);
-    let mut gcartbI: *mut libc::c_double = gcartaI.offset((nfs * counts) as isize);
-    let mut coeffR: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut coeffI: *mut libc::c_double = 0 as *mut libc::c_double;
-    if kappa < 0 as libc::c_int {
+    let mut nf: i32 = _len_cart[l as usize];
+    let mut nf2: i32 = nf * 2 as i32;
+    let mut nd: i32 = _len_spinor(kappa, l);
+    let mut nds: i32 = nd * nbra;
+    let mut nfs: i32 = nf * nbra;
+    let mut gcartaR: *mut f64 = gcartR;
+    let mut gcartaI: *mut f64 = gcartI;
+    let mut gcartbR: *mut f64 = gcartaR.offset((nfs * counts) as isize);
+    let mut gcartbI: *mut f64 = gcartaI.offset((nfs * counts) as isize);
+    let mut coeffR: *mut f64 = 0 as *mut f64;
+    let mut coeffI: *mut f64 = 0 as *mut f64;
+    if kappa < 0 as i32 {
         coeffR = g_c2s[l as usize].cart2j_gt_lR;
         coeffI = g_c2s[l as usize].cart2j_gt_lI;
     } else {
         coeffR = g_c2s[l as usize].cart2j_lt_lR;
         coeffI = g_c2s[l as usize].cart2j_lt_lI;
     }
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    let mut k: libc::c_int = 0;
-    let mut n: libc::c_int = 0;
-    let mut caR: libc::c_double = 0.;
-    let mut caI: libc::c_double = 0.;
-    let mut cbR: libc::c_double = 0.;
-    let mut cbI: libc::c_double = 0.;
-    let mut gaR: libc::c_double = 0.;
-    let mut gaI: libc::c_double = 0.;
-    let mut gbR: libc::c_double = 0.;
-    let mut gbI: libc::c_double = 0.;
-    i = 0 as libc::c_int;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut k: i32 = 0;
+    let mut n: i32 = 0;
+    let mut caR: f64 = 0.;
+    let mut caI: f64 = 0.;
+    let mut cbR: f64 = 0.;
+    let mut cbI: f64 = 0.;
+    let mut gaR: f64 = 0.;
+    let mut gaI: f64 = 0.;
+    let mut gbR: f64 = 0.;
+    let mut gbI: f64 = 0.;
+    i = 0 as i32;
     while i < nd {
-        k = 0 as libc::c_int;
+        k = 0 as i32;
         while k < counts {
-            j = 0 as libc::c_int;
+            j = 0 as i32;
             while j < nbra {
                 *gspR
                     .offset(
@@ -90388,15 +90388,15 @@ unsafe extern "C" fn a_ket1_cart2spinor(
             k += 1;
             k;
         }
-        n = 0 as libc::c_int;
+        n = 0 as i32;
         while n < nf {
             caR = *coeffR.offset((i * nf2 + n) as isize);
             caI = *coeffI.offset((i * nf2 + n) as isize);
             cbR = *coeffR.offset((i * nf2 + nf + n) as isize);
             cbI = *coeffI.offset((i * nf2 + nf + n) as isize);
-            k = 0 as libc::c_int;
+            k = 0 as i32;
             while k < counts {
-                j = 0 as libc::c_int;
+                j = 0 as i32;
                 while j < nbra {
                     gaR = *gcartaR.offset((k * nfs + j + n * nbra) as isize);
                     gaI = *gcartaI.offset((k * nfs + j + n * nbra) as isize);
@@ -90420,19 +90420,19 @@ unsafe extern "C" fn a_ket1_cart2spinor(
     }
 }
 unsafe extern "C" fn a_iket1_cart2spinor(
-    mut gspR: *mut libc::c_double,
-    mut gspI: *mut libc::c_double,
-    mut gcartR: *mut libc::c_double,
-    mut gcartI: *mut libc::c_double,
-    mut nbra: libc::c_int,
-    mut counts: libc::c_int,
-    mut kappa: libc::c_int,
-    mut l: libc::c_int,
+    mut gspR: *mut f64,
+    mut gspI: *mut f64,
+    mut gcartR: *mut f64,
+    mut gcartI: *mut f64,
+    mut nbra: i32,
+    mut counts: i32,
+    mut kappa: i32,
+    mut l: i32,
 ) {
     a_ket1_cart2spinor(gspI, gspR, gcartR, gcartI, nbra, counts, kappa, l);
-    let mut size: libc::c_int = _len_spinor(kappa, l) * nbra * counts;
-    let mut i: libc::c_int = 0;
-    i = 0 as libc::c_int;
+    let mut size: i32 = _len_spinor(kappa, l) * nbra * counts;
+    let mut i: i32 = 0;
+    i = 0 as i32;
     while i < size {
         *gspR.offset(i as isize) = -*gspR.offset(i as isize);
         i += 1;
@@ -90440,18 +90440,18 @@ unsafe extern "C" fn a_iket1_cart2spinor(
     }
 }
 unsafe extern "C" fn dcopy_ij(
-    mut out: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    ni: libc::c_int,
-    nj: libc::c_int,
-    mi: libc::c_int,
-    mj: libc::c_int,
+    mut out: *mut f64,
+    mut gctr: *mut f64,
+    ni: i32,
+    nj: i32,
+    mi: i32,
+    mj: i32,
 ) {
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    j = 0 as libc::c_int;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    j = 0 as i32;
     while j < mj {
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while i < mi {
             *out.offset((j * ni + i) as isize) = *gctr.offset((j * mi + i) as isize);
             i += 1;
@@ -90462,25 +90462,25 @@ unsafe extern "C" fn dcopy_ij(
     }
 }
 unsafe extern "C" fn dcopy_grids_ij(
-    mut out: *mut libc::c_double,
-    mut gctr: *const libc::c_double,
-    ngrids: libc::c_int,
-    ni: libc::c_int,
-    nj: libc::c_int,
-    mgrids: libc::c_int,
-    mi: libc::c_int,
-    mj: libc::c_int,
+    mut out: *mut f64,
+    mut gctr: *const f64,
+    ngrids: i32,
+    ni: i32,
+    nj: i32,
+    mgrids: i32,
+    mi: i32,
+    mj: i32,
 ) {
     let ngi: size_t = (ngrids * ni) as size_t;
     let mgi: size_t = (mgrids * mi) as size_t;
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    let mut m: libc::c_int = 0;
-    j = 0 as libc::c_int;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut m: i32 = 0;
+    j = 0 as i32;
     while j < mj {
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while i < mi {
-            m = 0 as libc::c_int;
+            m = 0 as i32;
             while m < mgrids {
                 *out
                     .offset(
@@ -90499,37 +90499,37 @@ unsafe extern "C" fn dcopy_grids_ij(
     }
 }
 unsafe extern "C" fn dcopy_iklj(
-    mut fijkl: *mut libc::c_double,
-    mut gctr: *const libc::c_double,
-    ni: libc::c_int,
-    nj: libc::c_int,
-    nk: libc::c_int,
-    nl: libc::c_int,
-    mi: libc::c_int,
-    mj: libc::c_int,
-    mk: libc::c_int,
-    ml: libc::c_int,
+    mut fijkl: *mut f64,
+    mut gctr: *const f64,
+    ni: i32,
+    nj: i32,
+    nk: i32,
+    nl: i32,
+    mi: i32,
+    mj: i32,
+    mk: i32,
+    ml: i32,
 ) {
     let nij: size_t = (ni * nj) as size_t;
     let nijk: size_t = nij.wrapping_mul(nk as libc::c_ulong);
     let mik: size_t = (mi * mk) as size_t;
     let mikl: size_t = mik.wrapping_mul(ml as libc::c_ulong);
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    let mut k: libc::c_int = 0;
-    let mut l: libc::c_int = 0;
-    let mut pijkl: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut pgctr: *const libc::c_double = 0 as *const libc::c_double;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut k: i32 = 0;
+    let mut l: i32 = 0;
+    let mut pijkl: *mut f64 = 0 as *mut f64;
+    let mut pgctr: *const f64 = 0 as *const f64;
     match mi {
         1 => {
-            l = 0 as libc::c_int;
+            l = 0 as i32;
             while l < ml {
-                k = 0 as libc::c_int;
+                k = 0 as i32;
                 while k < mk {
                     pijkl = fijkl
                         .offset((k as libc::c_ulong).wrapping_mul(nij) as isize);
                     pgctr = gctr.offset((k * mi) as isize);
-                    j = 0 as libc::c_int;
+                    j = 0 as i32;
                     while j < mj {
                         *pijkl
                             .offset(
@@ -90549,41 +90549,41 @@ unsafe extern "C" fn dcopy_iklj(
             }
         }
         3 => {
-            l = 0 as libc::c_int;
+            l = 0 as i32;
             while l < ml {
-                k = 0 as libc::c_int;
+                k = 0 as i32;
                 while k < mk {
                     pijkl = fijkl
                         .offset((k as libc::c_ulong).wrapping_mul(nij) as isize);
                     pgctr = gctr.offset((k * mi) as isize);
-                    j = 0 as libc::c_int;
+                    j = 0 as i32;
                     while j < mj {
                         *pijkl
                             .offset(
-                                (ni * j + 0 as libc::c_int) as isize,
+                                (ni * j + 0 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(0 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(0 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 1 as libc::c_int) as isize,
+                                (ni * j + 1 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(1 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(1 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 2 as libc::c_int) as isize,
+                                (ni * j + 2 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(2 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(2 as i32 as libc::c_ulong) as isize,
                             );
                         j += 1;
                         j;
@@ -90598,59 +90598,59 @@ unsafe extern "C" fn dcopy_iklj(
             }
         }
         5 => {
-            l = 0 as libc::c_int;
+            l = 0 as i32;
             while l < ml {
-                k = 0 as libc::c_int;
+                k = 0 as i32;
                 while k < mk {
                     pijkl = fijkl
                         .offset((k as libc::c_ulong).wrapping_mul(nij) as isize);
                     pgctr = gctr.offset((k * mi) as isize);
-                    j = 0 as libc::c_int;
+                    j = 0 as i32;
                     while j < mj {
                         *pijkl
                             .offset(
-                                (ni * j + 0 as libc::c_int) as isize,
+                                (ni * j + 0 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(0 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(0 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 1 as libc::c_int) as isize,
+                                (ni * j + 1 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(1 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(1 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 2 as libc::c_int) as isize,
+                                (ni * j + 2 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(2 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(2 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 3 as libc::c_int) as isize,
+                                (ni * j + 3 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(3 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(3 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 4 as libc::c_int) as isize,
+                                (ni * j + 4 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(4 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(4 as i32 as libc::c_ulong) as isize,
                             );
                         j += 1;
                         j;
@@ -90665,68 +90665,68 @@ unsafe extern "C" fn dcopy_iklj(
             }
         }
         6 => {
-            l = 0 as libc::c_int;
+            l = 0 as i32;
             while l < ml {
-                k = 0 as libc::c_int;
+                k = 0 as i32;
                 while k < mk {
                     pijkl = fijkl
                         .offset((k as libc::c_ulong).wrapping_mul(nij) as isize);
                     pgctr = gctr.offset((k * mi) as isize);
-                    j = 0 as libc::c_int;
+                    j = 0 as i32;
                     while j < mj {
                         *pijkl
                             .offset(
-                                (ni * j + 0 as libc::c_int) as isize,
+                                (ni * j + 0 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(0 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(0 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 1 as libc::c_int) as isize,
+                                (ni * j + 1 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(1 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(1 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 2 as libc::c_int) as isize,
+                                (ni * j + 2 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(2 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(2 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 3 as libc::c_int) as isize,
+                                (ni * j + 3 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(3 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(3 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 4 as libc::c_int) as isize,
+                                (ni * j + 4 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(4 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(4 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 5 as libc::c_int) as isize,
+                                (ni * j + 5 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(5 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(5 as i32 as libc::c_ulong) as isize,
                             );
                         j += 1;
                         j;
@@ -90741,77 +90741,77 @@ unsafe extern "C" fn dcopy_iklj(
             }
         }
         7 => {
-            l = 0 as libc::c_int;
+            l = 0 as i32;
             while l < ml {
-                k = 0 as libc::c_int;
+                k = 0 as i32;
                 while k < mk {
                     pijkl = fijkl
                         .offset((k as libc::c_ulong).wrapping_mul(nij) as isize);
                     pgctr = gctr.offset((k * mi) as isize);
-                    j = 0 as libc::c_int;
+                    j = 0 as i32;
                     while j < mj {
                         *pijkl
                             .offset(
-                                (ni * j + 0 as libc::c_int) as isize,
+                                (ni * j + 0 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(0 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(0 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 1 as libc::c_int) as isize,
+                                (ni * j + 1 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(1 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(1 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 2 as libc::c_int) as isize,
+                                (ni * j + 2 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(2 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(2 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 3 as libc::c_int) as isize,
+                                (ni * j + 3 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(3 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(3 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 4 as libc::c_int) as isize,
+                                (ni * j + 4 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(4 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(4 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 5 as libc::c_int) as isize,
+                                (ni * j + 5 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(5 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(5 as i32 as libc::c_ulong) as isize,
                             );
                         *pijkl
                             .offset(
-                                (ni * j + 6 as libc::c_int) as isize,
+                                (ni * j + 6 as i32) as isize,
                             ) = *pgctr
                             .offset(
                                 mikl
                                     .wrapping_mul(j as libc::c_ulong)
-                                    .wrapping_add(6 as libc::c_int as libc::c_ulong) as isize,
+                                    .wrapping_add(6 as i32 as libc::c_ulong) as isize,
                             );
                         j += 1;
                         j;
@@ -90826,16 +90826,16 @@ unsafe extern "C" fn dcopy_iklj(
             }
         }
         _ => {
-            l = 0 as libc::c_int;
+            l = 0 as i32;
             while l < ml {
-                k = 0 as libc::c_int;
+                k = 0 as i32;
                 while k < mk {
                     pijkl = fijkl
                         .offset((k as libc::c_ulong).wrapping_mul(nij) as isize);
                     pgctr = gctr.offset((k * mi) as isize);
-                    j = 0 as libc::c_int;
+                    j = 0 as i32;
                     while j < mj {
-                        i = 0 as libc::c_int;
+                        i = 0 as i32;
                         while i < mi {
                             *pijkl
                                 .offset(
@@ -90865,24 +90865,24 @@ unsafe extern "C" fn dcopy_iklj(
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_dset0(
-    mut out: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
-    mut counts: *mut libc::c_int,
+    mut out: *mut f64,
+    mut dims: *mut i32,
+    mut counts: *mut i32,
 ) {
-    let mut ni: libc::c_int = *dims.offset(0 as libc::c_int as isize);
-    let mut nj: libc::c_int = *dims.offset(1 as libc::c_int as isize);
-    let mut nk: libc::c_int = *dims.offset(2 as libc::c_int as isize);
+    let mut ni: i32 = *dims.offset(0 as i32 as isize);
+    let mut nj: i32 = *dims.offset(1 as i32 as isize);
+    let mut nk: i32 = *dims.offset(2 as i32 as isize);
     let mut nij: size_t = (ni * nj) as size_t;
     let mut nijk: size_t = nij.wrapping_mul(nk as libc::c_ulong);
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    let mut k: libc::c_int = 0;
-    let mut l: libc::c_int = 0;
+    let mut i: i32 = 0;
+    let mut j: i32 = 0;
+    let mut k: i32 = 0;
+    let mut l: i32 = 0;
     if dims == counts {
-        i = 0 as libc::c_int;
+        i = 0 as i32;
         while (i as libc::c_ulong)
             < nijk
-                .wrapping_mul(*counts.offset(3 as libc::c_int as isize) as libc::c_ulong)
+                .wrapping_mul(*counts.offset(3 as i32 as isize) as libc::c_ulong)
         {
             *out.offset(i as isize) = 0.0f64;
             i += 1;
@@ -90890,19 +90890,19 @@ pub unsafe extern "C" fn c2s_dset0(
         }
         return;
     }
-    let mut di: libc::c_int = *counts.offset(0 as libc::c_int as isize);
-    let mut dj: libc::c_int = *counts.offset(1 as libc::c_int as isize);
-    let mut dk: libc::c_int = *counts.offset(2 as libc::c_int as isize);
-    let mut dl: libc::c_int = *counts.offset(3 as libc::c_int as isize);
-    let mut pout: *mut libc::c_double = 0 as *mut libc::c_double;
-    l = 0 as libc::c_int;
+    let mut di: i32 = *counts.offset(0 as i32 as isize);
+    let mut dj: i32 = *counts.offset(1 as i32 as isize);
+    let mut dk: i32 = *counts.offset(2 as i32 as isize);
+    let mut dl: i32 = *counts.offset(3 as i32 as isize);
+    let mut pout: *mut f64 = 0 as *mut f64;
+    l = 0 as i32;
     while l < dl {
-        k = 0 as libc::c_int;
+        k = 0 as i32;
         while k < dk {
             pout = out.offset((k as libc::c_ulong).wrapping_mul(nij) as isize);
-            j = 0 as libc::c_int;
+            j = 0 as i32;
             while j < dj {
-                i = 0 as libc::c_int;
+                i = 0 as i32;
                 while i < di {
                     *pout
                         .offset(
@@ -90924,38 +90924,38 @@ pub unsafe extern "C" fn c2s_dset0(
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_grids_dset0(
-    mut out: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
-    mut counts: *mut libc::c_int,
+    mut out: *mut f64,
+    mut dims: *mut i32,
+    mut counts: *mut i32,
 ) {
-    let mut counts1: [libc::c_int; 4] = [
-        *counts.offset(2 as libc::c_int as isize),
-        *counts.offset(0 as libc::c_int as isize),
-        *counts.offset(1 as libc::c_int as isize),
-        *counts.offset(3 as libc::c_int as isize),
+    let mut counts1: [i32; 4] = [
+        *counts.offset(2 as i32 as isize),
+        *counts.offset(0 as i32 as isize),
+        *counts.offset(1 as i32 as isize),
+        *counts.offset(3 as i32 as isize),
     ];
-    let mut dims1: [libc::c_int; 4] = [
-        *dims.offset(2 as libc::c_int as isize),
-        *dims.offset(0 as libc::c_int as isize),
-        *dims.offset(1 as libc::c_int as isize),
-        *dims.offset(3 as libc::c_int as isize),
+    let mut dims1: [i32; 4] = [
+        *dims.offset(2 as i32 as isize),
+        *dims.offset(0 as i32 as isize),
+        *dims.offset(1 as i32 as isize),
+        *dims.offset(3 as i32 as isize),
     ];
     c2s_dset0(out, dims1.as_mut_ptr(), counts1.as_mut_ptr());
 }
 unsafe extern "C" fn sph2e_inner(
-    mut gsph: *mut libc::c_double,
-    mut gcart: *mut libc::c_double,
-    mut l: libc::c_int,
-    mut nbra: libc::c_int,
-    mut ncall: libc::c_int,
-    mut sizsph: libc::c_int,
-    mut sizcart: libc::c_int,
-) -> *mut libc::c_double {
-    let mut n: libc::c_int = 0;
+    mut gsph: *mut f64,
+    mut gcart: *mut f64,
+    mut l: i32,
+    mut nbra: i32,
+    mut ncall: i32,
+    mut sizsph: i32,
+    mut sizcart: i32,
+) -> *mut f64 {
+    let mut n: i32 = 0;
     match l {
         0 | 1 => return gcart,
         2 => {
-            n = 0 as libc::c_int;
+            n = 0 as i32;
             while n < ncall {
                 d_ket_cart2spheric(
                     gsph.offset((n * sizsph) as isize),
@@ -90969,7 +90969,7 @@ unsafe extern "C" fn sph2e_inner(
             }
         }
         3 => {
-            n = 0 as libc::c_int;
+            n = 0 as i32;
             while n < ncall {
                 f_ket_cart2spheric(
                     gsph.offset((n * sizsph) as isize),
@@ -90983,7 +90983,7 @@ unsafe extern "C" fn sph2e_inner(
             }
         }
         4 => {
-            n = 0 as libc::c_int;
+            n = 0 as i32;
             while n < ncall {
                 g_ket_cart2spheric(
                     gsph.offset((n * sizsph) as isize),
@@ -90997,7 +90997,7 @@ unsafe extern "C" fn sph2e_inner(
             }
         }
         _ => {
-            n = 0 as libc::c_int;
+            n = 0 as i32;
             while n < ncall {
                 a_ket_cart2spheric(
                     gsph.offset((n * sizsph) as isize),
@@ -91015,47 +91015,47 @@ unsafe extern "C" fn sph2e_inner(
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_sph_1e(
-    mut opij: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut opij: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut i_l: libc::c_int = (*envs).i_l;
-    let mut j_l: libc::c_int = (*envs).j_l;
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut di: libc::c_int = i_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut dj: libc::c_int = j_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut ni: libc::c_int = *dims.offset(0 as libc::c_int as isize);
-    let mut nj: libc::c_int = *dims.offset(1 as libc::c_int as isize);
-    let mut ofj: libc::c_int = ni * dj;
-    let mut nfi: libc::c_int = (*envs).nfi;
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut ic: libc::c_int = 0;
-    let mut jc: libc::c_int = 0;
-    let mut buflen: libc::c_int = nfi * dj;
-    let mut buf1: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut buf2: *mut libc::c_double = 0 as *mut libc::c_double;
-    buf1 = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    let mut i_l: i32 = (*envs).i_l;
+    let mut j_l: i32 = (*envs).j_l;
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut di: i32 = i_l * 2 as i32 + 1 as i32;
+    let mut dj: i32 = j_l * 2 as i32 + 1 as i32;
+    let mut ni: i32 = *dims.offset(0 as i32 as isize);
+    let mut nj: i32 = *dims.offset(1 as i32 as isize);
+    let mut ofj: i32 = ni * dj;
+    let mut nfi: i32 = (*envs).nfi;
+    let mut nf: i32 = (*envs).nf;
+    let mut ic: i32 = 0;
+    let mut jc: i32 = 0;
+    let mut buflen: i32 = nfi * dj;
+    let mut buf1: *mut f64 = 0 as *mut f64;
+    let mut buf2: *mut f64 = 0 as *mut f64;
+    buf1 = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = buf1.offset(buflen as isize);
-    buf2 = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    buf2 = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = buf2.offset(buflen as isize);
-    let mut pij: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut tmp1: *mut libc::c_double = 0 as *mut libc::c_double;
-    jc = 0 as libc::c_int;
+    let mut pij: *mut f64 = 0 as *mut f64;
+    let mut tmp1: *mut f64 = 0 as *mut f64;
+    jc = 0 as i32;
     while jc < j_ctr {
-        ic = 0 as libc::c_int;
+        ic = 0 as i32;
         while ic < i_ctr {
             tmp1 = (c2s_ket_sph[j_l as usize])
                 .expect("non-null function pointer")(buf1, gctr, nfi, nfi, j_l);
             tmp1 = ::core::mem::transmute::<
                 _,
-                fn(_, _, _, _) -> *mut libc::c_double,
+                fn(_, _, _, _) -> *mut f64,
             >(
                 (c2s_bra_sph[i_l as usize]).expect("non-null function pointer"),
             )(buf2, dj, tmp1, i_l);
@@ -91071,56 +91071,56 @@ pub unsafe extern "C" fn c2s_sph_1e(
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_sph_1e_grids(
-    mut out: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut out: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut ngrids: libc::c_int = (*envs).c2rust_unnamed_0.ngrids;
-    let mut i_l: libc::c_int = (*envs).i_l;
-    let mut j_l: libc::c_int = (*envs).j_l;
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut di: libc::c_int = i_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut dj: libc::c_int = j_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut ni: libc::c_int = *dims.offset(0 as libc::c_int as isize);
-    let mut nj: libc::c_int = *dims.offset(1 as libc::c_int as isize);
-    let mut Ng: size_t = *dims.offset(2 as libc::c_int as isize) as size_t;
-    let mut ofj: libc::c_int = ni * dj;
-    let mut nfi: libc::c_int = (*envs).nfi;
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut ic: libc::c_int = 0;
-    let mut jc: libc::c_int = 0;
-    let mut grids_offset: libc::c_int = 0;
-    let mut bgrids: libc::c_int = 0;
-    let mut bgrids_di: libc::c_int = 0;
-    let mut bgrids_nfi: libc::c_int = 0;
-    let mut buflen: libc::c_int = 104 as libc::c_int * nfi * dj;
-    let mut buf1: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut buf2: *mut libc::c_double = 0 as *mut libc::c_double;
-    buf1 = ((cache as uintptr_t).wrapping_add(63 as libc::c_int as libc::c_ulong)
-        & (64 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    let mut ngrids: i32 = (*envs).c2rust_unnamed_0.ngrids;
+    let mut i_l: i32 = (*envs).i_l;
+    let mut j_l: i32 = (*envs).j_l;
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut di: i32 = i_l * 2 as i32 + 1 as i32;
+    let mut dj: i32 = j_l * 2 as i32 + 1 as i32;
+    let mut ni: i32 = *dims.offset(0 as i32 as isize);
+    let mut nj: i32 = *dims.offset(1 as i32 as isize);
+    let mut Ng: size_t = *dims.offset(2 as i32 as isize) as size_t;
+    let mut ofj: i32 = ni * dj;
+    let mut nfi: i32 = (*envs).nfi;
+    let mut nf: i32 = (*envs).nf;
+    let mut ic: i32 = 0;
+    let mut jc: i32 = 0;
+    let mut grids_offset: i32 = 0;
+    let mut bgrids: i32 = 0;
+    let mut bgrids_di: i32 = 0;
+    let mut bgrids_nfi: i32 = 0;
+    let mut buflen: i32 = 104 as i32 * nfi * dj;
+    let mut buf1: *mut f64 = 0 as *mut f64;
+    let mut buf2: *mut f64 = 0 as *mut f64;
+    buf1 = ((cache as uintptr_t).wrapping_add(63 as i32 as libc::c_ulong)
+        & (64 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = buf1.offset(buflen as isize);
-    buf2 = ((cache as uintptr_t).wrapping_add(63 as libc::c_int as libc::c_ulong)
-        & (64 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    buf2 = ((cache as uintptr_t).wrapping_add(63 as i32 as libc::c_ulong)
+        & (64 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = buf2.offset(buflen as isize);
-    let mut pij: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut tmp1: *mut libc::c_double = 0 as *mut libc::c_double;
-    grids_offset = 0 as libc::c_int;
+    let mut pij: *mut f64 = 0 as *mut f64;
+    let mut tmp1: *mut f64 = 0 as *mut f64;
+    grids_offset = 0 as i32;
     while grids_offset < ngrids {
-        bgrids = if ngrids - grids_offset < 104 as libc::c_int {
+        bgrids = if ngrids - grids_offset < 104 as i32 {
             ngrids - grids_offset
         } else {
-            104 as libc::c_int
+            104 as i32
         };
         bgrids_di = bgrids * di;
         bgrids_nfi = bgrids * nfi;
-        jc = 0 as libc::c_int;
+        jc = 0 as i32;
         while jc < j_ctr {
-            ic = 0 as libc::c_int;
+            ic = 0 as i32;
             while ic < i_ctr {
                 tmp1 = (c2s_ket_sph[j_l as usize])
                     .expect(
@@ -91132,7 +91132,7 @@ pub unsafe extern "C" fn c2s_sph_1e_grids(
                         Ng.wrapping_mul((ofj * jc + di * ic) as libc::c_ulong) as isize,
                     )
                     .offset(grids_offset as isize);
-                dcopy_grids_ij(pij, tmp1, Ng as libc::c_int, ni, nj, bgrids, di, dj);
+                dcopy_grids_ij(pij, tmp1, Ng as i32, ni, nj, bgrids, di, dj);
                 gctr = gctr.offset((bgrids * nf) as isize);
                 ic += 1;
                 ic;
@@ -91140,49 +91140,49 @@ pub unsafe extern "C" fn c2s_sph_1e_grids(
             jc += 1;
             jc;
         }
-        grids_offset += 104 as libc::c_int;
+        grids_offset += 104 as i32;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_cart_1e_grids(
-    mut out: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut out: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut ngrids: libc::c_int = (*envs).c2rust_unnamed_0.ngrids;
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut ni: libc::c_int = *dims.offset(0 as libc::c_int as isize);
-    let mut nj: libc::c_int = *dims.offset(1 as libc::c_int as isize);
-    let mut Ng: size_t = *dims.offset(2 as libc::c_int as isize) as size_t;
-    let mut nfi: libc::c_int = (*envs).nfi;
-    let mut nfj: libc::c_int = (*envs).nfj;
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut ofj: libc::c_int = ni * nfj;
-    let mut ic: libc::c_int = 0;
-    let mut jc: libc::c_int = 0;
-    let mut grids_offset: libc::c_int = 0;
-    let mut bgrids: libc::c_int = 0;
-    let mut pij: *mut libc::c_double = 0 as *mut libc::c_double;
-    grids_offset = 0 as libc::c_int;
+    let mut ngrids: i32 = (*envs).c2rust_unnamed_0.ngrids;
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut ni: i32 = *dims.offset(0 as i32 as isize);
+    let mut nj: i32 = *dims.offset(1 as i32 as isize);
+    let mut Ng: size_t = *dims.offset(2 as i32 as isize) as size_t;
+    let mut nfi: i32 = (*envs).nfi;
+    let mut nfj: i32 = (*envs).nfj;
+    let mut nf: i32 = (*envs).nf;
+    let mut ofj: i32 = ni * nfj;
+    let mut ic: i32 = 0;
+    let mut jc: i32 = 0;
+    let mut grids_offset: i32 = 0;
+    let mut bgrids: i32 = 0;
+    let mut pij: *mut f64 = 0 as *mut f64;
+    grids_offset = 0 as i32;
     while grids_offset < ngrids {
-        bgrids = if ngrids - grids_offset < 104 as libc::c_int {
+        bgrids = if ngrids - grids_offset < 104 as i32 {
             ngrids - grids_offset
         } else {
-            104 as libc::c_int
+            104 as i32
         };
-        jc = 0 as libc::c_int;
+        jc = 0 as i32;
         while jc < j_ctr {
-            ic = 0 as libc::c_int;
+            ic = 0 as i32;
             while ic < i_ctr {
                 pij = out
                     .offset(
                         Ng.wrapping_mul((ofj * jc + nfi * ic) as libc::c_ulong) as isize,
                     )
                     .offset(grids_offset as isize);
-                dcopy_grids_ij(pij, gctr, Ng as libc::c_int, ni, nj, bgrids, nfi, nfj);
+                dcopy_grids_ij(pij, gctr, Ng as i32, ni, nj, bgrids, nfi, nfj);
                 gctr = gctr.offset((bgrids * nf) as isize);
                 ic += 1;
                 ic;
@@ -91190,65 +91190,65 @@ pub unsafe extern "C" fn c2s_cart_1e_grids(
             jc += 1;
             jc;
         }
-        grids_offset += 104 as libc::c_int;
+        grids_offset += 104 as i32;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_sph_2e1(
-    mut out: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut out: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut i_l: libc::c_int = (*envs).i_l;
-    let mut j_l: libc::c_int = (*envs).j_l;
-    let mut k_l: libc::c_int = (*envs).k_l;
-    let mut l_l: libc::c_int = (*envs).l_l;
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut k_ctr: libc::c_int = (*envs).x_ctr[2 as libc::c_int as usize];
-    let mut l_ctr: libc::c_int = (*envs).x_ctr[3 as libc::c_int as usize];
-    let mut di: libc::c_int = i_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut dj: libc::c_int = j_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut dk: libc::c_int = k_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut dl: libc::c_int = l_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut ni: libc::c_int = *dims.offset(0 as libc::c_int as isize);
-    let mut nj: libc::c_int = *dims.offset(1 as libc::c_int as isize);
-    let mut nk: libc::c_int = *dims.offset(2 as libc::c_int as isize);
-    let mut nl: libc::c_int = *dims.offset(3 as libc::c_int as isize);
-    let mut nfi: libc::c_int = (*envs).nfi;
-    let mut nfk: libc::c_int = (*envs).c2rust_unnamed.nfk;
-    let mut nfl: libc::c_int = (*envs).c2rust_unnamed_0.nfl;
-    let mut nfik: libc::c_int = nfi * nfk;
-    let mut nfikl: libc::c_int = nfik * nfl;
-    let mut dlj: libc::c_int = dl * dj;
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut ofj: libc::c_int = ni * dj;
-    let mut ofk: libc::c_int = ni * nj * dk;
-    let mut ofl: libc::c_int = ni * nj * nk * dl;
-    let mut ic: libc::c_int = 0;
-    let mut jc: libc::c_int = 0;
-    let mut kc: libc::c_int = 0;
-    let mut lc: libc::c_int = 0;
-    let mut buflen: libc::c_int = nfikl * dj;
-    let mut buf1: *mut libc::c_double = 0 as *mut libc::c_double;
-    buf1 = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
-    cache = buf1.offset((buflen * 4 as libc::c_int) as isize);
-    let mut buf2: *mut libc::c_double = buf1.offset(buflen as isize);
-    let mut buf3: *mut libc::c_double = buf2.offset(buflen as isize);
-    let mut buf4: *mut libc::c_double = buf3.offset(buflen as isize);
-    let mut pout: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut tmp1: *mut libc::c_double = 0 as *mut libc::c_double;
-    lc = 0 as libc::c_int;
+    let mut i_l: i32 = (*envs).i_l;
+    let mut j_l: i32 = (*envs).j_l;
+    let mut k_l: i32 = (*envs).k_l;
+    let mut l_l: i32 = (*envs).l_l;
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut k_ctr: i32 = (*envs).x_ctr[2 as i32 as usize];
+    let mut l_ctr: i32 = (*envs).x_ctr[3 as i32 as usize];
+    let mut di: i32 = i_l * 2 as i32 + 1 as i32;
+    let mut dj: i32 = j_l * 2 as i32 + 1 as i32;
+    let mut dk: i32 = k_l * 2 as i32 + 1 as i32;
+    let mut dl: i32 = l_l * 2 as i32 + 1 as i32;
+    let mut ni: i32 = *dims.offset(0 as i32 as isize);
+    let mut nj: i32 = *dims.offset(1 as i32 as isize);
+    let mut nk: i32 = *dims.offset(2 as i32 as isize);
+    let mut nl: i32 = *dims.offset(3 as i32 as isize);
+    let mut nfi: i32 = (*envs).nfi;
+    let mut nfk: i32 = (*envs).c2rust_unnamed.nfk;
+    let mut nfl: i32 = (*envs).c2rust_unnamed_0.nfl;
+    let mut nfik: i32 = nfi * nfk;
+    let mut nfikl: i32 = nfik * nfl;
+    let mut dlj: i32 = dl * dj;
+    let mut nf: i32 = (*envs).nf;
+    let mut ofj: i32 = ni * dj;
+    let mut ofk: i32 = ni * nj * dk;
+    let mut ofl: i32 = ni * nj * nk * dl;
+    let mut ic: i32 = 0;
+    let mut jc: i32 = 0;
+    let mut kc: i32 = 0;
+    let mut lc: i32 = 0;
+    let mut buflen: i32 = nfikl * dj;
+    let mut buf1: *mut f64 = 0 as *mut f64;
+    buf1 = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
+    cache = buf1.offset((buflen * 4 as i32) as isize);
+    let mut buf2: *mut f64 = buf1.offset(buflen as isize);
+    let mut buf3: *mut f64 = buf2.offset(buflen as isize);
+    let mut buf4: *mut f64 = buf3.offset(buflen as isize);
+    let mut pout: *mut f64 = 0 as *mut f64;
+    let mut tmp1: *mut f64 = 0 as *mut f64;
+    lc = 0 as i32;
     while lc < l_ctr {
-        kc = 0 as libc::c_int;
+        kc = 0 as i32;
         while kc < k_ctr {
-            jc = 0 as libc::c_int;
+            jc = 0 as i32;
             while jc < j_ctr {
-                ic = 0 as libc::c_int;
+                ic = 0 as i32;
                 while ic < i_ctr {
                     tmp1 = (c2s_ket_sph[j_l as usize])
                         .expect(
@@ -91258,7 +91258,7 @@ pub unsafe extern "C" fn c2s_sph_2e1(
                     tmp1 = sph2e_inner(buf3, tmp1, k_l, nfi, dlj, nfi * dk, nfik);
                     tmp1 = ::core::mem::transmute::<
                         _,
-                        fn(_, _, _, _) -> *mut libc::c_double,
+                        fn(_, _, _, _) -> *mut f64,
                     >(
                         (c2s_bra_sph[i_l as usize]).expect("non-null function pointer"),
                     )(buf4, dk * dlj, tmp1, i_l);
@@ -91284,56 +91284,56 @@ pub unsafe extern "C" fn c2s_sph_2e1(
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_sf_2e1(
-    mut opij: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut opij: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut shls: *mut libc::c_int = (*envs).shls;
-    let mut bas: *mut libc::c_int = (*envs).bas;
-    let mut i_sh: libc::c_int = *shls.offset(0 as libc::c_int as isize);
-    let mut j_sh: libc::c_int = *shls.offset(1 as libc::c_int as isize);
-    let mut i_l: libc::c_int = (*envs).i_l;
-    let mut j_l: libc::c_int = (*envs).j_l;
-    let mut i_kp: libc::c_int = *bas
-        .offset((8 as libc::c_int * i_sh + 4 as libc::c_int) as isize);
-    let mut j_kp: libc::c_int = *bas
-        .offset((8 as libc::c_int * j_sh + 4 as libc::c_int) as isize);
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut k_ctr: libc::c_int = (*envs).x_ctr[2 as libc::c_int as usize];
-    let mut l_ctr: libc::c_int = (*envs).x_ctr[3 as libc::c_int as usize];
-    let mut di: libc::c_int = _len_spinor(i_kp, i_l);
-    let mut dj: libc::c_int = _len_spinor(j_kp, j_l);
-    let mut nfj: libc::c_int = (*envs).nfj;
-    let mut nfk: libc::c_int = (*envs).c2rust_unnamed.nfk;
-    let mut nfl: libc::c_int = (*envs).c2rust_unnamed_0.nfl;
-    let mut nf2j: libc::c_int = nfj + nfj;
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut no: libc::c_int = di * nfk * nfl * dj;
-    let mut d_i: libc::c_int = di * nfk * nfl;
-    let mut d_j: libc::c_int = nfk * nfl * nfj;
-    let mut i: libc::c_int = 0;
-    let mut buflen: libc::c_int = di * nfk * nfl * nf2j;
-    let mut tmp1R: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut tmp1I: *mut libc::c_double = 0 as *mut libc::c_double;
-    tmp1R = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    let mut shls: *mut i32 = (*envs).shls;
+    let mut bas: *mut i32 = (*envs).bas;
+    let mut i_sh: i32 = *shls.offset(0 as i32 as isize);
+    let mut j_sh: i32 = *shls.offset(1 as i32 as isize);
+    let mut i_l: i32 = (*envs).i_l;
+    let mut j_l: i32 = (*envs).j_l;
+    let mut i_kp: i32 = *bas
+        .offset((8 as i32 * i_sh + 4 as i32) as isize);
+    let mut j_kp: i32 = *bas
+        .offset((8 as i32 * j_sh + 4 as i32) as isize);
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut k_ctr: i32 = (*envs).x_ctr[2 as i32 as usize];
+    let mut l_ctr: i32 = (*envs).x_ctr[3 as i32 as usize];
+    let mut di: i32 = _len_spinor(i_kp, i_l);
+    let mut dj: i32 = _len_spinor(j_kp, j_l);
+    let mut nfj: i32 = (*envs).nfj;
+    let mut nfk: i32 = (*envs).c2rust_unnamed.nfk;
+    let mut nfl: i32 = (*envs).c2rust_unnamed_0.nfl;
+    let mut nf2j: i32 = nfj + nfj;
+    let mut nf: i32 = (*envs).nf;
+    let mut no: i32 = di * nfk * nfl * dj;
+    let mut d_i: i32 = di * nfk * nfl;
+    let mut d_j: i32 = nfk * nfl * nfj;
+    let mut i: i32 = 0;
+    let mut buflen: i32 = di * nfk * nfl * nf2j;
+    let mut tmp1R: *mut f64 = 0 as *mut f64;
+    let mut tmp1I: *mut f64 = 0 as *mut f64;
+    tmp1R = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = tmp1R.offset(buflen as isize);
-    tmp1I = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    tmp1I = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = tmp1I.offset(buflen as isize);
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < i_ctr * j_ctr * k_ctr * l_ctr {
         a_bra_cart2spinor_sf(
             tmp1R,
             tmp1I,
-            0 as *mut libc::c_double,
-            0 as *mut libc::c_double,
-            0 as *mut libc::c_double,
+            0 as *mut f64,
+            0 as *mut f64,
+            0 as *mut f64,
             gctr,
             d_j,
             i_kp,
@@ -91341,63 +91341,63 @@ pub unsafe extern "C" fn c2s_sf_2e1(
         );
         a_ket_cart2spinor(opij, opij.offset(no as isize), tmp1R, tmp1I, d_i, j_kp, j_l);
         gctr = gctr.offset(nf as isize);
-        opij = opij.offset((no * 2 as libc::c_int) as isize);
+        opij = opij.offset((no * 2 as i32) as isize);
         i += 1;
         i;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_sf_2e1i(
-    mut opij: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut opij: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut shls: *mut libc::c_int = (*envs).shls;
-    let mut bas: *mut libc::c_int = (*envs).bas;
-    let mut i_sh: libc::c_int = *shls.offset(0 as libc::c_int as isize);
-    let mut j_sh: libc::c_int = *shls.offset(1 as libc::c_int as isize);
-    let mut i_l: libc::c_int = (*envs).i_l;
-    let mut j_l: libc::c_int = (*envs).j_l;
-    let mut i_kp: libc::c_int = *bas
-        .offset((8 as libc::c_int * i_sh + 4 as libc::c_int) as isize);
-    let mut j_kp: libc::c_int = *bas
-        .offset((8 as libc::c_int * j_sh + 4 as libc::c_int) as isize);
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut k_ctr: libc::c_int = (*envs).x_ctr[2 as libc::c_int as usize];
-    let mut l_ctr: libc::c_int = (*envs).x_ctr[3 as libc::c_int as usize];
-    let mut di: libc::c_int = _len_spinor(i_kp, i_l);
-    let mut dj: libc::c_int = _len_spinor(j_kp, j_l);
-    let mut nfj: libc::c_int = (*envs).nfj;
-    let mut nfk: libc::c_int = (*envs).c2rust_unnamed.nfk;
-    let mut nfl: libc::c_int = (*envs).c2rust_unnamed_0.nfl;
-    let mut nf2j: libc::c_int = nfj + nfj;
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut no: libc::c_int = di * nfk * nfl * dj;
-    let mut d_i: libc::c_int = di * nfk * nfl;
-    let mut d_j: libc::c_int = nfk * nfl * nfj;
-    let mut i: libc::c_int = 0;
-    let mut len1: libc::c_int = di * nfk * nfl * nf2j;
-    let mut tmp1R: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut tmp1I: *mut libc::c_double = 0 as *mut libc::c_double;
-    tmp1R = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    let mut shls: *mut i32 = (*envs).shls;
+    let mut bas: *mut i32 = (*envs).bas;
+    let mut i_sh: i32 = *shls.offset(0 as i32 as isize);
+    let mut j_sh: i32 = *shls.offset(1 as i32 as isize);
+    let mut i_l: i32 = (*envs).i_l;
+    let mut j_l: i32 = (*envs).j_l;
+    let mut i_kp: i32 = *bas
+        .offset((8 as i32 * i_sh + 4 as i32) as isize);
+    let mut j_kp: i32 = *bas
+        .offset((8 as i32 * j_sh + 4 as i32) as isize);
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut k_ctr: i32 = (*envs).x_ctr[2 as i32 as usize];
+    let mut l_ctr: i32 = (*envs).x_ctr[3 as i32 as usize];
+    let mut di: i32 = _len_spinor(i_kp, i_l);
+    let mut dj: i32 = _len_spinor(j_kp, j_l);
+    let mut nfj: i32 = (*envs).nfj;
+    let mut nfk: i32 = (*envs).c2rust_unnamed.nfk;
+    let mut nfl: i32 = (*envs).c2rust_unnamed_0.nfl;
+    let mut nf2j: i32 = nfj + nfj;
+    let mut nf: i32 = (*envs).nf;
+    let mut no: i32 = di * nfk * nfl * dj;
+    let mut d_i: i32 = di * nfk * nfl;
+    let mut d_j: i32 = nfk * nfl * nfj;
+    let mut i: i32 = 0;
+    let mut len1: i32 = di * nfk * nfl * nf2j;
+    let mut tmp1R: *mut f64 = 0 as *mut f64;
+    let mut tmp1I: *mut f64 = 0 as *mut f64;
+    tmp1R = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = tmp1R.offset(len1 as isize);
-    tmp1I = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    tmp1I = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = tmp1I.offset(len1 as isize);
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < i_ctr * j_ctr * k_ctr * l_ctr {
         a_bra_cart2spinor_sf(
             tmp1R,
             tmp1I,
-            0 as *mut libc::c_double,
-            0 as *mut libc::c_double,
-            0 as *mut libc::c_double,
+            0 as *mut f64,
+            0 as *mut f64,
+            0 as *mut f64,
             gctr,
             d_j,
             i_kp,
@@ -91405,65 +91405,65 @@ pub unsafe extern "C" fn c2s_sf_2e1i(
         );
         a_iket_cart2spinor(opij, opij.offset(no as isize), tmp1R, tmp1I, d_i, j_kp, j_l);
         gctr = gctr.offset(nf as isize);
-        opij = opij.offset((no * 2 as libc::c_int) as isize);
+        opij = opij.offset((no * 2 as i32) as isize);
         i += 1;
         i;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_si_2e1(
-    mut opij: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut opij: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut shls: *mut libc::c_int = (*envs).shls;
-    let mut bas: *mut libc::c_int = (*envs).bas;
-    let mut i_sh: libc::c_int = *shls.offset(0 as libc::c_int as isize);
-    let mut j_sh: libc::c_int = *shls.offset(1 as libc::c_int as isize);
-    let mut i_l: libc::c_int = (*envs).i_l;
-    let mut j_l: libc::c_int = (*envs).j_l;
-    let mut i_kp: libc::c_int = *bas
-        .offset((8 as libc::c_int * i_sh + 4 as libc::c_int) as isize);
-    let mut j_kp: libc::c_int = *bas
-        .offset((8 as libc::c_int * j_sh + 4 as libc::c_int) as isize);
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut k_ctr: libc::c_int = (*envs).x_ctr[2 as libc::c_int as usize];
-    let mut l_ctr: libc::c_int = (*envs).x_ctr[3 as libc::c_int as usize];
-    let mut di: libc::c_int = _len_spinor(i_kp, i_l);
-    let mut dj: libc::c_int = _len_spinor(j_kp, j_l);
-    let mut nfi: libc::c_int = (*envs).nfi;
-    let mut nfj: libc::c_int = (*envs).nfj;
-    let mut nfk: libc::c_int = (*envs).c2rust_unnamed.nfk;
-    let mut nfl: libc::c_int = (*envs).c2rust_unnamed_0.nfl;
-    let mut nf2i: libc::c_int = nfi + nfi;
-    let mut nf2j: libc::c_int = nfj + nfj;
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut no: libc::c_int = di * nfk * nfl * dj;
-    let mut d_i: libc::c_int = di * nfk * nfl;
-    let mut d_j: libc::c_int = nfk * nfl * nfj;
-    let mut i: libc::c_int = 0;
-    let mut gc_x: *mut libc::c_double = gctr;
-    let mut gc_y: *mut libc::c_double = gc_x
+    let mut shls: *mut i32 = (*envs).shls;
+    let mut bas: *mut i32 = (*envs).bas;
+    let mut i_sh: i32 = *shls.offset(0 as i32 as isize);
+    let mut j_sh: i32 = *shls.offset(1 as i32 as isize);
+    let mut i_l: i32 = (*envs).i_l;
+    let mut j_l: i32 = (*envs).j_l;
+    let mut i_kp: i32 = *bas
+        .offset((8 as i32 * i_sh + 4 as i32) as isize);
+    let mut j_kp: i32 = *bas
+        .offset((8 as i32 * j_sh + 4 as i32) as isize);
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut k_ctr: i32 = (*envs).x_ctr[2 as i32 as usize];
+    let mut l_ctr: i32 = (*envs).x_ctr[3 as i32 as usize];
+    let mut di: i32 = _len_spinor(i_kp, i_l);
+    let mut dj: i32 = _len_spinor(j_kp, j_l);
+    let mut nfi: i32 = (*envs).nfi;
+    let mut nfj: i32 = (*envs).nfj;
+    let mut nfk: i32 = (*envs).c2rust_unnamed.nfk;
+    let mut nfl: i32 = (*envs).c2rust_unnamed_0.nfl;
+    let mut nf2i: i32 = nfi + nfi;
+    let mut nf2j: i32 = nfj + nfj;
+    let mut nf: i32 = (*envs).nf;
+    let mut no: i32 = di * nfk * nfl * dj;
+    let mut d_i: i32 = di * nfk * nfl;
+    let mut d_j: i32 = nfk * nfl * nfj;
+    let mut i: i32 = 0;
+    let mut gc_x: *mut f64 = gctr;
+    let mut gc_y: *mut f64 = gc_x
         .offset((nf * i_ctr * j_ctr * k_ctr * l_ctr) as isize);
-    let mut gc_z: *mut libc::c_double = gc_y
+    let mut gc_z: *mut f64 = gc_y
         .offset((nf * i_ctr * j_ctr * k_ctr * l_ctr) as isize);
-    let mut gc_1: *mut libc::c_double = gc_z
+    let mut gc_1: *mut f64 = gc_z
         .offset((nf * i_ctr * j_ctr * k_ctr * l_ctr) as isize);
-    let mut len1: libc::c_int = di * nfk * nfl * nf2j;
-    let mut tmp1R: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut tmp1I: *mut libc::c_double = 0 as *mut libc::c_double;
-    tmp1R = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    let mut len1: i32 = di * nfk * nfl * nf2j;
+    let mut tmp1R: *mut f64 = 0 as *mut f64;
+    let mut tmp1I: *mut f64 = 0 as *mut f64;
+    tmp1R = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = tmp1R.offset(len1 as isize);
-    tmp1I = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    tmp1I = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = tmp1I.offset(len1 as isize);
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < i_ctr * j_ctr * k_ctr * l_ctr {
         a_bra_cart2spinor_si(tmp1R, tmp1I, gc_x, gc_y, gc_z, gc_1, d_j, i_kp, i_l);
         a_ket_cart2spinor(opij, opij.offset(no as isize), tmp1R, tmp1I, d_i, j_kp, j_l);
@@ -91471,65 +91471,65 @@ pub unsafe extern "C" fn c2s_si_2e1(
         gc_y = gc_y.offset(nf as isize);
         gc_z = gc_z.offset(nf as isize);
         gc_1 = gc_1.offset(nf as isize);
-        opij = opij.offset((no * 2 as libc::c_int) as isize);
+        opij = opij.offset((no * 2 as i32) as isize);
         i += 1;
         i;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_si_2e1i(
-    mut opij: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut opij: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut shls: *mut libc::c_int = (*envs).shls;
-    let mut bas: *mut libc::c_int = (*envs).bas;
-    let mut i_sh: libc::c_int = *shls.offset(0 as libc::c_int as isize);
-    let mut j_sh: libc::c_int = *shls.offset(1 as libc::c_int as isize);
-    let mut i_l: libc::c_int = (*envs).i_l;
-    let mut j_l: libc::c_int = (*envs).j_l;
-    let mut i_kp: libc::c_int = *bas
-        .offset((8 as libc::c_int * i_sh + 4 as libc::c_int) as isize);
-    let mut j_kp: libc::c_int = *bas
-        .offset((8 as libc::c_int * j_sh + 4 as libc::c_int) as isize);
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut k_ctr: libc::c_int = (*envs).x_ctr[2 as libc::c_int as usize];
-    let mut l_ctr: libc::c_int = (*envs).x_ctr[3 as libc::c_int as usize];
-    let mut di: libc::c_int = _len_spinor(i_kp, i_l);
-    let mut dj: libc::c_int = _len_spinor(j_kp, j_l);
-    let mut nfi: libc::c_int = (*envs).nfi;
-    let mut nfj: libc::c_int = (*envs).nfj;
-    let mut nfk: libc::c_int = (*envs).c2rust_unnamed.nfk;
-    let mut nfl: libc::c_int = (*envs).c2rust_unnamed_0.nfl;
-    let mut nf2i: libc::c_int = nfi + nfi;
-    let mut nf2j: libc::c_int = nfj + nfj;
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut no: libc::c_int = di * nfk * nfl * dj;
-    let mut d_i: libc::c_int = di * nfk * nfl;
-    let mut d_j: libc::c_int = nfk * nfl * nfj;
-    let mut i: libc::c_int = 0;
-    let mut gc_x: *mut libc::c_double = gctr;
-    let mut gc_y: *mut libc::c_double = gc_x
+    let mut shls: *mut i32 = (*envs).shls;
+    let mut bas: *mut i32 = (*envs).bas;
+    let mut i_sh: i32 = *shls.offset(0 as i32 as isize);
+    let mut j_sh: i32 = *shls.offset(1 as i32 as isize);
+    let mut i_l: i32 = (*envs).i_l;
+    let mut j_l: i32 = (*envs).j_l;
+    let mut i_kp: i32 = *bas
+        .offset((8 as i32 * i_sh + 4 as i32) as isize);
+    let mut j_kp: i32 = *bas
+        .offset((8 as i32 * j_sh + 4 as i32) as isize);
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut k_ctr: i32 = (*envs).x_ctr[2 as i32 as usize];
+    let mut l_ctr: i32 = (*envs).x_ctr[3 as i32 as usize];
+    let mut di: i32 = _len_spinor(i_kp, i_l);
+    let mut dj: i32 = _len_spinor(j_kp, j_l);
+    let mut nfi: i32 = (*envs).nfi;
+    let mut nfj: i32 = (*envs).nfj;
+    let mut nfk: i32 = (*envs).c2rust_unnamed.nfk;
+    let mut nfl: i32 = (*envs).c2rust_unnamed_0.nfl;
+    let mut nf2i: i32 = nfi + nfi;
+    let mut nf2j: i32 = nfj + nfj;
+    let mut nf: i32 = (*envs).nf;
+    let mut no: i32 = di * nfk * nfl * dj;
+    let mut d_i: i32 = di * nfk * nfl;
+    let mut d_j: i32 = nfk * nfl * nfj;
+    let mut i: i32 = 0;
+    let mut gc_x: *mut f64 = gctr;
+    let mut gc_y: *mut f64 = gc_x
         .offset((nf * i_ctr * j_ctr * k_ctr * l_ctr) as isize);
-    let mut gc_z: *mut libc::c_double = gc_y
+    let mut gc_z: *mut f64 = gc_y
         .offset((nf * i_ctr * j_ctr * k_ctr * l_ctr) as isize);
-    let mut gc_1: *mut libc::c_double = gc_z
+    let mut gc_1: *mut f64 = gc_z
         .offset((nf * i_ctr * j_ctr * k_ctr * l_ctr) as isize);
-    let mut len1: libc::c_int = di * nfk * nfl * nf2j;
-    let mut tmp1R: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut tmp1I: *mut libc::c_double = 0 as *mut libc::c_double;
-    tmp1R = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    let mut len1: i32 = di * nfk * nfl * nf2j;
+    let mut tmp1R: *mut f64 = 0 as *mut f64;
+    let mut tmp1I: *mut f64 = 0 as *mut f64;
+    tmp1R = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = tmp1R.offset(len1 as isize);
-    tmp1I = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    tmp1I = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = tmp1I.offset(len1 as isize);
-    i = 0 as libc::c_int;
+    i = 0 as i32;
     while i < i_ctr * j_ctr * k_ctr * l_ctr {
         a_bra_cart2spinor_si(tmp1R, tmp1I, gc_x, gc_y, gc_z, gc_1, d_j, i_kp, i_l);
         a_iket_cart2spinor(opij, opij.offset(no as isize), tmp1R, tmp1I, d_i, j_kp, j_l);
@@ -91537,33 +91537,33 @@ pub unsafe extern "C" fn c2s_si_2e1i(
         gc_y = gc_y.offset(nf as isize);
         gc_z = gc_z.offset(nf as isize);
         gc_1 = gc_1.offset(nf as isize);
-        opij = opij.offset((no * 2 as libc::c_int) as isize);
+        opij = opij.offset((no * 2 as i32) as isize);
         i += 1;
         i;
     }
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_cart_1e(
-    mut opij: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut opij: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut nfi: libc::c_int = (*envs).nfi;
-    let mut nfj: libc::c_int = (*envs).nfj;
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut ni: libc::c_int = *dims.offset(0 as libc::c_int as isize);
-    let mut nj: libc::c_int = *dims.offset(1 as libc::c_int as isize);
-    let mut ofj: libc::c_int = ni * nfj;
-    let mut ic: libc::c_int = 0;
-    let mut jc: libc::c_int = 0;
-    let mut popij: *mut libc::c_double = 0 as *mut libc::c_double;
-    jc = 0 as libc::c_int;
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut nfi: i32 = (*envs).nfi;
+    let mut nfj: i32 = (*envs).nfj;
+    let mut nf: i32 = (*envs).nf;
+    let mut ni: i32 = *dims.offset(0 as i32 as isize);
+    let mut nj: i32 = *dims.offset(1 as i32 as isize);
+    let mut ofj: i32 = ni * nfj;
+    let mut ic: i32 = 0;
+    let mut jc: i32 = 0;
+    let mut popij: *mut f64 = 0 as *mut f64;
+    jc = 0 as i32;
     while jc < j_ctr {
-        ic = 0 as libc::c_int;
+        ic = 0 as i32;
         while ic < i_ctr {
             popij = opij.offset((ofj * jc) as isize).offset((nfi * ic) as isize);
             dcopy_ij(popij, gctr, ni, nj, nfi, nfj);
@@ -91577,40 +91577,40 @@ pub unsafe extern "C" fn c2s_cart_1e(
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_cart_2e1(
-    mut fijkl: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut fijkl: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut k_ctr: libc::c_int = (*envs).x_ctr[2 as libc::c_int as usize];
-    let mut l_ctr: libc::c_int = (*envs).x_ctr[3 as libc::c_int as usize];
-    let mut nfi: libc::c_int = (*envs).nfi;
-    let mut nfj: libc::c_int = (*envs).nfj;
-    let mut nfk: libc::c_int = (*envs).c2rust_unnamed.nfk;
-    let mut nfl: libc::c_int = (*envs).c2rust_unnamed_0.nfl;
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut ni: libc::c_int = *dims.offset(0 as libc::c_int as isize);
-    let mut nj: libc::c_int = *dims.offset(1 as libc::c_int as isize);
-    let mut nk: libc::c_int = *dims.offset(2 as libc::c_int as isize);
-    let mut nl: libc::c_int = *dims.offset(3 as libc::c_int as isize);
-    let mut ofj: libc::c_int = ni * nfj;
-    let mut ofk: libc::c_int = ni * nj * nfk;
-    let mut ofl: libc::c_int = ni * nj * nk * nfl;
-    let mut ic: libc::c_int = 0;
-    let mut jc: libc::c_int = 0;
-    let mut kc: libc::c_int = 0;
-    let mut lc: libc::c_int = 0;
-    let mut pfijkl: *mut libc::c_double = 0 as *mut libc::c_double;
-    lc = 0 as libc::c_int;
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut k_ctr: i32 = (*envs).x_ctr[2 as i32 as usize];
+    let mut l_ctr: i32 = (*envs).x_ctr[3 as i32 as usize];
+    let mut nfi: i32 = (*envs).nfi;
+    let mut nfj: i32 = (*envs).nfj;
+    let mut nfk: i32 = (*envs).c2rust_unnamed.nfk;
+    let mut nfl: i32 = (*envs).c2rust_unnamed_0.nfl;
+    let mut nf: i32 = (*envs).nf;
+    let mut ni: i32 = *dims.offset(0 as i32 as isize);
+    let mut nj: i32 = *dims.offset(1 as i32 as isize);
+    let mut nk: i32 = *dims.offset(2 as i32 as isize);
+    let mut nl: i32 = *dims.offset(3 as i32 as isize);
+    let mut ofj: i32 = ni * nfj;
+    let mut ofk: i32 = ni * nj * nfk;
+    let mut ofl: i32 = ni * nj * nk * nfl;
+    let mut ic: i32 = 0;
+    let mut jc: i32 = 0;
+    let mut kc: i32 = 0;
+    let mut lc: i32 = 0;
+    let mut pfijkl: *mut f64 = 0 as *mut f64;
+    lc = 0 as i32;
     while lc < l_ctr {
-        kc = 0 as libc::c_int;
+        kc = 0 as i32;
         while kc < k_ctr {
-            jc = 0 as libc::c_int;
+            jc = 0 as i32;
             while jc < j_ctr {
-                ic = 0 as libc::c_int;
+                ic = 0 as i32;
                 while ic < i_ctr {
                     pfijkl = fijkl
                         .offset((ofl * lc) as isize)
@@ -91636,55 +91636,55 @@ pub unsafe extern "C" fn c2s_cart_2e1(
 pub unsafe extern "C" fn c2s_cart_2e2() {}
 #[no_mangle]
 pub unsafe extern "C" fn c2s_sph_3c2e1(
-    mut bufijk: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut bufijk: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut i_l: libc::c_int = (*envs).i_l;
-    let mut j_l: libc::c_int = (*envs).j_l;
-    let mut k_l: libc::c_int = (*envs).k_l;
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut k_ctr: libc::c_int = (*envs).x_ctr[2 as libc::c_int as usize];
-    let mut di: libc::c_int = i_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut dj: libc::c_int = j_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut dk: libc::c_int = k_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut ni: libc::c_int = *dims.offset(0 as libc::c_int as isize);
-    let mut nj: libc::c_int = *dims.offset(1 as libc::c_int as isize);
-    let mut nk: libc::c_int = *dims.offset(2 as libc::c_int as isize);
-    let mut nfi: libc::c_int = (*envs).nfi;
-    let mut nfk: libc::c_int = (*envs).c2rust_unnamed.nfk;
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut nfik: libc::c_int = nfi * nfk;
-    let mut ofj: libc::c_int = ni * dj;
-    let mut ofk: libc::c_int = ni * nj * dk;
-    let mut ic: libc::c_int = 0;
-    let mut jc: libc::c_int = 0;
-    let mut kc: libc::c_int = 0;
-    let mut buflen: libc::c_int = nfi * nfk * dj;
-    let mut buf1: *mut libc::c_double = 0 as *mut libc::c_double;
-    buf1 = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
-    cache = buf1.offset((buflen * 3 as libc::c_int) as isize);
-    let mut buf2: *mut libc::c_double = buf1.offset(buflen as isize);
-    let mut buf3: *mut libc::c_double = buf2.offset(buflen as isize);
-    let mut pijk: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut tmp1: *mut libc::c_double = 0 as *mut libc::c_double;
-    kc = 0 as libc::c_int;
+    let mut i_l: i32 = (*envs).i_l;
+    let mut j_l: i32 = (*envs).j_l;
+    let mut k_l: i32 = (*envs).k_l;
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut k_ctr: i32 = (*envs).x_ctr[2 as i32 as usize];
+    let mut di: i32 = i_l * 2 as i32 + 1 as i32;
+    let mut dj: i32 = j_l * 2 as i32 + 1 as i32;
+    let mut dk: i32 = k_l * 2 as i32 + 1 as i32;
+    let mut ni: i32 = *dims.offset(0 as i32 as isize);
+    let mut nj: i32 = *dims.offset(1 as i32 as isize);
+    let mut nk: i32 = *dims.offset(2 as i32 as isize);
+    let mut nfi: i32 = (*envs).nfi;
+    let mut nfk: i32 = (*envs).c2rust_unnamed.nfk;
+    let mut nf: i32 = (*envs).nf;
+    let mut nfik: i32 = nfi * nfk;
+    let mut ofj: i32 = ni * dj;
+    let mut ofk: i32 = ni * nj * dk;
+    let mut ic: i32 = 0;
+    let mut jc: i32 = 0;
+    let mut kc: i32 = 0;
+    let mut buflen: i32 = nfi * nfk * dj;
+    let mut buf1: *mut f64 = 0 as *mut f64;
+    buf1 = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
+    cache = buf1.offset((buflen * 3 as i32) as isize);
+    let mut buf2: *mut f64 = buf1.offset(buflen as isize);
+    let mut buf3: *mut f64 = buf2.offset(buflen as isize);
+    let mut pijk: *mut f64 = 0 as *mut f64;
+    let mut tmp1: *mut f64 = 0 as *mut f64;
+    kc = 0 as i32;
     while kc < k_ctr {
-        jc = 0 as libc::c_int;
+        jc = 0 as i32;
         while jc < j_ctr {
-            ic = 0 as libc::c_int;
+            ic = 0 as i32;
             while ic < i_ctr {
                 tmp1 = (c2s_ket_sph[j_l as usize])
                     .expect("non-null function pointer")(buf1, gctr, nfik, nfik, j_l);
                 tmp1 = sph2e_inner(buf2, tmp1, k_l, nfi, dj, nfi * dk, nfik);
                 tmp1 = ::core::mem::transmute::<
                     _,
-                    fn(_, _, _, _) -> *mut libc::c_double,
+                    fn(_, _, _, _) -> *mut f64,
                 >(
                     (c2s_bra_sph[i_l as usize]).expect("non-null function pointer"),
                 )(buf3, dk * dj, tmp1, i_l);
@@ -91698,11 +91698,11 @@ pub unsafe extern "C" fn c2s_sph_3c2e1(
                     ni,
                     nj,
                     nk,
-                    1 as libc::c_int,
+                    1 as i32,
                     di,
                     dj,
                     dk,
-                    1 as libc::c_int,
+                    1 as i32,
                 );
                 gctr = gctr.offset(nf as isize);
                 ic += 1;
@@ -91717,33 +91717,33 @@ pub unsafe extern "C" fn c2s_sph_3c2e1(
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_cart_3c2e1(
-    mut bufijk: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut bufijk: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut k_ctr: libc::c_int = (*envs).x_ctr[2 as libc::c_int as usize];
-    let mut nfi: libc::c_int = (*envs).nfi;
-    let mut nfj: libc::c_int = (*envs).nfj;
-    let mut nfk: libc::c_int = (*envs).c2rust_unnamed.nfk;
-    let mut ni: libc::c_int = *dims.offset(0 as libc::c_int as isize);
-    let mut nj: libc::c_int = *dims.offset(1 as libc::c_int as isize);
-    let mut nk: libc::c_int = *dims.offset(2 as libc::c_int as isize);
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut ofj: libc::c_int = ni * nfj;
-    let mut ofk: libc::c_int = ni * nj * nfk;
-    let mut ic: libc::c_int = 0;
-    let mut jc: libc::c_int = 0;
-    let mut kc: libc::c_int = 0;
-    let mut pijk: *mut libc::c_double = 0 as *mut libc::c_double;
-    kc = 0 as libc::c_int;
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut k_ctr: i32 = (*envs).x_ctr[2 as i32 as usize];
+    let mut nfi: i32 = (*envs).nfi;
+    let mut nfj: i32 = (*envs).nfj;
+    let mut nfk: i32 = (*envs).c2rust_unnamed.nfk;
+    let mut ni: i32 = *dims.offset(0 as i32 as isize);
+    let mut nj: i32 = *dims.offset(1 as i32 as isize);
+    let mut nk: i32 = *dims.offset(2 as i32 as isize);
+    let mut nf: i32 = (*envs).nf;
+    let mut ofj: i32 = ni * nfj;
+    let mut ofk: i32 = ni * nj * nfk;
+    let mut ic: i32 = 0;
+    let mut jc: i32 = 0;
+    let mut kc: i32 = 0;
+    let mut pijk: *mut f64 = 0 as *mut f64;
+    kc = 0 as i32;
     while kc < k_ctr {
-        jc = 0 as libc::c_int;
+        jc = 0 as i32;
         while jc < j_ctr {
-            ic = 0 as libc::c_int;
+            ic = 0 as i32;
             while ic < i_ctr {
                 pijk = bufijk
                     .offset((ofk * kc) as isize)
@@ -91755,11 +91755,11 @@ pub unsafe extern "C" fn c2s_cart_3c2e1(
                     ni,
                     nj,
                     nk,
-                    1 as libc::c_int,
+                    1 as i32,
                     nfi,
                     nfj,
                     nfk,
-                    1 as libc::c_int,
+                    1 as i32,
                 );
                 gctr = gctr.offset(nf as isize);
                 ic += 1;
@@ -91774,55 +91774,55 @@ pub unsafe extern "C" fn c2s_cart_3c2e1(
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_sph_3c2e1_ssc(
-    mut bufijk: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut bufijk: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
-    let mut i_l: libc::c_int = (*envs).i_l;
-    let mut j_l: libc::c_int = (*envs).j_l;
-    let mut i_ctr: libc::c_int = (*envs).x_ctr[0 as libc::c_int as usize];
-    let mut j_ctr: libc::c_int = (*envs).x_ctr[1 as libc::c_int as usize];
-    let mut k_ctr: libc::c_int = (*envs).x_ctr[2 as libc::c_int as usize];
-    let mut di: libc::c_int = i_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut dj: libc::c_int = j_l * 2 as libc::c_int + 1 as libc::c_int;
-    let mut nfi: libc::c_int = (*envs).nfi;
-    let mut nfk: libc::c_int = (*envs).c2rust_unnamed.nfk;
-    let mut ni: libc::c_int = di * i_ctr;
-    let mut nj: libc::c_int = dj * j_ctr;
-    let mut nk: libc::c_int = nfk * k_ctr;
-    let mut nf: libc::c_int = (*envs).nf;
-    let mut nfik: libc::c_int = nfi * nfk;
-    let mut ofj: libc::c_int = ni * dj;
-    let mut ofk: libc::c_int = ni * nj * nfk;
-    let mut ic: libc::c_int = 0;
-    let mut jc: libc::c_int = 0;
-    let mut kc: libc::c_int = 0;
-    let mut buflen: libc::c_int = nfi * nfk * dj;
-    let mut buf1: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut buf2: *mut libc::c_double = 0 as *mut libc::c_double;
-    buf1 = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    let mut i_l: i32 = (*envs).i_l;
+    let mut j_l: i32 = (*envs).j_l;
+    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
+    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
+    let mut k_ctr: i32 = (*envs).x_ctr[2 as i32 as usize];
+    let mut di: i32 = i_l * 2 as i32 + 1 as i32;
+    let mut dj: i32 = j_l * 2 as i32 + 1 as i32;
+    let mut nfi: i32 = (*envs).nfi;
+    let mut nfk: i32 = (*envs).c2rust_unnamed.nfk;
+    let mut ni: i32 = di * i_ctr;
+    let mut nj: i32 = dj * j_ctr;
+    let mut nk: i32 = nfk * k_ctr;
+    let mut nf: i32 = (*envs).nf;
+    let mut nfik: i32 = nfi * nfk;
+    let mut ofj: i32 = ni * dj;
+    let mut ofk: i32 = ni * nj * nfk;
+    let mut ic: i32 = 0;
+    let mut jc: i32 = 0;
+    let mut kc: i32 = 0;
+    let mut buflen: i32 = nfi * nfk * dj;
+    let mut buf1: *mut f64 = 0 as *mut f64;
+    let mut buf2: *mut f64 = 0 as *mut f64;
+    buf1 = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = buf1.offset(buflen as isize);
-    buf2 = ((cache as uintptr_t).wrapping_add(7 as libc::c_int as libc::c_ulong)
-        & (8 as libc::c_int as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut libc::c_double;
+    buf2 = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+        as *mut f64;
     cache = buf2.offset(buflen as isize);
-    let mut pijk: *mut libc::c_double = 0 as *mut libc::c_double;
-    let mut tmp1: *mut libc::c_double = 0 as *mut libc::c_double;
-    kc = 0 as libc::c_int;
+    let mut pijk: *mut f64 = 0 as *mut f64;
+    let mut tmp1: *mut f64 = 0 as *mut f64;
+    kc = 0 as i32;
     while kc < k_ctr {
-        jc = 0 as libc::c_int;
+        jc = 0 as i32;
         while jc < j_ctr {
-            ic = 0 as libc::c_int;
+            ic = 0 as i32;
             while ic < i_ctr {
                 tmp1 = (c2s_ket_sph[j_l as usize])
                     .expect("non-null function pointer")(buf1, gctr, nfik, nfik, j_l);
                 tmp1 = ::core::mem::transmute::<
                     _,
-                    fn(_, _, _, _) -> *mut libc::c_double,
+                    fn(_, _, _, _) -> *mut f64,
                 >(
                     (c2s_bra_sph[i_l as usize]).expect("non-null function pointer"),
                 )(buf2, nfk * dj, tmp1, i_l);
@@ -91836,11 +91836,11 @@ pub unsafe extern "C" fn c2s_sph_3c2e1_ssc(
                     ni,
                     nj,
                     nk,
-                    1 as libc::c_int,
+                    1 as i32,
                     di,
                     dj,
                     nfk,
-                    1 as libc::c_int,
+                    1 as i32,
                 );
                 gctr = gctr.offset(nf as isize);
                 ic += 1;
@@ -91855,82 +91855,82 @@ pub unsafe extern "C" fn c2s_sph_3c2e1_ssc(
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_sph_3c1e(
-    mut out: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut out: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
     c2s_sph_3c2e1(out, gctr, dims, envs, cache);
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_cart_3c1e(
-    mut out: *mut libc::c_double,
-    mut gctr: *mut libc::c_double,
-    mut dims: *mut libc::c_int,
+    mut out: *mut f64,
+    mut gctr: *mut f64,
+    mut dims: *mut i32,
     mut envs: *mut CINTEnvVars,
-    mut cache: *mut libc::c_double,
+    mut cache: *mut f64,
 ) {
     c2s_cart_3c2e1(out, gctr, dims, envs, cache);
 }
 #[no_mangle]
 pub unsafe extern "C" fn CINTc2s_bra_sph(
-    mut gsph: *mut libc::c_double,
-    mut nket: libc::c_int,
-    mut gcart: *mut libc::c_double,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
+    mut gsph: *mut f64,
+    mut nket: i32,
+    mut gcart: *mut f64,
+    mut l: i32,
+) -> *mut f64 {
     return ::core::mem::transmute::<
         _,
-        fn(_, _, _, _) -> *mut libc::c_double,
+        fn(_, _, _, _) -> *mut f64,
     >(
         (c2s_bra_sph[l as usize]).expect("non-null function pointer"),
     )(gsph, nket, gcart, l);
 }
 #[no_mangle]
 pub unsafe extern "C" fn CINTc2s_ket_sph(
-    mut gsph: *mut libc::c_double,
-    mut nbra: libc::c_int,
-    mut gcart: *mut libc::c_double,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
+    mut gsph: *mut f64,
+    mut nbra: i32,
+    mut gcart: *mut f64,
+    mut l: i32,
+) -> *mut f64 {
     return (c2s_ket_sph[l as usize])
         .expect("non-null function pointer")(gsph, gcart, nbra, nbra, l);
 }
 #[no_mangle]
 pub unsafe extern "C" fn CINTc2s_ket_sph1(
-    mut sph: *mut libc::c_double,
-    mut cart: *mut libc::c_double,
-    mut lds: libc::c_int,
-    mut ldc: libc::c_int,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
+    mut sph: *mut f64,
+    mut cart: *mut f64,
+    mut lds: i32,
+    mut ldc: i32,
+    mut l: i32,
+) -> *mut f64 {
     return (c2s_ket_sph1[l as usize])
         .expect("non-null function pointer")(sph, cart, lds, ldc, l);
 }
 #[no_mangle]
 pub unsafe extern "C" fn CINTs2c_bra_sph(
-    mut gsph: *mut libc::c_double,
-    mut nket: libc::c_int,
-    mut gcart: *mut libc::c_double,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
-    let mut nf: libc::c_int = (l + 1 as libc::c_int) * (l + 2 as libc::c_int)
-        / 2 as libc::c_int;
-    let mut nd: libc::c_int = l * 2 as libc::c_int + 1 as libc::c_int;
+    mut gsph: *mut f64,
+    mut nket: i32,
+    mut gcart: *mut f64,
+    mut l: i32,
+) -> *mut f64 {
+    let mut nf: i32 = (l + 1 as i32) * (l + 2 as i32)
+        / 2 as i32;
+    let mut nd: i32 = l * 2 as i32 + 1 as i32;
     CINTdgemm_NN1(nf, nket, nd, g_c2s[l as usize].cart2sph, gsph, gcart, nf);
     return gcart;
 }
 #[no_mangle]
 pub unsafe extern "C" fn CINTs2c_ket_sph(
-    mut gsph: *mut libc::c_double,
-    mut nbra: libc::c_int,
-    mut gcart: *mut libc::c_double,
-    mut l: libc::c_int,
-) -> *mut libc::c_double {
-    let mut nf: libc::c_int = (l + 1 as libc::c_int) * (l + 2 as libc::c_int)
-        / 2 as libc::c_int;
-    let mut nd: libc::c_int = l * 2 as libc::c_int + 1 as libc::c_int;
+    mut gsph: *mut f64,
+    mut nbra: i32,
+    mut gcart: *mut f64,
+    mut l: i32,
+) -> *mut f64 {
+    let mut nf: i32 = (l + 1 as i32) * (l + 2 as i32)
+        / 2 as i32;
+    let mut nd: i32 = l * 2 as i32 + 1 as i32;
     CINTdgemm_NT(nbra, nf, nd, gsph, g_c2s[l as usize].cart2sph, gcart);
     return gcart;
 }
@@ -91950,19 +91950,19 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(1 as libc::c_int as isize),
+                    .offset(1 as i32 as isize),
                 cart2j_lt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(4 as libc::c_int as isize),
+                    .offset(4 as i32 as isize),
                 cart2j_lt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(4 as libc::c_int as isize),
+                    .offset(4 as i32 as isize),
                 cart2j_gt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(16 as libc::c_int as isize),
+                    .offset(16 as i32 as isize),
                 cart2j_gt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(16 as libc::c_int as isize),
+                    .offset(16 as i32 as isize),
             };
             init
         },
@@ -91970,19 +91970,19 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(10 as libc::c_int as isize),
+                    .offset(10 as i32 as isize),
                 cart2j_lt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(40 as libc::c_int as isize),
+                    .offset(40 as i32 as isize),
                 cart2j_lt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(40 as libc::c_int as isize),
+                    .offset(40 as i32 as isize),
                 cart2j_gt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(88 as libc::c_int as isize),
+                    .offset(88 as i32 as isize),
                 cart2j_gt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(88 as libc::c_int as isize),
+                    .offset(88 as i32 as isize),
             };
             init
         },
@@ -91990,19 +91990,19 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(40 as libc::c_int as isize),
+                    .offset(40 as i32 as isize),
                 cart2j_lt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(160 as libc::c_int as isize),
+                    .offset(160 as i32 as isize),
                 cart2j_lt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(160 as libc::c_int as isize),
+                    .offset(160 as i32 as isize),
                 cart2j_gt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(280 as libc::c_int as isize),
+                    .offset(280 as i32 as isize),
                 cart2j_gt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(280 as libc::c_int as isize),
+                    .offset(280 as i32 as isize),
             };
             init
         },
@@ -92010,19 +92010,19 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(110 as libc::c_int as isize),
+                    .offset(110 as i32 as isize),
                 cart2j_lt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(440 as libc::c_int as isize),
+                    .offset(440 as i32 as isize),
                 cart2j_lt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(440 as libc::c_int as isize),
+                    .offset(440 as i32 as isize),
                 cart2j_gt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(680 as libc::c_int as isize),
+                    .offset(680 as i32 as isize),
                 cart2j_gt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(680 as libc::c_int as isize),
+                    .offset(680 as i32 as isize),
             };
             init
         },
@@ -92030,19 +92030,19 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(245 as libc::c_int as isize),
+                    .offset(245 as i32 as isize),
                 cart2j_lt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(980 as libc::c_int as isize),
+                    .offset(980 as i32 as isize),
                 cart2j_lt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(980 as libc::c_int as isize),
+                    .offset(980 as i32 as isize),
                 cart2j_gt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(1400 as libc::c_int as isize),
+                    .offset(1400 as i32 as isize),
                 cart2j_gt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(1400 as libc::c_int as isize),
+                    .offset(1400 as i32 as isize),
             };
             init
         },
@@ -92050,19 +92050,19 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(476 as libc::c_int as isize),
+                    .offset(476 as i32 as isize),
                 cart2j_lt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(1904 as libc::c_int as isize),
+                    .offset(1904 as i32 as isize),
                 cart2j_lt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(1904 as libc::c_int as isize),
+                    .offset(1904 as i32 as isize),
                 cart2j_gt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(2576 as libc::c_int as isize),
+                    .offset(2576 as i32 as isize),
                 cart2j_gt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(2576 as libc::c_int as isize),
+                    .offset(2576 as i32 as isize),
             };
             init
         },
@@ -92070,19 +92070,19 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(840 as libc::c_int as isize),
+                    .offset(840 as i32 as isize),
                 cart2j_lt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(3360 as libc::c_int as isize),
+                    .offset(3360 as i32 as isize),
                 cart2j_lt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(3360 as libc::c_int as isize),
+                    .offset(3360 as i32 as isize),
                 cart2j_gt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(4368 as libc::c_int as isize),
+                    .offset(4368 as i32 as isize),
                 cart2j_gt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(4368 as libc::c_int as isize),
+                    .offset(4368 as i32 as isize),
             };
             init
         },
@@ -92090,19 +92090,19 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(1380 as libc::c_int as isize),
+                    .offset(1380 as i32 as isize),
                 cart2j_lt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(5520 as libc::c_int as isize),
+                    .offset(5520 as i32 as isize),
                 cart2j_lt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(5520 as libc::c_int as isize),
+                    .offset(5520 as i32 as isize),
                 cart2j_gt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(6960 as libc::c_int as isize),
+                    .offset(6960 as i32 as isize),
                 cart2j_gt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(6960 as libc::c_int as isize),
+                    .offset(6960 as i32 as isize),
             };
             init
         },
@@ -92110,19 +92110,19 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(2145 as libc::c_int as isize),
+                    .offset(2145 as i32 as isize),
                 cart2j_lt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(8580 as libc::c_int as isize),
+                    .offset(8580 as i32 as isize),
                 cart2j_lt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(8580 as libc::c_int as isize),
+                    .offset(8580 as i32 as isize),
                 cart2j_gt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(10560 as libc::c_int as isize),
+                    .offset(10560 as i32 as isize),
                 cart2j_gt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(10560 as libc::c_int as isize),
+                    .offset(10560 as i32 as isize),
             };
             init
         },
@@ -92130,19 +92130,19 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(3190 as libc::c_int as isize),
+                    .offset(3190 as i32 as isize),
                 cart2j_lt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(12760 as libc::c_int as isize),
+                    .offset(12760 as i32 as isize),
                 cart2j_lt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(12760 as libc::c_int as isize),
+                    .offset(12760 as i32 as isize),
                 cart2j_gt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(15400 as libc::c_int as isize),
+                    .offset(15400 as i32 as isize),
                 cart2j_gt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(15400 as libc::c_int as isize),
+                    .offset(15400 as i32 as isize),
             };
             init
         },
@@ -92150,19 +92150,19 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(4576 as libc::c_int as isize),
+                    .offset(4576 as i32 as isize),
                 cart2j_lt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(18304 as libc::c_int as isize),
+                    .offset(18304 as i32 as isize),
                 cart2j_lt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(18304 as libc::c_int as isize),
+                    .offset(18304 as i32 as isize),
                 cart2j_gt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(21736 as libc::c_int as isize),
+                    .offset(21736 as i32 as isize),
                 cart2j_gt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(21736 as libc::c_int as isize),
+                    .offset(21736 as i32 as isize),
             };
             init
         },
@@ -92170,19 +92170,19 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(6370 as libc::c_int as isize),
+                    .offset(6370 as i32 as isize),
                 cart2j_lt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(25480 as libc::c_int as isize),
+                    .offset(25480 as i32 as isize),
                 cart2j_lt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(25480 as libc::c_int as isize),
+                    .offset(25480 as i32 as isize),
                 cart2j_gt_lR: g_trans_cart2jR
                     .as_mut_ptr()
-                    .offset(29848 as libc::c_int as isize),
+                    .offset(29848 as i32 as isize),
                 cart2j_gt_lI: g_trans_cart2jI
                     .as_mut_ptr()
-                    .offset(29848 as libc::c_int as isize),
+                    .offset(29848 as i32 as isize),
             };
             init
         },
@@ -92190,11 +92190,11 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(8645 as libc::c_int as isize),
-                cart2j_lt_lR: 0 as *mut libc::c_double,
-                cart2j_lt_lI: 0 as *mut libc::c_double,
-                cart2j_gt_lR: 0 as *mut libc::c_double,
-                cart2j_gt_lI: 0 as *mut libc::c_double,
+                    .offset(8645 as i32 as isize),
+                cart2j_lt_lR: 0 as *mut f64,
+                cart2j_lt_lI: 0 as *mut f64,
+                cart2j_gt_lR: 0 as *mut f64,
+                cart2j_gt_lI: 0 as *mut f64,
             };
             init
         },
@@ -92202,11 +92202,11 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(11480 as libc::c_int as isize),
-                cart2j_lt_lR: 0 as *mut libc::c_double,
-                cart2j_lt_lI: 0 as *mut libc::c_double,
-                cart2j_gt_lR: 0 as *mut libc::c_double,
-                cart2j_gt_lI: 0 as *mut libc::c_double,
+                    .offset(11480 as i32 as isize),
+                cart2j_lt_lR: 0 as *mut f64,
+                cart2j_lt_lI: 0 as *mut f64,
+                cart2j_gt_lR: 0 as *mut f64,
+                cart2j_gt_lI: 0 as *mut f64,
             };
             init
         },
@@ -92214,11 +92214,11 @@ unsafe extern "C" fn run_static_initializers() {
             let mut init = cart2sp_t {
                 cart2sph: g_trans_cart2sph
                     .as_mut_ptr()
-                    .offset(14960 as libc::c_int as isize),
-                cart2j_lt_lR: 0 as *mut libc::c_double,
-                cart2j_lt_lI: 0 as *mut libc::c_double,
-                cart2j_gt_lR: 0 as *mut libc::c_double,
-                cart2j_gt_lI: 0 as *mut libc::c_double,
+                    .offset(14960 as i32 as isize),
+                cart2j_lt_lR: 0 as *mut f64,
+                cart2j_lt_lI: 0 as *mut f64,
+                cart2j_gt_lR: 0 as *mut f64,
+                cart2j_gt_lI: 0 as *mut f64,
             };
             init
         },
