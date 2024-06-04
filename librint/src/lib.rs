@@ -18,3 +18,7 @@ pub mod find_roots;
 pub mod fmt;
 pub mod eigh;
 pub mod misc;
+pub mod g3c1e;
+pub mod g1e_grids;
+pub mod g2c2e;
+pub mod g3c2e;

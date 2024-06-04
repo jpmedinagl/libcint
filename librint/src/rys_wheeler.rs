@@ -18,25 +18,6 @@ extern "C" {
     fn erf(_: libc::c_double) -> libc::c_double;
     fn erfcl(_: f64) -> f64;
     fn erfc(_: libc::c_double) -> libc::c_double;
-    // fn fmt_erfc_like(
-    //     f: *mut libc::c_double,
-    //     t: libc::c_double,
-    //     lower: libc::c_double,
-    //     m: libc::c_int,
-    // );
-    // fn fmt_lerfc_like(
-    //     f: *mut f64,
-    //     t: f64,
-    //     lower: f64,
-    //     m: libc::c_int,
-    // );
-    // fn _CINTdiagonalize(
-    //     n: libc::c_int,
-    //     diag: *mut libc::c_double,
-    //     diag_off1: *mut libc::c_double,
-    //     eig: *mut libc::c_double,
-    //     vec: *mut libc::c_double,
-    // ) -> libc::c_int;
 }
 pub type size_t = libc::c_ulong;
 pub type __off_t = libc::c_long;
