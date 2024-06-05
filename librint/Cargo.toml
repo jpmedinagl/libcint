@@ -10,6 +10,7 @@ libc = "0.2.155"
 
 [profile.release-lto]
 debug = true
+opt-level = 0
 debug-assertions = true
 inherits = "release"
-lto = true
+#lto = true

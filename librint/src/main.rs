@@ -25,6 +25,8 @@ fn main() -> io::Result<()> {
 
     let mut shls_arr: [i32; 4] = [0, 0, 0, 0];
 
+    let mut buf;
+
 	println!("buf");
     for i in 0..nbas {
         for j in 0..nbas {
@@ -34,7 +36,7 @@ fn main() -> io::Result<()> {
             let di = CINTcgto_cart(i, &bas_arr);
             let dj = CINTcgto_cart(j, &bas_arr);
 
-            let mut buf = vec![0.0; (di * dj) as usize];
+            buf = vec![0.0; (di * dj) as usize];
 
             for i in 0..((di*dj) as usize) {
                 println!("{} ", buf[i]);

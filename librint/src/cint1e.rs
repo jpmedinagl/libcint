@@ -348,6 +348,7 @@ pub unsafe extern "C" fn CINT1e_drv(
     cache = gctr.offset((nc * n_comp) as isize);
     let mut has_value: i32 = CINT1e_loop(gctr, envs, cache, int1e_type);
     let mut counts: [i32; 4] = [0; 4];
+    // TODO: update dims to point to counts correctly
     if dims.is_null() {
         dims = counts.as_mut_ptr();
     }
@@ -414,6 +415,7 @@ pub unsafe extern "C" fn CINT1e_drv(
     }
     counts[2 as i32 as usize] = 1 as i32;
     counts[3 as i32 as usize] = 1 as i32;
+    // TODO: after dims is fixed, update nout to be dims[0] * dims[1]
     // let mut nout: i32 = *dims.offset(0 as i32 as isize)
     //     * *dims.offset(1 as i32 as isize);
     let mut nout: i32 = 1;
