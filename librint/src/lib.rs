@@ -1,5 +1,5 @@
-#![feature(extern_types)]
-#![feature(f128)]
+#![feature(autodiff)]
+// #![feature(f128)]
 
 pub mod cint;
 
@@ -22,3 +22,4 @@ pub mod g3c1e;
 pub mod g1e_grids;
 pub mod g2c2e;
 pub mod g3c2e;
+pub mod intor1;

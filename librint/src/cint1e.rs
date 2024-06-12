@@ -61,7 +61,7 @@ pub unsafe extern "C" fn CINT1e_loop(
         .offset(
             *bas.offset((8 as i32 * j_sh + 6 as i32) as isize) as isize,
         );
-    let mut n_comp: i32 = (*envs).ncomp_e1 * (*envs).ncomp_tensor;
+    let mut n_comp: i32 = (*envs).ncomp_e1 * (*envs).ncomp_tensor; // cannot handle (augmented) unknown intrinsic
     let mut expcutoff: f64 = (*envs).expcutoff;
     let mut log_maxci: *mut f64 = 0 as *mut f64;
     let mut log_maxcj: *mut f64 = 0 as *mut f64;
@@ -239,9 +239,7 @@ pub unsafe extern "C" fn CINT1e_loop(
                 *iempty = 0 as i32;
             }
             ip += 1;
-            ip;
             pdata_ij = pdata_ij.offset(1);
-            pdata_ij;
         }
         if *iempty == 0 {
             if j_ctr > 1 as i32 {
@@ -272,7 +270,6 @@ pub unsafe extern "C" fn CINT1e_loop(
             *jempty = 0 as i32;
         }
         jp += 1;
-        jp;
     }
     if n_comp > 1 as i32 && *jempty == 0 {
         CINTdmat_transpose(gctr, gctrj, (*envs).nf * nc, n_comp);
@@ -333,14 +330,14 @@ pub unsafe extern "C" fn CINT1e_drv(
         * *x_ctr.offset(1 as i32 as isize);
     let mut n_comp: i32 = (*envs).ncomp_e1 * (*envs).ncomp_tensor;
     let mut stack: *mut f64 = 0 as *mut f64;
-    if cache.is_null() {
-        let mut cache_size: size_t = int1e_cache_size(envs) as size_t;
-        stack = malloc(
-            (::core::mem::size_of::<f64>() as libc::c_ulong)
-                .wrapping_mul(cache_size),
-        ) as *mut f64;
-        cache = stack;
-    }
+    // if cache.is_null() {
+    let mut cache_size: size_t = int1e_cache_size(envs) as size_t;
+    stack = malloc(
+        (::core::mem::size_of::<f64>() as libc::c_ulong)
+            .wrapping_mul(cache_size),
+    ) as *mut f64;
+    cache = stack;
+    // }
     let mut gctr: *mut f64 = 0 as *mut f64;
     gctr = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
         & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
@@ -348,9 +345,9 @@ pub unsafe extern "C" fn CINT1e_drv(
     cache = gctr.offset((nc * n_comp) as isize);
     let mut has_value: i32 = CINT1e_loop(gctr, envs, cache, int1e_type);
     let mut counts: [i32; 4] = [0; 4];
-    if dims.is_null() {
-        dims = counts.as_mut_ptr();
-    }
+    // if dims.is_null() {
+    dims = counts.as_mut_ptr();
+    // }
     if f_c2s
         == ::core::mem::transmute::<
             Option::<
@@ -434,14 +431,12 @@ pub unsafe extern "C" fn CINT1e_drv(
                 cache,
             );
             n += 1;
-            n;
         }
     } else {
         n = 0 as i32;
         while n < n_comp {
             c2s_dset0(out.offset((nout * n) as isize), dims, counts.as_mut_ptr());
             n += 1;
-            n;
         }
     }
     if !stack.is_null() {
@@ -497,7 +492,6 @@ unsafe extern "C" fn make_g1e_gout(
                     (empty != 0 && ia == 0 as i32) as i32,
                 );
                 ia += 1;
-                ia;
             }
         }
         _ => {}
@@ -528,7 +522,6 @@ pub unsafe extern "C" fn CINTgout1e(
                 ) = *g.offset(ix as isize) * *g.offset(iy as isize)
                 * *g.offset(iz as isize);
             n += 1;
-            n;
         }
     } else {
         n = 0 as i32;
@@ -540,7 +533,6 @@ pub unsafe extern "C" fn CINTgout1e(
                 += *g.offset(ix as isize) * *g.offset(iy as isize)
                     * *g.offset(iz as isize);
             n += 1;
-            n;
         }
     };
 }
@@ -585,11 +577,9 @@ pub unsafe extern "C" fn CINTgout1e_nuc(
                     += *gx.offset(i as isize) * *gy.offset(i as isize)
                         * *gz.offset(i as isize);
                 i += 1;
-                i;
             }
             *gout.offset(n as isize) = s;
             n += 1;
-            n;
         }
     } else {
         n = 0 as i32;
@@ -616,11 +606,9 @@ pub unsafe extern "C" fn CINTgout1e_nuc(
                     += *gx.offset(i as isize) * *gy.offset(i as isize)
                         * *gz.offset(i as isize);
                 i += 1;
-                i;
             }
             *gout.offset(n as isize) += s;
             n += 1;
-            n;
         }
     };
 }
@@ -765,6 +753,7 @@ pub unsafe fn int1e_ovlp_cart(
         0 as i32,
     );
 }
+// this function does nothing
 #[no_mangle]
 pub unsafe extern "C" fn int1e_ovlp_optimizer(
     mut opt: *mut *mut CINTOpt,
@@ -848,21 +837,20 @@ pub unsafe extern "C" fn int1e_nuc_sph(
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn int1e_nuc_cart(
-    mut out: *mut f64,
-    mut dims: *mut i32,
-    mut shls: *mut i32,
-    mut atm: *mut i32,
-    mut natm: i32,
-    mut bas: *mut i32,
-    mut nbas: i32,
-    mut env: *mut f64,
-    mut opt: *mut CINTOpt,
-    mut cache: *mut f64,
+pub unsafe fn int1e_nuc_cart(
+    out: &mut [f64],
+    dims: &mut [i32],
+    shls: &mut [i32],
+    atm: &mut [i32],
+    natm: i32,
+    bas: &mut [i32],
+    nbas: i32,
+    env: &mut [f64],
+    cache: &mut [f64],
 ) -> i32 {
     let mut ng = [0, 0, 0, 0, 0, 1, 0, 1];
     let mut envs = CINTEnvVars::new();
-    CINTinit_int1e_EnvVars(&mut envs, ng.as_mut_ptr(), shls, atm, natm, bas, nbas, env);
+    CINTinit_int1e_EnvVars(&mut envs as *mut CINTEnvVars, ng.as_mut_ptr(), shls.as_mut_ptr(), atm.as_mut_ptr(), natm, bas.as_mut_ptr(), nbas, env.as_mut_ptr());
     envs
         .f_gout = ::core::mem::transmute::<
         Option::<
@@ -888,10 +876,10 @@ pub unsafe extern "C" fn int1e_nuc_cart(
         ),
     );
     return CINT1e_drv(
-        out,
-        dims,
-        &mut envs,
-        cache,
+        out.as_mut_ptr(),
+        dims.as_mut_ptr(),
+        &mut envs as *mut CINTEnvVars,
+        cache.as_mut_ptr(),
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
@@ -941,18 +929,19 @@ pub fn cint1e_ovlp_cart(
 ) -> i32 {
     let mut dims = [0;0];
     let mut cache = [0.0;0];
-    unsafe { 
+    unsafe {
         return int1e_ovlp_cart(
-        out,
-        &mut dims,
-        shls,
-        atm,
-        natm,
-        bas,
-        nbas,
-        env,
-        &mut cache,
-    );}
+            out,
+            &mut dims,
+            shls,
+            atm,
+            natm,
+            bas,
+            nbas,
+            env,
+            &mut cache,
+        );
+    }
 }
 #[no_mangle]
 pub unsafe extern "C" fn cint1e_ovlp_cart_optimizer(
@@ -1012,28 +1001,30 @@ pub unsafe extern "C" fn cint1e_ovlp_optimizer(
     int1e_ovlp_optimizer(opt, atm, natm, bas, nbas, env);
 }
 #[no_mangle]
-pub unsafe extern "C" fn cint1e_nuc_cart(
-    mut out: *mut f64,
-    mut shls: *mut i32,
-    mut atm: *mut i32,
+pub fn cint1e_nuc_cart(
+    mut out: &mut [f64],
+    mut shls: &mut [i32],
+    mut atm: &mut [i32],
     mut natm: i32,
-    mut bas: *mut i32,
+    mut bas: &mut [i32],
     mut nbas: i32,
-    mut env: *mut f64,
-    mut opt: *mut CINTOpt,
+    mut env: &mut [f64],
 ) -> i32 {
-    return int1e_nuc_cart(
-        out,
-        0 as *mut i32,
-        shls,
-        atm,
-        natm,
-        bas,
-        nbas,
-        env,
-        opt,
-        0 as *mut f64,
-    );
+    let mut dims = [0;0];
+    let mut cache = [0.0;0];
+    unsafe {
+        return int1e_nuc_cart(
+            out,
+            &mut dims,
+            shls,
+            atm,
+            natm,
+            bas,
+            nbas,
+            env,
+            &mut cache,
+        );
+    }
 }
 #[no_mangle]
 pub unsafe extern "C" fn cint1e_nuc_cart_optimizer(
@@ -1227,18 +1218,19 @@ pub unsafe extern "C" fn cint1e_nuc_cart_(
     mut optptr_as_integer8: size_t,
 ) -> i32 {
     let mut opt: *mut *mut CINTOpt = optptr_as_integer8 as *mut *mut CINTOpt;
-    return int1e_nuc_cart(
-        out,
-        0 as *mut i32,
-        shls,
-        atm,
-        *natm,
-        bas,
-        *nbas,
-        env,
-        *opt,
-        0 as *mut f64,
-    );
+    todo!();
+    // return int1e_nuc_cart(
+    //     out,
+    //     0 as *mut i32,
+    //     shls,
+    //     atm,
+    //     *natm,
+    //     bas,
+    //     *nbas,
+    //     env,
+    //     *opt,
+    //     0 as *mut f64,
+    // );
 }
 #[no_mangle]
 pub unsafe extern "C" fn cint1e_nuc_cart_optimizer_(
