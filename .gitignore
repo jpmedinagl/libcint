@@ -1,6 +1,12 @@
 *.so
 *.la
 *.o
+.*
+build
+
+debug
+release
+target
 
 CMakeCache.txt
 CMakeFiles
