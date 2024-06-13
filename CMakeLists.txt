@@ -200,7 +200,6 @@ if(ENABLE_STATIC)
 endif()
 
 add_subdirectory(diagonal)
-# add_subdirectory(grad)
 
 add_library(cint ${cintSrc})
 set_target_properties(cint PROPERTIES
@@ -208,9 +207,9 @@ set_target_properties(cint PROPERTIES
   SOVERSION ${cint_SOVERSION}
   LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 if(QUADMATH_FOUND)
-	target_link_libraries(cint quadmath -flto LLDEnzymeFlags) #diag) #LLDEnzymeLooseTypeFlags)
+	target_link_libraries(cint quadmath -flto LLDEnzymeFlags)
 endif()
-target_link_libraries(cint "-lm" -flto LLDEnzymeFlags) #diag) #LLDEnzymeLooseTypeFlags)
+target_link_libraries(cint "-lm" -flto LLDEnzymeFlags)
 
 set(CintHeaders
   ${PROJECT_SOURCE_DIR}/include/cint_funcs.h
@@ -219,6 +218,10 @@ set(CintHeaders
 install(TARGETS cint DESTINATION "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" COMPONENT "lib")
 install(FILES ${CintHeaders} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR} COMPONENT "dev")
 
+option(GRAD "build grad" 0)
+if (GRAD)
+  add_subdirectory(grad)
+endif()
 
 if(ENABLE_EXAMPLE)
   enable_language(Fortran)
