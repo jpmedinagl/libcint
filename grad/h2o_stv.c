@@ -27,10 +27,10 @@ void read_arrays(FILE * file, int natm, int nbas, int ** atm, int ** bas, double
 		count++;
 	}
 
-	for (int i = 0; i < count; i++) {
-		printf("%d ", (*atm)[i]);
-	}
-	printf("\n");
+	// for (int i = 0; i < count; i++) {
+	// 	printf("%d ", (*atm)[i]);
+	// }
+	// printf("\n");
 
 	count = 0;
 	while (count < nbas * BAS_SLOTS) {
@@ -39,10 +39,10 @@ void read_arrays(FILE * file, int natm, int nbas, int ** atm, int ** bas, double
 		count++;
 	}
 
-	for (int i = 0; i < count; i++) {
-		printf("%d ", (*bas)[i]);
-	}
-	printf("\n");
+	// for (int i = 0; i < count; i++) {
+	// 	printf("%d ", (*bas)[i]);
+	// }
+	// printf("\n");
 
 	count = 0;
 	while (fscanf(file, "%lf", &num) != EOF) {
@@ -51,16 +51,16 @@ void read_arrays(FILE * file, int natm, int nbas, int ** atm, int ** bas, double
 	}
 	fclose(file);
 
-	for (int i = 0; i < count; i++) {
-		printf("%lf ", (*env)[i]);
-	}
-	printf("\n");
+	// for (int i = 0; i < count; i++) {
+	// 	printf("%lf ", (*env)[i]);
+	// }
+	// printf("\n");
 }
 
 int main(int argc, char ** argv)
 {	
 	int natm = 3;
-	int nbas = 5;
+	int nbas = 7; // 12 for def2svp
 
 	int * atm = malloc(sizeof(int) * natm * ATM_SLOTS);
 	int * bas = malloc(sizeof(int) * nbas * BAS_SLOTS);
