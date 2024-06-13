@@ -65,7 +65,7 @@ int main(int argc, char ** argv)
 	double * env = malloc(sizeof(double) * 10000);
 	double * denv;
 
-	FILE * file = fopen("/u/jpmedina/libcint/molecules/h2/basis.txt", "r");
+	FILE * file = fopen("/u/jpmedina/libcint/molecules/h2/sto3g.txt", "r");
  	read_arrays(file, natm, nbas, &atm, &bas, &env);
 	
 	int di, dj, dk, dl;

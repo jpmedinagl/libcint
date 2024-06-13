@@ -7,7 +7,7 @@
 
 #add_executable(h2_stv h2_stv.c)
 #add_executable(h2_rep h2_rep.c)
-#add_executable(h2o_stv h2o_stv.c)
+# add_executable(h2o_stv h2o_stv.c)
 #add_executable(h2_stv_grad h2_stv_grad.c)
 #add_executable(h2_rep_grad h2_rep_grad.c)
 
@@ -27,7 +27,7 @@
 
 # add_subdirectory(diag)
 
-add_executable(scf scf.c)
-add_executable(scf_grad scf_grad.c)
-target_link_libraries(scf diag cint m)
-target_link_libraries(scf_grad PUBLIC cint m LLDEnzymeFlags diag)
+# add_executable(scf scf.c)
+# add_executable(scf_grad scf_grad.c)
+# target_link_libraries(scf diag cint m)
+# target_link_libraries(scf_grad PUBLIC cint m LLDEnzymeFlags diag)
