@@ -9,6 +9,8 @@
 # target_link_libraries(h2_rep cint m)
 # target_link_libraries(h2_scf diag cint m)
 
+add_executable(h2o_scf h2o_scf.c)
+target_link_libraries(h2o_scf diag cint m)
 
 
 # add_executable(h2_stv_grad h2_stv_grad.c)
