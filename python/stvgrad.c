@@ -24,21 +24,6 @@ extern int enzyme_dup;
 extern int enzyme_out;
 extern int enzyme_const;
 
-void cint1e_diff(double *buf, double * dbuf, int *shls,
-                      int *atm, int natm, int *bas, int nbas, double *env, double *denv) {
-    printf("before enzyme call\n");
-	__enzyme_autodiff((void *) cint1e_cart_wrapper,
-			enzyme_dup, buf, dbuf,	
-			enzyme_const, shls, 
-			enzyme_const, atm, 
-			enzyme_const, natm, 
-			enzyme_const, bas, 
-			enzyme_const, nbas,
-			enzyme_dup, env, denv);
-    printf("after enzyme call\n");
-}
-
-
 void read_arrays(FILE * file, int natm, int nbas, int ** atm, int ** bas, double ** env)
 {
 	double num;
@@ -64,6 +49,20 @@ void read_arrays(FILE * file, int natm, int nbas, int ** atm, int ** bas, double
 		count++;
 	}
 	fclose(file);
+}
+
+void cint1e_diff(double *buf, double * dbuf, int *shls,
+                      int *atm, int natm, int *bas, int nbas, double *env, double *denv) {
+    printf("before enzyme call\n");
+	__enzyme_autodiff((void *) cint1e_cart_wrapper,
+			enzyme_dup, buf, dbuf,	
+			enzyme_const, shls, 
+			enzyme_const, atm, 
+			enzyme_const, natm, 
+			enzyme_const, bas, 
+			enzyme_const, nbas,
+			enzyme_dup, env, denv);
+    printf("after enzyme call\n");
 }
 
 int main(int argc, char ** argv)
@@ -92,7 +91,7 @@ int main(int argc, char ** argv)
 			shls[0] = i; di = CINTcgto_cart(i, bas);
 			shls[1] = j; dj = CINTcgto_cart(j, bas);
 
-            printf("i  j  %d %d \ndi dj %d %d\n", i, j, di, dj);
+			printf("i  j  %d %d \ndi dj %d %d\n", i, j, di, dj);
 
 			buf = malloc(sizeof(double) * di * dj);
 			dbuf = malloc(sizeof(double) * di * dj);
@@ -102,12 +101,12 @@ int main(int argc, char ** argv)
 			memset(denv, 0, sizeof(double) * 10000);
 
 			cint1e_diff(buf, dbuf, shls, atm, natm, bas, nbas, env, denv);
-            printf("\n");
 			
 			printf("denv[50:56]: ");
 			for (int k = 28; k < 34; k++) {
 				printf("%f ", denv[k]);
 			}
+			printf("\n");
 			printf("\n");
 
 			free(buf);

@@ -490,8 +490,8 @@ int main()
     int natm = 3;
     int nbas = 5;
     
-    int nelec = 10; // ?
-    int nshells = 7; // ?
+    int nelec = 10;
+    int nshells = 7;
 
     int * atm = malloc(sizeof(int) * natm * ATM_SLOTS);
     int * bas = malloc(sizeof(int) * nbas * BAS_SLOTS);
@@ -508,7 +508,7 @@ int main()
 
     double E;
     energy(&E, natm, nbas, nshells, atm, bas, env, P);
-    printf("%lf\n", E);
+    printf("E: %lf\n", E);
 
     // double E;
     double dE = 1.0;
