@@ -117,6 +117,31 @@ set(cintSrc
   src/autocode/deriv3.c src/autocode/int1e_grids1.c
   src/autocode/deriv4.c src/autocode/lresc.c)
 
+set(gradSrc
+  python/scf.c)
+
+set(diagSrc
+  diagonal/backspac.c diagonal/blaswrap.h diagonal/close.c diagonal/daxpy.c diagonal/dcopy.c
+  diagonal/ddot.c diagonal/dfe.c diagonal/dgemm.c diagonal/dgemv.c
+  diagonal/dger.c diagonal/disnan.c diagonal/dlae2.c diagonal/dlaev2.c
+  diagonal/dlaisnan.c diagonal/dlamch.c diagonal/dlanst.c diagonal/dlansy.c
+  diagonal/dlapy2.c diagonal/dlarfb.c diagonal/dlarf.c diagonal/dlarfg.c
+  diagonal/dlarft.c diagonal/dlartg.c diagonal/dlascl.c diagonal/dlaset.c
+  diagonal/dlasr.c diagonal/dlasrt.c diagonal/dlatrd.c diagonal/dnrm2.c
+  diagonal/dorg2l.c diagonal/dorg2r.c diagonal/dorgql.c diagonal/dorgqr.c
+  diagonal/dorgtr.c diagonal/dscal.c diagonal/d_sign.c diagonal/dsteqr.c
+  diagonal/dsterf.c diagonal/dswap.c diagonal/dsyev.c diagonal/dsymv.c
+  diagonal/dsyr2.c diagonal/dsyr2k.c diagonal/dsytd2.c diagonal/dsytrd.c
+  diagonal/dtrmm.c diagonal/dtrmv.c diagonal/endfile.c diagonal/err.c
+  diagonal/f2c.h diagonal/fio.h diagonal/fmt.c diagonal/fmt.h
+  diagonal/fmtlib.c diagonal/fp.h diagonal/i77vers.c diagonal/ieeeck.c
+  diagonal/iio.c diagonal/iladlc.c diagonal/iladlr.c diagonal/ilaenv.c
+  diagonal/i_nint.c diagonal/inquire.c diagonal/iparmq.c diagonal/lio.h
+  diagonal/lsame.c diagonal/lwrite.c diagonal/open.c diagonal/pow_di.c
+  diagonal/rewind.c diagonal/s_cmp.c diagonal/s_copy.c diagonal/sfe.c
+  diagonal/sig_die.c diagonal/sysdep1.h diagonal/util.c diagonal/wref.c
+  diagonal/wrtfmt.c diagonal/wsfe.c diagonal/xerbla.c)
+
 #option(WITH_RANGE_COULOMB "Range separated Coulomb" on)
 if(WITH_RANGE_COULOMB)
 # defined in config.h
@@ -201,7 +226,7 @@ endif()
 
 add_subdirectory(diagonal)
 
-add_library(cint ${cintSrc})
+add_library(cint ${cintSrc} ${gradSrc} ${diagSrc})
 set_target_properties(cint PROPERTIES
   VERSION ${cint_VERSION}
   SOVERSION ${cint_SOVERSION}
@@ -209,7 +234,7 @@ set_target_properties(cint PROPERTIES
 if(QUADMATH_FOUND)
 	target_link_libraries(cint quadmath -flto LLDEnzymeFlags)
 endif()
-target_link_libraries(cint "-lm" -flto LLDEnzymeFlags)
+target_link_libraries(cint -lm -flto LLDEnzymeFlags)
 
 set(CintHeaders
   ${PROJECT_SOURCE_DIR}/include/cint_funcs.h
