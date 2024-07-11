@@ -51,16 +51,20 @@ cmake_policy(SET CMP0042 NEW)
 include(GNUInstallDirs)
 #set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(Enzyme_DIR /u/jpmedina/Enzyme/enzyme/build)
 
-find_package(Enzyme REQUIRED CONFIG NO_DEFAULT_PATH)
-message("found dir ${Enzyme_DIR}")
-message("found ${Enzyme_FOUND}")
-get_property(importTargetsAfter DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY IMPORTED_TARGETS)
-message("imported targets ${importTargetsAfter}")
+## ENZYME
+
+# set(Enzyme_DIR /u/jpmedina/Enzyme/enzyme/build)
+
+# find_package(Enzyme REQUIRED CONFIG NO_DEFAULT_PATH)
+# message("found dir ${Enzyme_DIR}")
+# message("found ${Enzyme_FOUND}")
+# get_property(importTargetsAfter DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY IMPORTED_TARGETS)
+# message("imported targets ${importTargetsAfter}")
+
+
 
 # /u/jpmedina/clapack/build
-
 # find_package(CLAPACK REQUIRED CONFIG NO_DEFAULT_PATH)
 # message("found dir ${CLAPACK_DIR}")
 # message("found ${CLAPACK_FOUND}")
@@ -234,9 +238,9 @@ set_target_properties(cint PROPERTIES
   SOVERSION ${cint_SOVERSION}
   LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 if(QUADMATH_FOUND)
-	target_link_libraries(cint quadmath -flto LLDEnzymeFlags)
+	target_link_libraries(cint quadmath -flto)
 endif()
-target_link_libraries(cint -lm -flto LLDEnzymeFlags)
+target_link_libraries(cint -lm -flto)
 
 set(CintHeaders
   ${PROJECT_SOURCE_DIR}/include/cint_funcs.h
