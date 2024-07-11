@@ -51,6 +51,8 @@ cmake_policy(SET CMP0042 NEW)
 include(GNUInstallDirs)
 #set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(Enzyme_DIR /u/jpmedina/Enzyme/enzyme/build)
+
 find_package(Enzyme REQUIRED CONFIG NO_DEFAULT_PATH)
 message("found dir ${Enzyme_DIR}")
 message("found ${Enzyme_FOUND}")
