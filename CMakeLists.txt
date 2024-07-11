@@ -232,7 +232,7 @@ endif()
 
 add_subdirectory(diagonal)
 
-add_library(cint ${cintSrc} ${gradSrc} ${diagSrc})
+add_library(cint ${cintSrc} ${gradSrc}) # ${diagSrc})
 set_target_properties(cint PROPERTIES
   VERSION ${cint_VERSION}
   SOVERSION ${cint_SOVERSION}
