@@ -156,6 +156,9 @@ endif()
 
 # add_subdirectory(diagonal)
 
+include_directories(
+  build/include)
+
 add_library(cint ${cintSrc})
 # set_target_properties(cint PROPERTIES
 #   VERSION ${cint_VERSION}

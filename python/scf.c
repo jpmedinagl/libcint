@@ -4,12 +4,12 @@
 #include <math.h>
 #include "cint.h"
 
-#include "f2c.h"
-#include "blaswrap.h"
+// #include "f2c.h"
+// #include "blaswrap.h"
 
 #define N_STO 3
 
-int __enzyme_autodiff(void *, ...);
+// int __enzyme_autodiff(void *, ...);
 
 int cint1e_ovlp_cart(double *buf, int *shls,
                     int *atm, int natm, int *bas, int nbas, double *env);
@@ -20,13 +20,13 @@ int cint1e_kin_cart(double *buf, int *shls,
 int cint1e_nuc_cart(double *buf, int *shls,
                     int *atm, int natm, int *bas, int nbas, double *env);
 
-extern int dsyev_(char *jobz, char *uplo, integer *n, doublereal *a, 
-    integer *lda, doublereal *w, doublereal *work, integer *lwork, 
-	integer *info);
+// extern int dsyev_(char *jobz, char *uplo, integer *n, doublereal *a, 
+//     integer *lda, doublereal *w, doublereal *work, integer *lwork, 
+// 	integer *info);
 
-extern int enzyme_dup;
-extern int enzyme_out;
-extern int enzyme_const;
+// extern int enzyme_dup;
+// extern int enzyme_out;
+// extern int enzyme_const;
 
 double * c_arr(int x, int y) 
 {   
@@ -182,8 +182,14 @@ void integrals(int natm, int nbas, int nshells, int * atm, int * bas, double * e
                         for (int sigk = sig; sigk < sig + dk; sigk++) {
                             for (int nuj = nu; nuj < nu + dj; nuj++) {
                                 for (int mui = mu; mui < mu + di; mui++) {
+                                    if (i == 4 && j == 4 && k == 4 & l == 4) {
+                                        printf("before last\n");
+                                    }
                                     (*two)[(int) (mui*pow(nshells, 3) + nuj*pow(nshells, 2) + sigk*nshells + laml)] = buf[c];
                                     c++;
+                                    if (i == 4 && j == 4 && k == 4 & l == 4) {
+                                        printf("after last\n");
+                                    }
                                 }
                             }
                         }
@@ -195,37 +201,39 @@ void integrals(int natm, int nbas, int nshells, int * atm, int * bas, double * e
                 }
                 sig += dk;
             }
+            if (i == 4 && j == 4) {
+                printf("after last\n");
+            }
             nu += dj;
         }
         mu += di;
     }
-
     free(T);
     free(V);
 }
 
 void find_X(int nshells, double * S, double ** X, double ** X_dag) 
 {
-    double * eig;// = c_arr(1, nshells);
+    double * eig = c_arr(1, nshells);
     double * U = c_arr(nshells, nshells);
-    dcopy(nshells, U, S);
+    // dcopy(nshells, U, S);
 
-    char jobz = 'V', uplo = 'U';
-    integer lda = nshells, n = nshells, info = 8, lwork = 3*n;
-    double w[n], work[3*n];
+    // char jobz = 'V', uplo = 'U';
+    // integer lda = nshells, n = nshells, info = 8, lwork = 3*n;
+    // double w[n], work[3*n];
 
-    dsyev_(&jobz, &uplo, &n, U, &lda, w, work, &lwork, &info);
+    // dsyev_(&jobz, &uplo, &n, U, &lda, w, work, &lwork, &info);
 
-    if(info > 0) {
-        printf("The algorithm failed to compute eigenvalues.\n");
-        exit(1);
-    }
+    // if(info > 0) {
+    //     printf("The algorithm failed to compute eigenvalues.\n");
+    //     exit(1);
+    // }
 
     double * Ut = c_arr(nshells, nshells);
     transpose(nshells, U, Ut);
     dcopy(nshells, U, Ut);
 
-    eig = w;
+    // eig = w;
 
     double * diag_eig = c_arr(nshells, nshells);
     for (int i = 0; i < nshells; i++) {
@@ -285,16 +293,16 @@ void diag_F(int nshells, double * Fprime, double * X, double ** C, double ** eps
     double * U = c_arr(nshells, nshells);
     dcopy(nshells, U, Fprime);
 
-    char jobz = 'V', uplo = 'U';
-    integer lda = nshells, n = nshells, info = 8, lwork = 3*n;
-    double w[n], work[3*n];
+    // char jobz = 'V', uplo = 'U';
+    // integer lda = nshells, n = nshells, info = 8, lwork = 3*n;
+    // double w[n], work[3*n];
 
-    dsyev_(&jobz, &uplo, &n, U, &lda, w, work, &lwork, &info);
+    // dsyev_(&jobz, &uplo, &n, U, &lda, w, work, &lwork, &info);
 
-    if(info > 0) {
-        printf("The algorithm failed to compute eigenvalues.\n");
-        exit(1);
-    }
+    // if(info > 0) {
+    //     printf("The algorithm failed to compute eigenvalues.\n");
+    //     exit(1);
+    // }
 
     double * Ut = c_arr(nshells, nshells);
     transpose(nshells, U, Ut);
@@ -473,17 +481,17 @@ void energy(double * E, int natm, int nbas, int nshells, int * atm, int * bas, d
     *E = Enuc + E0;
 }
 
-void energy_diff(double * E, double * dE, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * denv, double * P) {
-	__enzyme_autodiff((void *) energy,
-        enzyme_dup, E, dE,	
-        enzyme_const, natm,
-        enzyme_const, nbas,
-        enzyme_const, nshells,
-        enzyme_const, atm,
-        enzyme_const, bas, 
-        enzyme_dup, env, denv,
-        enzyme_const, P);
-}
+// void energy_diff(double * E, double * dE, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * denv, double * P) {
+// 	__enzyme_autodiff((void *) energy,
+//         enzyme_dup, E, dE,	
+//         enzyme_const, natm,
+//         enzyme_const, nbas,
+//         enzyme_const, nshells,
+//         enzyme_const, atm,
+//         enzyme_const, bas, 
+//         enzyme_dup, env, denv,
+//         enzyme_const, P);
+// }
 
 int main()
 {
@@ -511,10 +519,10 @@ int main()
     printf("E: %lf\n", E);
 
     // double E;
-    double dE = 1.0;
-    double * denv = malloc(sizeof(double) * 10000);
+    // double dE = 1.0;
+    // double * denv = malloc(sizeof(double) * 10000);
 
-    energy_diff(&E, &dE, natm, nbas, nshells, atm, bas, env, denv, P);
+    // energy_diff(&E, &dE, natm, nbas, nshells, atm, bas, env, denv, P);
     // printf("E: %lf\n", E);
     // printf("denv:\n");
     // for (int k = 0; k < 50; k++) {
