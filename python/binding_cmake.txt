@@ -96,9 +96,6 @@ set(cintSrc
   src/autocode/deriv3.c src/autocode/int1e_grids1.c
   src/autocode/deriv4.c src/autocode/lresc.c)
 
-set(gradSrc
-  python/scf.c)
-
 option(BUILD_SHARED_LIBS "build shared libraries" 1)
 option(ENABLE_EXAMPLE "build examples" 0)
 option(ENABLE_TEST "build tests" 0)
@@ -109,7 +106,10 @@ if(ENABLE_STATIC)
 endif()
 
 add_library(cint ${cintSrc})
-target_link_libraries(cint -lm -flto LLDEnzymeFlags)
+target_link_libraries(cint -lm -flto)
+
+set(gradSrc
+  scf/scf.c)
 
 add_subdirectory(diagonal)
 
@@ -128,8 +128,9 @@ if (GRAD)
   add_subdirectory(grad)
 endif()
 
-if (PY)
-  add_subdirectory(python)
+option(SCF "build scf" 0)
+if (SCF)
+  add_subdirectory(scf)
 endif()
 
 include(CPackComponent)

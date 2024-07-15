@@ -109,7 +109,7 @@ add_library(cint ${cintSrc})
 target_link_libraries(cint -lm -flto)
 
 set(gradSrc
-  python/scf.c)
+  scf/scf.c)
 
 add_subdirectory(diagonal)
 
@@ -128,8 +128,9 @@ if (GRAD)
   add_subdirectory(grad)
 endif()
 
-if (PY)
-  add_subdirectory(python)
+option(SCF "build scf" 0)
+if (SCF)
+  add_subdirectory(scf)
 endif()
 
 include(CPackComponent)
