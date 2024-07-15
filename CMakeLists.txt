@@ -54,15 +54,11 @@ include(GNUInstallDirs)
 
 ## ENZYME
 
-# set(Enzyme_DIR /u/jpmedina/Enzyme/enzyme/build)
-
-# find_package(Enzyme REQUIRED CONFIG NO_DEFAULT_PATH)
-# message("found dir ${Enzyme_DIR}")
-# message("found ${Enzyme_FOUND}")
-# get_property(importTargetsAfter DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY IMPORTED_TARGETS)
-# message("imported targets ${importTargetsAfter}")
-
-
+find_package(Enzyme REQUIRED CONFIG NO_DEFAULT_PATH)
+message("found dir ${Enzyme_DIR}")
+message("found ${Enzyme_FOUND}")
+get_property(importTargetsAfter DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY IMPORTED_TARGETS)
+message("imported targets ${importTargetsAfter}")
 
 # /u/jpmedina/clapack/build
 # find_package(CLAPACK REQUIRED CONFIG NO_DEFAULT_PATH)
@@ -232,15 +228,15 @@ endif()
 
 add_subdirectory(diagonal)
 
-add_library(cint ${cintSrc} ${gradSrc}) # ${diagSrc})
+add_library(cint ${cintSrc})
 set_target_properties(cint PROPERTIES
   VERSION ${cint_VERSION}
   SOVERSION ${cint_SOVERSION}
   LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 if(QUADMATH_FOUND)
-	target_link_libraries(cint quadmath -flto)
+	target_link_libraries(cint quadmath -flto LLDEnzymeFlags)
 endif()
-target_link_libraries(cint -lm -flto)
+target_link_libraries(cint -lm -flto LLDEnzymeFlags)
 
 set(CintHeaders
   ${PROJECT_SOURCE_DIR}/include/cint_funcs.h
@@ -252,6 +248,11 @@ install(FILES ${CintHeaders} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL
 option(GRAD "build grad" 0)
 if (GRAD)
   add_subdirectory(grad)
+endif()
+
+option(PY "build py" 0)
+if (PY)
+  add_subdirectory(python)
 endif()
 
 if(ENABLE_EXAMPLE)
