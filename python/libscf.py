@@ -4,7 +4,7 @@ import numpy as np
 
 path = '/u/jpmedina/libcint/python/libgrad.so'
 # path = os.path.abspath("libgrad.so")
-print(path)
+# print(path)
 
 libc = ctypes.CDLL(path)
 

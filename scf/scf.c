@@ -9,7 +9,7 @@
 
 #define N_STO 3
 
-// int __enzyme_autodiff(void *, ...);
+int __enzyme_autodiff(void *, ...);
 
 int cint1e_ovlp_cart(double *buf, int *shls,
                     int *atm, int natm, int *bas, int nbas, double *env);
@@ -459,7 +459,7 @@ double * RHF(int natm, int nbas, int nelec, int nshells, int * atm, int * bas, d
     return P;
 }
 
-double energy(int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P)
+void energy(double * E, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P)
 {
     double * S, * H;
     double *two;
@@ -484,11 +484,14 @@ double energy(int natm, int nbas, int nshells, int * atm, int * bas, double * en
         }
     }
 
-    return Enuc + E0;
+    *E = Enuc + E0;
 }
 
-// void energy_diff(double * E, double * dE, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * denv, double * P) {
-// 	__enzyme_autodiff((void *) energy,
+// double * grad(int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P) {
+//     double E, dE;
+//     double * denv = malloc(sizeof(double) * 1000);
+
+//     __enzyme_autodiff((void *) energy,
 //         enzyme_dup, E, dE,	
 //         enzyme_const, natm,
 //         enzyme_const, nbas,
@@ -497,21 +500,35 @@ double energy(int natm, int nbas, int nshells, int * atm, int * bas, double * en
 //         enzyme_const, bas, 
 //         enzyme_dup, env, denv,
 //         enzyme_const, P);
+
+//     return denv;
 // }
+
+void energy_diff(double * E, double * dE, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * denv, double * P) {
+	__enzyme_autodiff((void *) energy,
+        enzyme_dup, E, dE,	
+        enzyme_const, natm,
+        enzyme_const, nbas,
+        enzyme_const, nshells,
+        enzyme_const, atm,
+        enzyme_const, bas, 
+        enzyme_dup, env, denv,
+        enzyme_const, P);
+}
 
 int main()
 {
-    int natm = 1;
-    int nbas = 3;
+    int natm = 2;
+    int nbas = 2;
     
-    int nelec = 6;
-    int nshells = 5;
+    int nelec = 2;
+    int nshells = 2;
 
     int * atm = malloc(sizeof(int) * natm * ATM_SLOTS);
     int * bas = malloc(sizeof(int) * nbas * BAS_SLOTS);
     double * env = malloc(sizeof(double) * 10000);
 
-    FILE * file = fopen("/u/jpmedina/libcint/molecules/c/sto3g.txt", "r");
+    FILE * file = fopen("/u/jpmedina/libcint/molecules/h2/sto3g.txt", "r");
     read_arrays(file, natm, nbas, &atm, &bas, &env);
 
     // RHF
@@ -522,10 +539,10 @@ int main()
     printf("P:\n");
     print_arr(nshells, 2, P);
 
-    double E = energy(natm, nbas, nshells, atm, bas, env, P);
+    double E;
+    energy(&E, natm, nbas, nshells, atm, bas, env, P);
     printf("E: %lf\n", E);
 
-    // double E;
     // double dE = 1.0;
     // double * denv = malloc(sizeof(double) * 10000);
 
@@ -537,24 +554,24 @@ int main()
     // }
     // printf("\n");
 
-    // printf("finite diff:\n");
+    printf("finite diff:\n");
     
-    // double grad;
-    // double E1, E2;
-    // double h = 0.000001;
+    double grad;
+    double E1, E2;
+    double h = 0.000001;
     
-    // for (int k = 20; k < 42; k++) {
-    //     env[k] += h;
-    //     energy(&E1, natm, nbas, nshells, atm, bas, env, P);
-    //     env[k] -= 2.0*h;
-    //     energy(&E2, natm, nbas, nshells, atm, bas, env, P);
-    //     env[k] += h;
+    for (int k = 20; k < 42; k++) {
+        env[k] += h;
+        energy(&E1, natm, nbas, nshells, atm, bas, env, P);
+        env[k] -= 2.0*h;
+        energy(&E2, natm, nbas, nshells, atm, bas, env, P);
+        env[k] += h;
 
-    //     grad = (E1 - E2)/(2.0*h);
+        grad = (E1 - E2)/(2.0*h);
 
-    //     printf("%lf ", grad);
-    // }
-    // printf("\n");
+        printf("%lf ", grad);
+    }
+    printf("\n");
 
     return 0;
 }
