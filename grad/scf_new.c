@@ -134,49 +134,146 @@ void transpose(int n, double * C, double * Ct) {
     }
 }
 
-void integrals(int natm, int nbas, int * atm, int * bas, double * env, Array ** S, Array ** T, Array ** V, Array ** H, Array_two ** two) 
-{   
-    *S = c_arr(nbas, nbas);
-    *T = c_arr(nbas, nbas);
-    *V = c_arr(nbas, nbas);
-    *H = c_arr(nbas, nbas);
-    *two = c_arr_doub(nbas, nbas, nbas, nbas);
+// void integrals(int natm, int nbas, int nshells, int * atm, int * bas, double * env, Array ** S, Array ** T, Array ** V, Array ** H, Array_two ** two) 
+// {   
+//     *S = c_arr(nshells, nshells);
+//     *T = c_arr(nshells, nshells);
+//     *V = c_arr(nshells, nshells);
+//     *H = c_arr(nshells, nshells);
+//     *two = c_arr_doub(nshells, nshells, nshells, nshells);
 
+//     int di, dj, dk, dl;
+//     int shls[4];
+    
+//     double * buf;
+//     for (int i = 0; i < nbas; i++) {
+//         for (int j = 0; j < nbas; j++) {
+//             shls[0] = i; di = CINTcgto_cart(i, bas);
+//             shls[1] = j; dj = CINTcgto_cart(j, bas);
+
+//             buf = malloc(sizeof(double) * di * dj);
+//             cint1e_ovlp_cart(buf, shls, atm, natm, bas, nbas, env);
+//             (*S)->m[i * (*S)->row + j] = buf[0];
+
+//             cint1e_kin_cart(buf, shls, atm, natm, bas, nbas, env);
+//             (*T)->m[i * (*T)->row + j] = buf[0];
+
+//             cint1e_nuc_cart(buf, shls, atm, natm, bas, nbas, env);
+//             (*V)->m[i * (*V)->row + j] = buf[0];
+//             free(buf);
+
+//             (*H)->m[i * (*T)->row + j] = (*T)->m[i * (*T)->row + j] + (*V)->m[i * (*V)->row + j];
+
+//             for (int k = 0; k < nbas; k++) {
+//                 for (int l = 0; l < nbas; l++) {
+//                     shls[2] = k; dk = CINTcgto_cart(k, bas);
+//                     shls[3] = l; dl = CINTcgto_cart(l, bas);
+
+//                     buf = malloc(sizeof(double) * di * dj * dk * dl);
+//                     cint2e_cart(buf, shls, atm, natm, bas, nbas, env, NULL);
+//                     (*two)->m[(int) (i*pow(nbas, 3) + j*pow(nbas, 2) + k*nbas + l)] = buf[0];
+//                     free(buf);
+//                 }
+//             }
+//         }
+//     }
+// }
+
+void integrals(int natm, int nbas, int nshells, int * atm, int * bas, double * env, Array ** S, Array ** H, Array_two ** two)  {
+    *S = c_arr(nshells, nshells);
+    *H = c_arr(nshells, nshells);
+    *two = c_arr_doub(nshells, nshells, nshells, nshells);
+
+    Array * T = c_arr(nshells, nshells);
+    Array * V = c_arr(nshells, nshells);
+
+    int mu, nu, sig, lam;
     int di, dj, dk, dl;
     int shls[4];
+
+    int c;
     
     double * buf;
+
+    mu = 0;
     for (int i = 0; i < nbas; i++) {
+        nu = 0;
         for (int j = 0; j < nbas; j++) {
+            sig = 0;
+
             shls[0] = i; di = CINTcgto_cart(i, bas);
             shls[1] = j; dj = CINTcgto_cart(j, bas);
 
             buf = malloc(sizeof(double) * di * dj);
             cint1e_ovlp_cart(buf, shls, atm, natm, bas, nbas, env);
-            (*S)->m[i * (*S)->row + j] = buf[0];
 
+            c = 0;
+            for (int nuj = nu; nuj < nu + dj; nuj++) {
+                for (int mui = mu; mui < mu + di; mui++) {
+                    (*S)->m[mui * nshells + nuj] = buf[c];
+                    c++;
+                }
+            }
+
+            c = 0;
             cint1e_kin_cart(buf, shls, atm, natm, bas, nbas, env);
-            (*T)->m[i * (*T)->row + j] = buf[0];
+            for (int nuj = nu; nuj < nu + dj; nuj++) {
+                for (int mui = mu; mui < mu + di; mui++) {
+                    T->m[mui * nshells + nuj] = buf[c];
+                    c++;
+                }
+            }
 
+            c = 0;
             cint1e_nuc_cart(buf, shls, atm, natm, bas, nbas, env);
-            (*V)->m[i * (*V)->row + j] = buf[0];
+            for (int nuj = nu; nuj < nu + dj; nuj++) {
+                for (int mui = mu; mui < mu + di; mui++) {
+                    V->m[mui * nshells + nuj] = buf[c];
+                    c++;
+                }
+            }
+
+            for (int nuj = nu; nuj < nu + dj; nuj++) {
+                for (int mui = mu; mui < mu + di; mui++) {
+                    (*H)->m[mui*nshells + nuj] = T->m[mui*nshells + nuj] + V->m[mui*nshells + nuj];
+                }
+            }
+
             free(buf);
 
-            (*H)->m[i * (*T)->row + j] = (*T)->m[i * (*T)->row + j] + (*V)->m[i * (*V)->row + j];
-
             for (int k = 0; k < nbas; k++) {
+                lam = 0;
                 for (int l = 0; l < nbas; l++) {
                     shls[2] = k; dk = CINTcgto_cart(k, bas);
                     shls[3] = l; dl = CINTcgto_cart(l, bas);
 
                     buf = malloc(sizeof(double) * di * dj * dk * dl);
                     cint2e_cart(buf, shls, atm, natm, bas, nbas, env, NULL);
-                    (*two)->m[(int) (i*pow(nbas, 3) + j*pow(nbas, 2) + k*nbas + l)] = buf[0];
+
+                    c = 0;
+                    for (int laml = lam; laml < lam + dl; laml++) {
+                        for (int sigk = sig; sigk < sig + dk; sigk++) {
+                            for (int nuj = nu; nuj < nu + dj; nuj++) {
+                                for (int mui = mu; mui < mu + di; mui++) {
+                                    (*two)->m[(int) (mui*pow(nshells, 3) + nuj*pow(nshells, 2) + sigk*nshells + laml)] = buf[c];
+                                    c++;
+                                }
+                            }
+                        }
+                    }
+
                     free(buf);
+
+                    lam += dl;
                 }
+                sig += dk;
             }
+            nu += dj;
         }
+        mu += di;
     }
+    free(T);
+    free(V);
 }
 
 void find_X(Array S, Array ** X, Array ** X_dag) 
@@ -214,18 +311,18 @@ void find_X(Array S, Array ** X, Array ** X_dag)
     transpose((*X)->row, (*X)->m, (*X_dag)->m);
 }
 
-void calc_F(int nbas, Array P, Array_two two, Array H, Array ** G, Array ** F) 
+void calc_F(int n, Array P, Array_two two, Array H, Array ** G, Array ** F) 
 {
-    *G = c_arr(nbas, nbas);
-    *F = c_arr(nbas, nbas);
+    *G = c_arr(n, n);
+    *F = c_arr(n, n);
 
-    for (int mu = 0; mu < nbas; mu++) {
-        for (int nu = 0; nu < nbas; nu++) {
-            for (int la = 0; la < nbas; la++) {
-                for (int sig = 0; sig < nbas; sig++) {
+    for (int mu = 0; mu < n; mu++) {
+        for (int nu = 0; nu < n; nu++) {
+            for (int la = 0; la < n; la++) {
+                for (int sig = 0; sig < n; sig++) {
                     (*G)->m[mu * (*G)->row + nu] += P.m[la * P.row + sig] 
-                        * (two.m[(int) (mu*pow(nbas, 3) + nu*pow(nbas, 2) + sig*nbas + la)] 
-                        - 0.5 * two.m[(int) (mu*pow(nbas, 3) + la*pow(nbas, 2) + sig*nbas + nu)]);
+                        * (two.m[(int) (mu*pow(n, 3) + nu*pow(n, 2) + sig*n + la)] 
+                        - 0.5 * two.m[(int) (mu*pow(n, 3) + la*pow(n, 2) + sig*n + nu)]);
                 }
             }
 
@@ -286,11 +383,11 @@ void diag_F(Array Fprime, Array X, Array ** C, Array ** epsilon)
     free_arr(Cprime);
 }
 
-Array * calc_P(int nbas, int nelec, Array C) 
+Array * calc_P(int n, int nelec, Array C) 
 {
-    Array * P = c_arr(nbas, nbas);
-    for (int mu = 0; mu < nbas; mu++) {
-        for (int nu = 0; nu < nbas; nu++) {
+    Array * P = c_arr(n, n);
+    for (int mu = 0; mu < n; mu++) {
+        for (int nu = 0; nu < n; nu++) {
             for (int i = 0; i < (nelec / 2); i++) {
                 // printf("%lf\n", 2.0 * C.m[mu * C.row + i] * C.m[nu * C.row + i]);
                 P->m[mu * P->row + nu] += 2.0 * C.m[mu * C.row + i] * C.m[nu * C.row + i];
@@ -301,11 +398,11 @@ Array * calc_P(int nbas, int nelec, Array C)
     return P;
 }
 
-double f_delta(int nbas, Array P, Array P_old) 
+double f_delta(int n, Array P, Array P_old) 
 {
     double delta = 0;
-    for (int mu = 0; mu < nbas; mu++) {
-        for (int nu = 0; nu < nbas; nu++) {
+    for (int mu = 0; mu < n; mu++) {
+        for (int nu = 0; nu < n; nu++) {
             delta += pow(P.m[mu * P.row + nu] - P_old.m[mu * P.row + nu], 2.0);
         }
     }
@@ -328,18 +425,18 @@ double norm(int * atm, double * env, int i, int j)
     return pow(pow(xi - xj, 2) + pow(yi - yj, 2) + pow(zi - zj, 2), 0.5); 
 }
 
-Array * RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, int imax, double conv)
+Array * RHF(int natm, int nbas, int nelec, int nshells, int * atm, int * bas, double * env, int imax, double conv)
 {   
-    Array * S, * T, * V, * H;
+    Array * S, * H;
     Array_two *two;
-    integrals(natm, nbas, atm, bas, env, &S, &T, &V, &H, &two);
+    integrals(natm, nbas, nshells, atm, bas, env, &S, &H, &two);
 
     Array * X, * X_dag;
     find_X(*S, &X, &X_dag);
 
-    Array * P = c_arr(nbas, nbas);
-    for (int i = 0; i < nbas; i++) {
-        for (int j = 0; j < nbas; j++) {
+    Array * P = c_arr(nshells, nshells);
+    for (int i = 0; i < nshells; i++) {
+        for (int j = 0; j < nshells; j++) {
             if (i == j) {
                 P->m[i * P->row + j] = 1.0;
             }
@@ -357,13 +454,13 @@ Array * RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, i
     while (delta > conv && i < imax) {
         Pold = P;
         
-        calc_F(nbas, *P, *two, *H, &G, &F);
+        calc_F(nshells, *P, *two, *H, &G, &F);
         calc_Fprime(*F, *X, *X_dag, &Fprime);
         diag_F(*Fprime, *X, &C, &epsilon);
 
-        P = calc_P(nbas, nelec, *C);
+        P = calc_P(nshells, nelec, *C);
 
-        delta = f_delta(nbas, *P, *Pold);
+        delta = f_delta(nshells, *P, *Pold);
         i++;
     }
 
@@ -375,18 +472,18 @@ Array * RHF(int natm, int nbas, int nelec, int * atm, int * bas, double * env, i
     return P;
 }
 
-void energy(double * E, int natm, int nbas, int * atm, int * bas, double * env, Array * P)
+void energy(double * E, int natm, int nbas, int nshells, int * atm, int * bas, double * env, Array * P)
 {
-    Array * S, * T, * V, * H;
+    Array * S, * H;
     Array_two *two;
-    integrals(natm, nbas, atm, bas, env, &S, &T, &V, &H, &two);
+    integrals(natm, nbas, nshells, atm, bas, env, &S, &H, &two);
 
     Array * G, * F;    
-    calc_F(nbas, *P, *two, *H, &G, &F);
+    calc_F(nshells, *P, *two, *H, &G, &F);
 
     double E0 = 0.0;
-    for (int mu = 0; mu < nbas; mu++) {
-        for (int nu = 0; nu < nbas; nu++) {
+    for (int mu = 0; mu < nshells; mu++) {
+        for (int nu = 0; nu < nshells; nu++) {
             E0 += 0.5 * P->m[mu * P->row + nu] * (H->m[mu * H->row + nu] + F->m[mu * F->row + nu]);
         }
     }
@@ -403,11 +500,12 @@ void energy(double * E, int natm, int nbas, int * atm, int * bas, double * env, 
     *E = Enuc + E0;
 }
 
-void energy_diff(double * E, double * dE, int natm, int nbas, int * atm, int * bas, double * env, double * denv, Array * P) {
+void energy_diff(double * E, double * dE, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * denv, Array * P) {
 	__enzyme_autodiff((void *) energy,
         enzyme_dup, E, dE,	
         enzyme_const, natm,
         enzyme_const, nbas,
+        enzyme_const, nshells,
         enzyme_const, atm,
         enzyme_const, bas, 
         enzyme_dup, env, denv,
@@ -433,13 +531,13 @@ int main()
     int imax = 20;
     double conv = 0.000001;
 
-    Array * P = RHF(natm, nbas, nelec, atm, bas, env, imax, conv);
+    Array * P = RHF(natm, nbas, nelec, nshells, atm, bas, env, imax, conv);
 
     double E;
     double dE = 1.0;
     double * denv = malloc(sizeof(double) * 10000);
 
-    energy_diff(&E, &dE, natm, nbas, atm, bas, env, denv, P);
+    energy_diff(&E, &dE, natm, nbas, nshells, atm, bas, env, denv, P);
     printf("E: %lf\n", E);
     printf("denv:\n");
     for (int k = 28; k < 34; k++) {
@@ -455,9 +553,9 @@ int main()
     
     for (int k = 28; k < 34; k++) {
         env[k] += h;
-        energy(&E1, natm, nbas, atm, bas, env, P);
+        energy(&E1, natm, nbas, nshells, atm, bas, env, P);
         env[k] -= 2.0*h;
-        energy(&E2, natm, nbas, atm, bas, env, P);
+        energy(&E2, natm, nbas, nshells, atm, bas, env, P);
         env[k] += h;
 
         grad = (E1 - E2)/(2.0*h);
