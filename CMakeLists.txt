@@ -218,10 +218,12 @@ set(CintHeaders
 install(TARGETS cint DESTINATION "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" COMPONENT "lib")
 install(FILES ${CintHeaders} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR} COMPONENT "dev")
 
-option(GRAD "build grad" 0)
-if (GRAD)
-  add_subdirectory(grad)
-endif()
+add_subdirectory(python)
+
+# option(GRAD "build grad" 0)
+# if (GRAD)
+#   add_subdirectory(grad)
+# endif()
 
 if(ENABLE_EXAMPLE)
   enable_language(Fortran)
