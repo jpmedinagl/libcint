@@ -459,7 +459,7 @@ double * RHF(int natm, int nbas, int nelec, int nshells, int * atm, int * bas, d
     return P;
 }
 
-double energy(int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P)
+void energy(double * E, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P)
 {
     double * S, * H;
     double *two;
@@ -484,7 +484,7 @@ double energy(int natm, int nbas, int nshells, int * atm, int * bas, double * en
         }
     }
 
-    return Enuc + E0;
+    *E = Enuc + E0;
 }
 
 // double * grad(int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P) {
@@ -539,11 +539,12 @@ int main()
     printf("P:\n");
     print_arr(nshells, 2, P);
 
-    double E = energy(natm, nbas, nshells, atm, bas, env, P);
+    double E;
+    energy(&E, natm, nbas, nshells, atm, bas, env, P);
     printf("E: %lf\n", E);
 
-    // double dE = 1.0;
-    // double * denv = malloc(sizeof(double) * 10000);
+    double dE = 1.0;
+    double * denv = malloc(sizeof(double) * 10000);
 
     // energy_diff(&E, &dE, natm, nbas, nshells, atm, bas, env, denv, P);
     // printf("E: %lf\n", E);

@@ -14,7 +14,7 @@ message("set clang")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if ("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto") # --save-temps -fuse-ld=lld")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}") # --save-temps -fuse-ld=lld")
     message("Clang found")
 endif ()
 
@@ -106,15 +106,15 @@ if(ENABLE_STATIC)
 endif()
 
 add_library(cint ${cintSrc})
-target_link_libraries(cint -lm -flto LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
+target_link_libraries(cint -lm LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
 
-# set(gradSrc
-#   scf/scf.c)
+set(gradSrc
+  scf/scf.c)
 
 add_subdirectory(diagonal)
 
-# add_library(grad SHARED ${gradSrc} ${cintSrc})
-# target_link_libraries(grad -lm -flto LLDEnzymeFlags diag LLDEnzymeLooseTypeFlags)
+add_library(grad SHARED ${gradSrc} ${cintSrc} ${includeSrc})
+target_link_libraries(grad -lm diag) # LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
 
 set(CintHeaders
   ${PROJECT_SOURCE_DIR}/include/cint_funcs.h
@@ -123,17 +123,17 @@ set(CintHeaders
 install(TARGETS cint DESTINATION "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" COMPONENT "lib")
 install(FILES ${CintHeaders} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR} COMPONENT "dev")
 
-add_subdirectory(python)
+# add_subdirectory(python)
 
-option(GRAD "build grad" 0)
-if (GRAD)
-  add_subdirectory(grad)
-endif()
+# option(GRAD "build grad" 0)
+# if (GRAD)
+#   add_subdirectory(grad)
+# endif()
 
-option(SCF "build scf" 0)
-if (SCF)
-  add_subdirectory(scf)
-endif()
+# option(SCF "build scf" 0)
+# if (SCF)
+#   add_subdirectory(scf)
+# endif()
 
 include(CPackComponent)
 
