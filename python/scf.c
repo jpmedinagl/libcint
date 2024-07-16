@@ -205,7 +205,7 @@ void integrals(int natm, int nbas, int nshells, int * atm, int * bas, double * e
 
 void find_X(int nshells, double * S, double ** X, double ** X_dag) 
 {
-    double * eig = c_arr(1, nshells);
+    double * eig; // = c_arr(1, nshells);
     double * U = c_arr(nshells, nshells);
     dcopy(nshells, U, S);
 

@@ -28,33 +28,6 @@ extern int enzyme_dup;
 extern int enzyme_out;
 extern int enzyme_const;
 
-void read_arrays(FILE * file, int natm, int nbas, int ** atm, int ** bas, double ** env)
-{
-	double num;
-	int number;
-	int count = 0;
-
-	while (count < natm * ATM_SLOTS) {
-        fscanf(file, "%d", &number);
-		(*atm)[count] = number;
-		count++;
-	}
-
-	count = 0;
-	while (count < nbas * BAS_SLOTS) {
-        fscanf(file, "%d", &number);
-		(*bas)[count] = number;
-		count++;
-	}
-
-	count = 0;
-	while (fscanf(file, "%lf", &num) != EOF) {
-		(*env)[count] = num;
-		count++;
-	}
-	fclose(file);
-}
-
 double * c_arr(int x, int y) 
 {
     double * mat = malloc(sizeof(double) * (x * y));
@@ -67,6 +40,17 @@ double * c_arr_doub(int x, int y, int w, int z)
     double * mat = malloc(sizeof(double) * (x * y * w * z));
     memset(mat, 0, sizeof(double) * (x * y * w * z));
     return mat;
+}
+
+void print_arr(int n, int size, double * A) {
+    for (int i = 0; i < pow(n, size); i++) {
+        printf("%lf ", A[i]);
+        for (int p = 1; p < size; p++) {
+            if ((i + 1) % (int) pow(n, p) == 0) {
+                printf("\n");
+            }
+        }
+    }
 }
 
 void dcopy(int n, double * dest, double * source) {
@@ -92,6 +76,33 @@ void transpose(int n, double * C, double * Ct) {
             Ct[i * n + j] = C[j * n + i];
         }
     }
+}
+
+void read_arrays(FILE * file, int natm, int nbas, int ** atm, int ** bas, double ** env)
+{
+	double num;
+	int number;
+	int count = 0;
+
+	while (count < natm * ATM_SLOTS) {
+        fscanf(file, "%d", &number);
+		(*atm)[count] = number;
+		count++;
+	}
+
+	count = 0;
+	while (count < nbas * BAS_SLOTS) {
+        fscanf(file, "%d", &number);
+		(*bas)[count] = number;
+		count++;
+	}
+
+	count = 0;
+	while (fscanf(file, "%lf", &num) != EOF) {
+		(*env)[count] = num;
+		count++;
+	}
+	fclose(file);
 }
 
 void integrals(int natm, int nbas, int nshells, int * atm, int * bas, double * env, double ** S, double ** H, double ** two)  {
@@ -198,8 +209,8 @@ void find_X(int nshells, double * S, double ** X, double ** X_dag)
     dcopy(nshells, U, S);
 
     char jobz = 'V', uplo = 'U';
-    integer lda = 2, n = 2, info = 8, lwork = 6;
-    double w[2], work[6];
+    integer lda = nshells, n = nshells, info = 8, lwork = 3*n;
+    double w[n], work[3*n];
 
     dsyev_(&jobz, &uplo, &n, U, &lda, w, work, &lwork, &info);
 
@@ -207,6 +218,10 @@ void find_X(int nshells, double * S, double ** X, double ** X_dag)
         printf("The algorithm failed to compute eigenvalues.\n");
         exit(1);
     }
+
+    double * Ut = c_arr(nshells, nshells);
+    transpose(nshells, U, Ut);
+    dcopy(nshells, U, Ut);
 
     eig = w;
 
@@ -226,24 +241,25 @@ void find_X(int nshells, double * S, double ** X, double ** X_dag)
     transpose(nshells, *X, *X_dag);
 }
 
-void calc_F(int n, double * P, double * two, double * H, double ** G, double ** F) 
+void calc_F(int n, double * P, double * two, double * H, double ** F) 
 {
-    *G = c_arr(n, n);
+    double * G = c_arr(n, n);
     *F = c_arr(n, n);
 
     for (int mu = 0; mu < n; mu++) {
         for (int nu = 0; nu < n; nu++) {
             for (int la = 0; la < n; la++) {
                 for (int sig = 0; sig < n; sig++) {
-                    (*G)[mu * n + nu] += P[la * n + sig] 
+                    G[mu * n + nu] += P[la * n + sig] 
                         * (two[(int) (mu*pow(n, 3) + nu*pow(n, 2) + sig*n + la)] 
                         - 0.5 * two[(int) (mu*pow(n, 3) + la*pow(n, 2) + sig*n + nu)]);
                 }
             }
 
-            (*F)[mu * n + nu] += (*G)[mu * n + nu] + H[mu * n + nu];
+            (*F)[mu * n + nu] += G[mu * n + nu] + H[mu * n + nu];
         }
     }
+    free(G);
 }
 
 void calc_Fprime(int n, double * F, double * X, double * X_dag, double ** Fprime) 
@@ -261,8 +277,8 @@ void diag_F(int nshells, double * Fprime, double * X, double ** C, double ** eps
     dcopy(nshells, U, Fprime);
 
     char jobz = 'V', uplo = 'U';
-    integer lda = 2, n = 2, info = 8, lwork = 6;
-    double w[2], work[6];
+    integer lda = nshells, n = nshells, info = 8, lwork = 3*n;
+    double w[n], work[3*n];
 
     dsyev_(&jobz, &uplo, &n, U, &lda, w, work, &lwork, &info);
 
@@ -366,7 +382,7 @@ double * RHF(int natm, int nbas, int nelec, int nshells, int * atm, int * bas, d
     while (delta > conv && i < imax) {
         Pold = P;
         
-        calc_F(nshells, P, two, H, &G, &F);
+        calc_F(nshells, P, two, H, &F);
         calc_Fprime(nshells, F, X, X_dag, &Fprime);
         diag_F(nshells, Fprime, X, &C, &epsilon);
 
@@ -390,8 +406,8 @@ void energy(double * E, int natm, int nbas, int nshells, int * atm, int * bas, d
     double * two;
     integrals(natm, nbas, nshells, atm, bas, env, &S, &H, &two);
 
-    double * G, * F;    
-    calc_F(nshells, P, two, H, &G, &F);
+    double * F;
+    calc_F(nshells, P, two, H, &F);
 
     double E0 = 0.0;
     for (int mu = 0; mu < nshells; mu++) {
