@@ -9,7 +9,7 @@
 
 #define N_STO 3
 
-int __enzyme_autodiff(void *, ...);
+// int __enzyme_autodiff(void *, ...);
 
 int cint1e_ovlp_cart(double *buf, int *shls,
                     int *atm, int natm, int *bas, int nbas, double *env);
@@ -24,9 +24,9 @@ extern int dsyev_(char *jobz, char *uplo, integer *n, doublereal *a,
     integer *lda, doublereal *w, doublereal *work, integer *lwork, 
 	integer *info);
 
-extern int enzyme_dup;
-extern int enzyme_out;
-extern int enzyme_const;
+// extern int enzyme_dup;
+// extern int enzyme_out;
+// extern int enzyme_const;
 
 double * c_arr(int x, int y) 
 {
@@ -438,13 +438,13 @@ double * RHF(int natm, int nbas, int nelec, int nshells, int * atm, int * bas, d
         }
     }
 
-    printf("conv P\n");
-    print_arr(nshells, 2, P);
+    // printf("conv P\n");
+    // print_arr(nshells, 2, P);
 
     return P;
 }
 
-void energy(double * E, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P)
+double energy(int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P)
 {
     double * S, * H;
     double * two;
@@ -469,20 +469,48 @@ void energy(double * E, int natm, int nbas, int nshells, int * atm, int * bas, d
         }
     }
 
-    *E = Enuc + E0;
+    return Enuc + E0;
 }
 
-void energy_diff(double * E, double * dE, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * denv, double * P) {
-	__enzyme_autodiff((void *) energy,
-        enzyme_dup, E, dE,	
-        enzyme_const, natm,
-        enzyme_const, nbas,
-        enzyme_const, nshells,
-        enzyme_const, atm,
-        enzyme_const, bas, 
-        enzyme_dup, env, denv,
-        enzyme_const, P);
-}
+// void energy(double * E, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P)
+// {
+//     double * S, * H;
+//     double * two;
+//     integrals(natm, nbas, nshells, atm, bas, env, &S, &H, &two);
+
+//     double * F;
+//     calc_F(nshells, P, two, H, &F);
+
+//     double E0 = 0.0;
+//     for (int mu = 0; mu < nshells; mu++) {
+//         for (int nu = 0; nu < nshells; nu++) {
+//             E0 += 0.5 * P[mu * nshells + nu] * (H[mu * nshells + nu] + F[mu * nshells + nu]);
+//         }
+//     }
+
+//     double Enuc = 0.0;
+//     for (int i = 0; i < natm; i++) {
+//         for (int j = 0; j < natm; j++) {
+//             if (i > j) {
+//                 Enuc += ((double) (atm[i*6 + 0] * atm[j*6 + 0]))/(norm(atm, env, i, j));
+//             }
+//         }
+//     }
+
+//     *E = Enuc + E0;
+// }
+
+// void energy_diff(double * E, double * dE, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * denv, double * P) {
+// 	__enzyme_autodiff((void *) energy,
+//         enzyme_dup, E, dE,	
+//         enzyme_const, natm,
+//         enzyme_const, nbas,
+//         enzyme_const, nshells,
+//         enzyme_const, atm,
+//         enzyme_const, bas, 
+//         enzyme_dup, env, denv,
+//         enzyme_const, P);
+// }
 
 int main()
 {
@@ -509,36 +537,36 @@ int main()
     // energy(&E, natm, nbas, nshells, atm, bas, env, P);
     // printf("E: %lf\n", E);
 
-    double E;
-    double dE = 1.0;
-    double * denv = malloc(sizeof(double) * 10000);
+    // double E;
+    // double dE = 1.0;
+    // double * denv = malloc(sizeof(double) * 10000);
 
-    energy_diff(&E, &dE, natm, nbas, nshells, atm, bas, env, denv, P);
-    printf("E: %lf\n", E);
-    printf("denv:\n");
-    for (int k = 28; k < 34; k++) {
-        printf("%f ", denv[k]);
-    }
-    printf("\n");
+    // energy_diff(&E, &dE, natm, nbas, nshells, atm, bas, env, denv, P);
+    // printf("E: %lf\n", E);
+    // printf("denv:\n");
+    // for (int k = 28; k < 34; k++) {
+    //     printf("%f ", denv[k]);
+    // }
+    // printf("\n");
 
-    printf("finite diff:\n");
+    // printf("finite diff:\n");
     
-    double grad;
-    double E1, E2;
-    double h = 0.000001;
+    // double grad;
+    // double E1, E2;
+    // double h = 0.000001;
     
-    for (int k = 28; k < 34; k++) {
-        env[k] += h;
-        energy(&E1, natm, nbas, nshells, atm, bas, env, P);
-        env[k] -= 2.0*h;
-        energy(&E2, natm, nbas, nshells, atm, bas, env, P);
-        env[k] += h;
+    // for (int k = 28; k < 34; k++) {
+    //     env[k] += h;
+    //     energy(&E1, natm, nbas, nshells, atm, bas, env, P);
+    //     env[k] -= 2.0*h;
+    //     energy(&E2, natm, nbas, nshells, atm, bas, env, P);
+    //     env[k] += h;
 
-        grad = (E1 - E2)/(2.0*h);
+    //     grad = (E1 - E2)/(2.0*h);
 
-        printf("%lf ", grad);
-    }
-    printf("\n");
+    //     printf("%lf ", grad);
+    // }
+    // printf("\n");
 
     return 0;
 }

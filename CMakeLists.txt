@@ -108,13 +108,13 @@ endif()
 add_library(cint ${cintSrc})
 target_link_libraries(cint -lm -flto LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
 
-set(gradSrc
-  scf/scf.c)
-
 add_subdirectory(diagonal)
 
-add_library(grad SHARED ${gradSrc} ${cintSrc})
-target_link_libraries(grad -lm -flto LLDEnzymeFlags diag LLDEnzymeLooseTypeFlags)
+# set(gradSrc
+#   scf/scf.c)
+
+# add_library(grad SHARED ${gradSrc} ${cintSrc})
+# target_link_libraries(grad -lm -flto LLDEnzymeFlags diag LLDEnzymeLooseTypeFlags)
 
 set(CintHeaders
   ${PROJECT_SOURCE_DIR}/include/cint_funcs.h
