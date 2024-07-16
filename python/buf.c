@@ -107,11 +107,11 @@ int main(int argc, char ** argv)
     }
     printf("\n");
 
-    // printf("denv: ");
-    // for (int k = 24; k < 42; k++) {
-    //     printf("%f ", denv[k]);
-    // }
-    // printf("\n");
+    printf("denv: ");
+    for (int k = 24; k < 42; k++) {
+        printf("%f ", denv[k]);
+    }
+    printf("\n");
 	
 	// for (int i = 0; i < nbas; i++) {
 	// 	for (int j = 0; j < nbas; j++) {

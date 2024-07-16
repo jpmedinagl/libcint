@@ -33,3 +33,6 @@
 #define OF_CMPLX        2
 
 #define GRID_BLKSIZE    104
+
+// binding
+#define WITH_CINT2_INTERFACE 1

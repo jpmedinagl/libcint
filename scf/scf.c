@@ -543,16 +543,16 @@ int main()
     energy(&E, natm, nbas, nshells, atm, bas, env, P);
     printf("E: %lf\n", E);
 
-    // double dE = 1.0;
-    // double * denv = malloc(sizeof(double) * 10000);
+    double dE = 1.0;
+    double * denv = malloc(sizeof(double) * 10000);
 
-    // energy_diff(&E, &dE, natm, nbas, nshells, atm, bas, env, denv, P);
-    // printf("E: %lf\n", E);
-    // printf("denv:\n");
-    // for (int k = 20; k < 42; k++) {
-    //     printf("%f ", denv[k]);
-    // }
-    // printf("\n");
+    energy_diff(&E, &dE, natm, nbas, nshells, atm, bas, env, denv, P);
+    printf("E: %lf\n", E);
+    printf("denv:\n");
+    for (int k = 20; k < 42; k++) {
+        printf("%f ", denv[k]);
+    }
+    printf("\n");
 
     printf("finite diff:\n");
     

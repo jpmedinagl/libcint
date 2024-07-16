@@ -495,18 +495,18 @@ void energy_diff(double * E, double * dE, int natm, int nbas, int nshells, int *
 
 int main()
 {
-    int natm = 1;
-    int nbas = 3;
+    int natm = 2;
+    int nbas = 2;
     
-    int nelec = 6;
-    int nshells = 5;
+    int nelec = 2;
+    int nshells = 2;
 
     int * atm = malloc(sizeof(int) * natm * ATM_SLOTS);
     int * bas = malloc(sizeof(int) * nbas * BAS_SLOTS);
     double * env = malloc(sizeof(double) * 10000);
 
     printf("before file\n");
-    FILE * file = fopen("/u/jpmedina/libcint/molecules/c/sto3g.txt", "r");
+    FILE * file = fopen("/u/jpmedina/libcint/molecules/h2/sto3g.txt", "r");
     read_arrays(file, natm, nbas, &atm, &bas, &env);
 
     // // RHF
@@ -531,24 +531,24 @@ int main()
     }
     printf("\n");
 
-    // printf("finite diff:\n");
+    printf("finite diff:\n");
     
-    // double grad;
-    // double E1, E2;
-    // double h = 0.000001;
+    double grad;
+    double E1, E2;
+    double h = 0.000001;
     
-    // for (int k = 20; k < 42; k++) {
-    //     env[k] += h;
-    //     energy(&E1, natm, nbas, nshells, atm, bas, env, P);
-    //     env[k] -= 2.0*h;
-    //     energy(&E2, natm, nbas, nshells, atm, bas, env, P);
-    //     env[k] += h;
+    for (int k = 20; k < 42; k++) {
+        env[k] += h;
+        energy(&E1, natm, nbas, nshells, atm, bas, env, P);
+        env[k] -= 2.0*h;
+        energy(&E2, natm, nbas, nshells, atm, bas, env, P);
+        env[k] += h;
 
-    //     grad = (E1 - E2)/(2.0*h);
+        grad = (E1 - E2)/(2.0*h);
 
-    //     printf("%lf ", grad);
-    // }
-    // printf("\n");
+        printf("%lf ", grad);
+    }
+    printf("\n");
 
     return 0;
 }
