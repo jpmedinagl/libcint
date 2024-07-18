@@ -108,13 +108,26 @@ endif()
 add_library(cint ${cintSrc})
 target_link_libraries(cint -lm -flto LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
 
+option(SO "build so" 0)
+option(GRAD "build grad" 0)
+option(SCF "build scf" 0)
+
 add_subdirectory(diagonal)
 
-# set(gradSrc
-#   scf/scf.c)
+if (SO)
+  set(gradSrc
+    scf/scf.c)
+  add_library(grad SHARED ${gradSrc} ${cintSrc})
+  target_link_libraries(grad -lm -flto diag LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
+else()
+  if (GRAD)
+    add_subdirectory(grad)
+  endif()
 
-# add_library(grad SHARED ${gradSrc} ${cintSrc})
-# target_link_libraries(grad -lm -flto LLDEnzymeFlags diag LLDEnzymeLooseTypeFlags)
+  if (SCF)
+    add_subdirectory(scf)
+  endif()
+endif()
 
 set(CintHeaders
   ${PROJECT_SOURCE_DIR}/include/cint_funcs.h
@@ -122,16 +135,6 @@ set(CintHeaders
 
 install(TARGETS cint DESTINATION "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" COMPONENT "lib")
 install(FILES ${CintHeaders} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR} COMPONENT "dev")
-
-option(GRAD "build grad" 0)
-if (GRAD)
-  add_subdirectory(grad)
-endif()
-
-option(SCF "build scf" 0)
-if (SCF)
-  add_subdirectory(scf)
-endif()
 
 include(CPackComponent)
 
