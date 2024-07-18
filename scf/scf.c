@@ -9,7 +9,7 @@
 
 #define N_STO 3
 
-// int __enzyme_autodiff(void *, ...);
+int __enzyme_autodiff(void *, ...);
 
 int cint1e_ovlp_cart(double *buf, int *shls,
                     int *atm, int natm, int *bas, int nbas, double *env);
@@ -24,9 +24,9 @@ extern int dsyev_(char *jobz, char *uplo, integer *n, doublereal *a,
     integer *lda, doublereal *w, doublereal *work, integer *lwork, 
 	integer *info);
 
-// extern int enzyme_dup;
-// extern int enzyme_out;
-// extern int enzyme_const;
+extern int enzyme_dup;
+extern int enzyme_out;
+extern int enzyme_const;
 
 double * c_arr(int x, int y) 
 {
@@ -512,6 +512,22 @@ double energy(int natm, int nbas, int nshells, int * atm, int * bas, double * en
 //         enzyme_const, P);
 // }
 
+double * grad(int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P) 
+{
+    double * denv = malloc(sizeof(double) * 100);
+
+    double dE = __enzyme_autodiff((void *) energy,
+        enzyme_const, natm,
+        enzyme_const, nbas,
+        enzyme_const, nshells,
+        enzyme_const, atm,
+        enzyme_const, bas, 
+        enzyme_dup, env, denv,
+        enzyme_const, P);
+    
+    return denv;
+}
+
 int main()
 {
     int natm = 2;
@@ -522,7 +538,7 @@ int main()
 
     int * atm = malloc(sizeof(int) * natm * ATM_SLOTS);
     int * bas = malloc(sizeof(int) * nbas * BAS_SLOTS);
-    double * env = malloc(sizeof(double) * 10000);
+    double * env = malloc(sizeof(double) * 100);
 
     FILE * file = fopen("/u/jpmedina/libcint/molecules/h2/sto3g.txt", "r");
     read_arrays(file, natm, nbas, &atm, &bas, &env);
@@ -532,6 +548,37 @@ int main()
     double conv = 0.000001;
 
     double * P = RHF(natm, nbas, nelec, nshells, atm, bas, env, imax, conv);
+
+    printf("P:\n");
+    print_arr(nshells, 2, P);
+
+    double E = energy(natm, nbas, nshells, atm, bas, env, P);
+    printf("E:\n%lf", E);
+
+    double * denv = malloc(sizeof(double) * 100);
+
+    double dE = __enzyme_autodiff((void *) energy,
+        enzyme_const, natm,
+        enzyme_const, nbas,
+        enzyme_const, nshells,
+        enzyme_const, atm,
+        enzyme_const, bas, 
+        enzyme_dup, env, denv,
+        enzyme_const, P);
+
+    printf("denv:\n");
+    for (int k = 28; k < 34; k++) {
+        printf("%f ", denv[k]);
+    }
+    printf("\n");
+
+    memset(denv, 0, sizeof(double) * 100);
+    printf("grad:\n");
+    denv = grad(natm, nbas, nshells, atm, bas, env, P);
+    for (int k = 28; k < 34; k++) {
+        printf("%f ", denv[k]);
+    }
+    printf("\n");
 
     // double E;
     // energy(&E, natm, nbas, nshells, atm, bas, env, P);
@@ -549,24 +596,24 @@ int main()
     // }
     // printf("\n");
 
-    // printf("finite diff:\n");
+    printf("finite diff:\n");
     
-    // double grad;
-    // double E1, E2;
-    // double h = 0.000001;
+    double grad;
+    double E1, E2;
+    double h = 0.000001;
     
-    // for (int k = 28; k < 34; k++) {
-    //     env[k] += h;
-    //     energy(&E1, natm, nbas, nshells, atm, bas, env, P);
-    //     env[k] -= 2.0*h;
-    //     energy(&E2, natm, nbas, nshells, atm, bas, env, P);
-    //     env[k] += h;
+    for (int k = 28; k < 34; k++) {
+        env[k] += h;
+        E1 = energy(natm, nbas, nshells, atm, bas, env, P);
+        env[k] -= 2.0*h;
+        E2 = energy(natm, nbas, nshells, atm, bas, env, P);
+        env[k] += h;
 
-    //     grad = (E1 - E2)/(2.0*h);
+        grad = (E1 - E2)/(2.0*h);
 
-    //     printf("%lf ", grad);
-    // }
-    // printf("\n");
+        printf("%lf ", grad);
+    }
+    printf("\n");
 
     return 0;
 }

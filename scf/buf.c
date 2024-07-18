@@ -90,13 +90,23 @@ int main(int argc, char ** argv)
     printf("ij didj %d%d %d%d\n", i, j, di, dj);
 
     buf = malloc(sizeof(double) * di * dj);
+	buf[0] = 1.0;
     dbuf = malloc(sizeof(double) * di * dj);
     dbuf[0] = 1.0;
 
     denv = malloc(sizeof(double) * 10000);
+	denv[0] = 1.0;
 	
-	int ret;
-	int dret;
+	int * ret;
+	// __enzyme_autodiff((void *) cint1e_ovlp_cart,
+	// 		enzyme_const, ret,
+	// 		enzyme_dup, buf, dbuf,
+	// 		enzyme_const, shls,
+	// 		enzyme_const, atm,
+	// 		enzyme_const, natm,
+	// 		enzyme_const, bas,
+	// 		enzyme_const, nbas,
+	// 		enzyme_dup, env, denv);
     cint1e_diff(buf, dbuf, shls, atm, natm, bas, nbas, env, denv);
     // cint1e_kin_cart(buf, shls, atm, natm, bas, nbas, env);
     
