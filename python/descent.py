@@ -26,11 +26,6 @@ while not (delta < epsilon or i == max_i):
     P = libscf.RHF(natm, nbas, nelec, nshells, atm, bas, env)
     E = libscf.energy(natm, nbas, nshells, atm, bas, env, P)
     denv = libscf.grad(natm, nbas, nshells, atm, bas, env, P)
-
-    # print("env:   ", env[28:34])
-    # print("P:   ", P)
-    # print("E:   ", E)
-    # print("grad:", denv[28:34])
     
     env[28:34] = env[28:34] - alpha * denv[28:34]
 
@@ -39,7 +34,7 @@ while not (delta < epsilon or i == max_i):
     # if i % 100 == 0:
     print(i)
     print("E:   ", E)
-    print("grad:", denv[28:34])
+    # print("grad:", denv[28:34])
 
     i += 1
 
@@ -52,3 +47,6 @@ print("env:   ", env[28:34])
 print("P:   ", P)
 print("E:   ", E)
 print("grad:", denv[28:34])
+
+S = libscf.int1e(natm, nbas, nshells, atm, bas, env, 'ovlp')
+print("S: ", S)
