@@ -15,12 +15,15 @@ natm, nbas, nelec, nshells = 2, 2, 2, 2
 
 alpha = 1e-4
 
-max_i = 500
+max_i = 50
 epsilon = 1e-6
 
 delta = 1
 
 i = 0
+
+S = libscf.int1e(natm, nbas, nshells, atm, bas, env, 'ovlp')
+print("S: ", S)
 
 while not (delta < epsilon or i == max_i):
     P = libscf.RHF(natm, nbas, nelec, nshells, atm, bas, env)

@@ -2,7 +2,7 @@ import os
 import ctypes
 import numpy as np
 
-path = '/u/jpmedina/libcint/python/libgrad2.so'
+path = '/u/jpmedina/libcint/python/libgrad.so'
 
 libc = ctypes.CDLL(path)
 
