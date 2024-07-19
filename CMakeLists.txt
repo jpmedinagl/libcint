@@ -106,7 +106,7 @@ if(ENABLE_STATIC)
 endif()
 
 add_library(cint ${cintSrc})
-target_link_libraries(cint -lm -flto LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
+target_link_libraries(cint -lm -flto) # LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
 
 option(SO "build so" 0)
 option(GRAD "build grad" 0)
