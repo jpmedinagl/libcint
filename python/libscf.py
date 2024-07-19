@@ -2,11 +2,32 @@ import os
 import ctypes
 import numpy as np
 
-path = '/u/jpmedina/libcint/python/libgrad.so'
-# path = os.path.abspath("libgrad.so")
-# print(path)
+path = '/u/jpmedina/libcint/python/libgrad2.so'
 
 libc = ctypes.CDLL(path)
+
+libc.integral1e.argtypes = (
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.POINTER(ctypes.c_int),
+    ctypes.POINTER(ctypes.c_int),
+    ctypes.POINTER(ctypes.c_double),
+    ctypes.c_int,
+    ctypes.c_int
+)
+libc.integral1e.restype = ctypes.POINTER(ctypes.c_double)
+
+libc.integral2e.argtypes = (
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.POINTER(ctypes.c_int),
+    ctypes.POINTER(ctypes.c_int),
+    ctypes.POINTER(ctypes.c_double),
+    ctypes.c_int
+)
+libc.integral2e.restype = ctypes.POINTER(ctypes.c_double)
 
 libc.RHF.argtypes = (
     ctypes.c_int,
@@ -42,6 +63,51 @@ libc.grad.argtypes = (
     ctypes.POINTER(ctypes.c_double)
 )
 libc.grad.restype = ctypes.POINTER(ctypes.c_double)
+
+def int1e(natm: int, nbas: int, nshells: int, atm: np.ndarray, bas: np.ndarray, env: np.ndarray, typei: str = 'ovlp', coord: str = 'cart') -> np.ndarray:
+    atm_ctypes = atm.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+    bas_ctypes = bas.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+    env_ctypes = env.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+
+    if (typei == 'ovlp'):
+        flag = 0
+    elif (typei == 'kin'):
+        flag = 1
+    elif (typei == 'nuc'):
+        flag = 2
+    else:
+        print("integral type does not exist: ovlp, kin, nuc")
+        return None
+    
+    if (coord == 'cart'):
+        c = 0
+    elif (coord == 'sph'):
+        c = 1
+    else:
+        print("coordinate type does not exist: cart, sph")
+        return None
+
+    
+    R_c = libc.integral1e(natm, nbas, nshells, atm_ctypes, bas_ctypes, env_ctypes, c, flag)
+    R = np.ctypeslib.as_array(R_c, shape=(nshells, nshells))
+    return R
+
+def int2e(natm: int, nbas: int, nshells: int, atm: np.ndarray, bas: np.ndarray, env: np.ndarray, coord: str = 'cart') -> np.ndarray:
+    atm_ctypes = atm.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+    bas_ctypes = bas.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+    env_ctypes = env.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+
+    if (coord == 'cart'):
+        c = 0
+    elif (coord == 'sph'):
+        c = 1
+    else:
+        print("coordinate type does not exist: cart, sph")
+        return None
+    
+    R_c = libc.integral2e(natm, nbas, nshells, atm_ctypes, bas_ctypes, env_ctypes, c)
+    R = np.ctypeslib.as_array(R_c, shape=(nshells, nshells, nshells, nshells))
+    return R
 
 def RHF(natm: int, nbas: int, nelec: int, nshells: int, atm: np.ndarray, bas: np.ndarray, env: np.ndarray, imax: int = 200, conv: float = 1e-6) -> np.ndarray:    
     atm_ctypes = atm.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
