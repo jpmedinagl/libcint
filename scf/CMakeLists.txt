@@ -1,5 +1,5 @@
 add_executable(bug bug.c)
-target_link_libraries(bug PUBLIC cint m LLDEnzymeFlags)
+target_link_libraries(bug PUBLIC cint m LLDEnzymeFlags LLDEnzymePrintFlags LLDEnzymePrintTypeFlags)
 
 # add_executable(buf ${CMAKE_SOURCE_DIR}/scf/buf.c)
 # target_link_libraries(buf PUBLIC cint m LLDEnzymeFlags)
