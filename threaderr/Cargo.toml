@@ -1,0 +1,17 @@
+[package]
+name = "lib"
+version = "0.1.0"
+edition = "2021"
+
+[profile.dev]
+debug = true
+opt-level = 0
+debug-assertions = true
+lto = "fat"
+
+[profile.release]
+lto = "fat"
+
+[[bin]]
+name = "file"
+path = "file.rs"
