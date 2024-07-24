@@ -53,14 +53,15 @@ void cint1e_cart_wrapper(double *buf, int *shls,
 
 void cint1e_diff(double *buf, double * dbuf, int *shls,
                       int *atm, int natm, int *bas, int nbas, double *env, double *denv) {
-	__enzyme_autodiff((void *) cint1e_cart_wrapper,
+	__enzyme_autodiff((void *) cint1e_ovlp_cart,
 			enzyme_dup, buf, dbuf,	
 			enzyme_const, shls, 
 			enzyme_const, atm, 
 			enzyme_const, natm, 
 			enzyme_const, bas, 
 			enzyme_const, nbas,
-			enzyme_dup, env, denv);
+			enzyme_dup, env, denv,
+			enzyme_const, NULL);
 }
 
 
@@ -85,40 +86,37 @@ int main(int argc, char ** argv)
 
 	// SINGLE MATRIX ELEMENT
 
-    int i = 4, j = 2;
+    int i = 2, j = 4;
     shls[0] = i; di = CINTcgto_cart(i, bas);
 	shls[1] = j; dj = CINTcgto_cart(j, bas);
 
     printf("ij didj %d%d %d%d\n", i, j, di, dj);
 
     buf = malloc(sizeof(double) * di * dj);
-	// cint1e_ovlp_cart(buf, shls, atm, natm, bas, nbas, env);
-    
-    // printf("buf: ");
-    // for (int l = 0; l < di * dj; l++) {
-    //     printf("%lf ", buf[l]);
-    // }
-    // printf("\n");
-
     dbuf = malloc(sizeof(double) * di * dj);
 	dbuf[0] = 1.0;
     denv = malloc(sizeof(double) * 10000);
 	memset(denv, 0, sizeof(double) * 10000);
 	
-	// int ret = __enzyme_autodiff((void *) cint1e_ovlp_cart,
-	// 		enzyme_dup, buf, dbuf,
-	// 		enzyme_const, shls,
-	// 		enzyme_const, atm,
-	// 		enzyme_const, natm,
-	// 		enzyme_const, bas,
-	// 		enzyme_const, nbas,
-	// 		enzyme_dup, env, denv,
-	// 		enzyme_const, NULL);
-	
+	printf("denv:\n");
+    for (int k = 55; k < 56; k++) {
+        printf("%f ", denv[k]);
+    }
     cint1e_diff(buf, dbuf, shls, atm, natm, bas, nbas, env, denv);
 
-    printf("denv:\n");
-    for (int k = 0; k < 56 * 3; k++) {
+	dbuf[1] = 1.0;
+	memset(denv, 0, sizeof(double) * 10000);
+
+	cint1e_diff(buf, dbuf, shls, atm, natm, bas, nbas, env, denv);
+	for (int k = 55; k < 56; k++) {
+        printf("%f ", denv[k]);
+    }
+
+	dbuf[2] = 1.0;
+	memset(denv, 0, sizeof(double) * 10000);
+
+	cint1e_diff(buf, dbuf, shls, atm, natm, bas, nbas, env, denv);
+	for (int k = 55; k < 56; k++) {
         printf("%f ", denv[k]);
     }
     printf("\n");
