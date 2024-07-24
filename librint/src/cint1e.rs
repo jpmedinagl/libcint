@@ -931,21 +931,23 @@ pub fn cint1e_ovlp_cart(
     nbas: i32,
     env: &mut [f64],
 ) -> i32 {
-    let mut dims = [0;0];
-    let mut cache = [0.0;0];
-    unsafe {
-        return int1e_ovlp_cart(
-            out,
-            &mut dims,
-            shls,
-            atm,
-            natm,
-            bas,
-            nbas,
-            env,
-            &mut cache,
-        );
-    }
+    eprintln!("libcint lrys_wheeler singular value n={} i={} b={}", 0, 0, 0);
+    return 0;
+    // let mut dims = [0;0];
+    // let mut cache = [0.0;0];
+    // unsafe {
+    //     return int1e_ovlp_cart(
+    //         out,
+    //         &mut dims,
+    //         shls,
+    //         atm,
+    //         natm,
+    //         bas,
+    //         nbas,
+    //         env,
+    //         &mut cache,
+    //     );
+    // }
 }
 #[no_mangle]
 pub unsafe extern "C" fn cint1e_ovlp_cart_optimizer(
