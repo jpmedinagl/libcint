@@ -7,10 +7,6 @@ set(cint_VERSION_TWEAK "0")
 set(cint_VERSION "${cint_VERSION_MAJOR}.${cint_VERSION_MINOR}.${cint_VERSION_PATCH}")
 set(cint_SOVERSION "${cint_VERSION_MAJOR}")
 
-
-# set(CMAKE_C_COMPILER "/u/jpmedina/llvm-project-14.0.6/build/bin/clang")
-message("set clang")
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if ("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
