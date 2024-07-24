@@ -64,6 +64,15 @@ libc.grad.argtypes = (
 )
 libc.grad.restype = ctypes.POINTER(ctypes.c_double)
 
+def pmat(A):
+    for i in range(len(A)):
+      for j in range(len(A[0])):
+        if (A[i,j] <= 0):
+            print("{:f} ".format(A[i,j]), end='')
+        else:
+            print(" {:f} ".format(A[i,j]), end='')
+      print()
+
 def int1e(natm: int, nbas: int, nshells: int, atm: np.ndarray, bas: np.ndarray, env: np.ndarray, typei: str = 'ovlp', coord: str = 'cart') -> np.ndarray:
     atm_ctypes = atm.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
     bas_ctypes = bas.ctypes.data_as(ctypes.POINTER(ctypes.c_int))

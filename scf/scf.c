@@ -655,6 +655,7 @@ double energy(int natm, int nbas, int nshells, int * atm, int * bas, double * en
 double * grad(int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P) 
 {
     double * denv = malloc(sizeof(double) * 100);
+    memset(denv, 0, sizeof(double) * 100);
 
     double dE = __enzyme_autodiff((void *) energy,
         enzyme_const, natm,
