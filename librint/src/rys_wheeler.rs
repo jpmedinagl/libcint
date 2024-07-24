@@ -5444,24 +5444,24 @@ unsafe extern "C" fn lnaive_jacobi_moments(
         lower,
         n - 1 as i32,
     );
-    i = 0 as i32;
-    while i < n {
-        coef = lJACOBI_COEF
-            .as_mut_ptr()
-            .offset((i * (i + 1 as i32) / 2 as i32) as isize);
-        order = JACOBI_COEF_ORDER
-            .as_mut_ptr()
-            .offset((i * (i + 1 as i32) / 2 as i32) as isize);
-        s = 0.0f64;
-        j = 0 as i32;
-        while j <= i {
-            k = *order.offset(j as isize);
-            s += *coef.offset(k as isize) * fmt[k as usize];
-            j += 1;
-        }
-        *mus.offset(i as isize) = s;
-        i += 1;
-    }
+    // i = 0 as i32;
+    // while i < n {
+    //     coef = lJACOBI_COEF
+    //         .as_mut_ptr()
+    //         .offset((i * (i + 1 as i32) / 2 as i32) as isize);
+    //     order = JACOBI_COEF_ORDER
+    //         .as_mut_ptr()
+    //         .offset((i * (i + 1 as i32) / 2 as i32) as isize);
+    //     s = 0.0f64;
+    //     j = 0 as i32;
+    //     while j <= i {
+    //         k = *order.offset(j as isize);
+    //         s += *coef.offset(k as isize) * fmt[k as usize];
+    //         j += 1;
+    //     }
+    //     *mus.offset(i as isize) = s;
+    //     i += 1;
+    // }
 }
 unsafe extern "C" fn lflocke_jacobi_moments(
     mut n: i32,
@@ -5471,38 +5471,38 @@ unsafe extern "C" fn lflocke_jacobi_moments(
     if t < 3e-7f64 {
         return lnaive_jacobi_moments(n, t, 0.0f64, mus);
     }
-    let mut t_inv: f64 = 0.5 / t;
-    let mut mu1: f64 = 1.0f64;
-    let mut mu2: f64 = 0.0f64;
-    let mut mu0: f64 = 0.0f64;
-    let mut rn: f64 = 0.0f64;
-    let mut i: i32 = 0;
-    i = n - 1 as i32 + 24 as i32;
-    while i >= n {
-        rn = (2 as i32 * i + 3 as i32) as f64 * t_inv
-            + lJACOBI_RN_PART2[i as usize];
-        mu0 = (mu2 - rn * mu1) / lJACOBI_SN[i as usize];
-        mu2 = mu1;
-        mu1 = mu0;
-        i -= 1;
-    }
-    while i >= 0 as i32 {
-        rn = (2 as i32 * i + 3 as i32) as f64 * t_inv
-            + lJACOBI_RN_PART2[i as usize];
-        mu0 = (mu2 - rn * mu1) / lJACOBI_SN[i as usize];
-        *mus.offset(i as isize) = mu0;
-        mu2 = mu1;
-        mu1 = mu0;
-        i -= 1;
-    }
-    let mut tt: f64 = sqrtl(t);
-    let mut norm: f64 = 
-        0.8862269254527580136490837416705725913987747280611935641069038949264f64 * erfl(tt) / tt / mu0;
-    i = 0 as i32;
-    while i < n {
-        *mus.offset(i as isize) *= norm;
-        i += 1;
-    }
+    // let mut t_inv: f64 = 0.5 / t;
+    // let mut mu1: f64 = 1.0f64;
+    // let mut mu2: f64 = 0.0f64;
+    // let mut mu0: f64 = 0.0f64;
+    // let mut rn: f64 = 0.0f64;
+    // let mut i: i32 = 0;
+    // i = n - 1 as i32 + 24 as i32;
+    // while i >= n {
+    //     rn = (2 as i32 * i + 3 as i32) as f64 * t_inv
+    //         + lJACOBI_RN_PART2[i as usize];
+    //     mu0 = (mu2 - rn * mu1) / lJACOBI_SN[i as usize];
+    //     mu2 = mu1;
+    //     mu1 = mu0;
+    //     i -= 1;
+    // }
+    // while i >= 0 as i32 {
+    //     rn = (2 as i32 * i + 3 as i32) as f64 * t_inv
+    //         + lJACOBI_RN_PART2[i as usize];
+    //     mu0 = (mu2 - rn * mu1) / lJACOBI_SN[i as usize];
+    //     *mus.offset(i as isize) = mu0;
+    //     mu2 = mu1;
+    //     mu1 = mu0;
+    //     i -= 1;
+    // }
+    // let mut tt: f64 = sqrtl(t);
+    // let mut norm: f64 = 
+    //     0.8862269254527580136490837416705725913987747280611935641069038949264f64 * erfl(tt) / tt / mu0;
+    // i = 0 as i32;
+    // while i < n {
+    //     *mus.offset(i as isize) *= norm;
+    //     i += 1;
+    // }
 }
 unsafe extern "C" fn lwheeler_recursion(
     mut n: i32,
@@ -5698,8 +5698,10 @@ pub unsafe extern "C" fn CINTlrys_jacobi(
     let mut beta: *mut f64 = lJACOBI_BETA.as_mut_ptr();
     if lower == 0 as i32 as f64 {
         lflocke_jacobi_moments(n * 2 as i32, x, moments.as_mut_ptr());
-    } else {
-        lnaive_jacobi_moments(n * 2 as i32, x, lower, moments.as_mut_ptr());
     }
-    return lrys_wheeler_partial(n, alpha, beta, moments.as_mut_ptr(), roots, weights);
+    // } else {
+    //     lnaive_jacobi_moments(n * 2 as i32, x, lower, moments.as_mut_ptr());
+    // }
+    // return lrys_wheeler_partial(n, alpha, beta, moments.as_mut_ptr(), roots, weights);
+    return 0;
 }
