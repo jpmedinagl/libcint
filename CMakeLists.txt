@@ -7,15 +7,10 @@ set(cint_VERSION_TWEAK "0")
 set(cint_VERSION "${cint_VERSION_MAJOR}.${cint_VERSION_MINOR}.${cint_VERSION_PATCH}")
 set(cint_SOVERSION "${cint_VERSION_MAJOR}")
 
-
-# set(CMAKE_C_COMPILER "/u/jpmedina/llvm-project-14.0.6/build/bin/clang")
-message("set clang")
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if ("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto") # --save-temps -fuse-ld=lld")
-    # set(CMAKE_C_FLAGS "-g")
     message("Clang found")
 endif ()
 
@@ -45,32 +40,16 @@ if (BUILD_MARCH_NATIVE)
   endif()
 endif()
 
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O2 -DNDEBUG")
-
 cmake_policy(SET CMP0042 NEW)
 include(GNUInstallDirs)
-#set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 
 ## ENZYME
 
 find_package(Enzyme REQUIRED CONFIG NO_DEFAULT_PATH)
 message("found dir ${Enzyme_DIR}")
-message("found ${Enzyme_FOUND}")
 get_property(importTargetsAfter DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY IMPORTED_TARGETS)
 message("imported targets ${importTargetsAfter}")
-
-# /u/jpmedina/clapack/build
-# find_package(CLAPACK REQUIRED CONFIG NO_DEFAULT_PATH)
-# message("found dir ${CLAPACK_DIR}")
-# message("found ${CLAPACK_FOUND}")
-# get_property(importTargetsAfter DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY IMPORTED_TARGETS)
-# message("imported targets ${importTargetsAfter}")
-
-# find_library(${CLAPACK_DIR})
-#target_include_directories(CLAPACK PUBLIC "/u/jpmedina/clapack/INCLUDE")
-#target_link_directories(CLAPACK PUBLIC "/u/jpmedina/clapack/build")
-
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 find_package(QUADMATH)
@@ -87,9 +66,6 @@ set(CMAKE_REQUIRED_INCLUDES math.h)
 set(CMAKE_REQUIRED_LIBRARIES m)
 check_function_exists(expl HAVE_EXPL)
 check_function_exists(sqrtl HAVE_SQRTL)
-#set(CMAKE_REQUIRED_INCLUDES quadmath.h)
-#set(CMAKE_REQUIRED_LIBRARIES quadmath)
-#check_function_exists(fabsq HAVE_QUADMATH_H)
 
 include_directories(
   ${PROJECT_BINARY_DIR}/include
@@ -119,124 +95,38 @@ set(cintSrc
   src/autocode/deriv3.c src/autocode/int1e_grids1.c
   src/autocode/deriv4.c src/autocode/lresc.c)
 
-set(gradSrc
-  python/scf.c)
-
-set(diagSrc
-  diagonal/backspac.c diagonal/blaswrap.h diagonal/close.c diagonal/daxpy.c diagonal/dcopy.c
-  diagonal/ddot.c diagonal/dfe.c diagonal/dgemm.c diagonal/dgemv.c
-  diagonal/dger.c diagonal/disnan.c diagonal/dlae2.c diagonal/dlaev2.c
-  diagonal/dlaisnan.c diagonal/dlamch.c diagonal/dlanst.c diagonal/dlansy.c
-  diagonal/dlapy2.c diagonal/dlarfb.c diagonal/dlarf.c diagonal/dlarfg.c
-  diagonal/dlarft.c diagonal/dlartg.c diagonal/dlascl.c diagonal/dlaset.c
-  diagonal/dlasr.c diagonal/dlasrt.c diagonal/dlatrd.c diagonal/dnrm2.c
-  diagonal/dorg2l.c diagonal/dorg2r.c diagonal/dorgql.c diagonal/dorgqr.c
-  diagonal/dorgtr.c diagonal/dscal.c diagonal/d_sign.c diagonal/dsteqr.c
-  diagonal/dsterf.c diagonal/dswap.c diagonal/dsyev.c diagonal/dsymv.c
-  diagonal/dsyr2.c diagonal/dsyr2k.c diagonal/dsytd2.c diagonal/dsytrd.c
-  diagonal/dtrmm.c diagonal/dtrmv.c diagonal/endfile.c diagonal/err.c
-  diagonal/f2c.h diagonal/fio.h diagonal/fmt.c diagonal/fmt.h
-  diagonal/fmtlib.c diagonal/fp.h diagonal/i77vers.c diagonal/ieeeck.c
-  diagonal/iio.c diagonal/iladlc.c diagonal/iladlr.c diagonal/ilaenv.c
-  diagonal/i_nint.c diagonal/inquire.c diagonal/iparmq.c diagonal/lio.h
-  diagonal/lsame.c diagonal/lwrite.c diagonal/open.c diagonal/pow_di.c
-  diagonal/rewind.c diagonal/s_cmp.c diagonal/s_copy.c diagonal/sfe.c
-  diagonal/sig_die.c diagonal/sysdep1.h diagonal/util.c diagonal/wref.c
-  diagonal/wrtfmt.c diagonal/wsfe.c diagonal/xerbla.c)
-
-#option(WITH_RANGE_COULOMB "Range separated Coulomb" on)
-if(WITH_RANGE_COULOMB)
-# defined in config.h
-#  add_definitions(-DWITH_RANGE_COULOMB)
-#  message("Enabled WITH_RANGE_COULOMB")
-endif(WITH_RANGE_COULOMB)
-
-if(WITH_POLYNOMIAL_FIT)
-  set(cintSrc ${cintSrc} src/polyfits.c src/sr_rys_polyfits.c)
-  add_definitions(-DWITH_POLYNOMIAL_FIT)
-  message("Enabled WITH_POLYNOMIAL_FIT")
-endif(WITH_POLYNOMIAL_FIT)
-
-if(WITH_COULOMB_ERF)
-  message("WITH_COULOMB_ERF is deprecated since v6.0")
-endif(WITH_COULOMB_ERF)
-
-if(WITH_F12)
-  set(cintSrc ${cintSrc} src/g2e_f12.c src/stg_roots.c src/cint2e_f12.c)
-  add_definitions(-DWITH_F12)
-  message("Enabled WITH_F12")
-endif(WITH_F12)
-
-# Gaussian type geminal code are incorrect
-if(WITH_GTG)
-#  set(cintSrc ${cintSrc} src/g2e_gtg.c src/cint2e_gtg.c src/cint3c2e_gtg.c
-#    src/cint2c2e_gtg.c)
-#  add_definitions(-DWITH_GTG)
-#  message("Enabled WITH_GTG. Note there are bugs in gtg type integrals")
-  message("WITH_GTG is deprecated since v6.0")
-endif(WITH_GTG)
-
-if(WITH_4C1E)
-  set(cintSrc ${cintSrc} src/cint4c1e.c src/g4c1e.c)
-  message("Enabled WITH_4C1E. Note there are bugs in 4c1e integral functions")
-endif(WITH_4C1E)
-
-if(PYPZPX)
-  add_definitions(-DPYPZPX)
-  message("P orbitals convention (py, pz, px)")
-else()
-  message("P orbitals convention (px, py, pz)")
-endif(PYPZPX)
-
-if(MIN_EXPCUTOFF)
-  message("Minimal cutoff in exponent for integral screening ${MIN_EXPCUTOFF}")
-  add_definitions(-DMIN_EXPCUTOFF=${MIN_EXPCUTOFF})
-endif()
-
-if(KEEP_GOING)
-  message("Do not trigger hard exit for numerical issues in Rys quadrature")
-  add_definitions(-DKEEP_GOING)
-endif()
-
-option(WITH_FORTRAN "Fortran interface" on)
-if(WITH_FORTRAN)
-  add_definitions(-DWITH_FORTRAN)
-  message("Enable Fortran interface")
-else()
-  message("Exclude Fortran interface")
-endif(WITH_FORTRAN)
-
-option(WITH_CINT2_INTERFACE "Old libcint (version 2) interface" on)
-if(WITH_CINT2_INTERFACE)
-  add_definitions(-DWITH_CINT2_INTERFACE)
-  message("Enable old cint (version 2) interface")
-else()
-  message("Exclude old cint (version 2) interface")
-endif(WITH_CINT2_INTERFACE)
-
 option(BUILD_SHARED_LIBS "build shared libraries" 1)
 option(ENABLE_EXAMPLE "build examples" 0)
 option(ENABLE_TEST "build tests" 0)
-option(ENABLE_STATIC "Enforce static library build" 0)
-if(QUICK_TEST)
-  set(RUN_QUICK_TEST --quick)
-endif()
+option(ENABLE_STATIC "Enforce static library build" 1)
 
 if(ENABLE_STATIC)
   set(BUILD_SHARED_LIBS 0)
 endif()
 
+add_library(cint ${cintSrc})
+target_link_libraries(cint -lm -flto) # LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
+
+option(SO "build so" 0)
+option(GRAD "build grad" 0)
+option(SCF "build scf" 0)
+
 add_subdirectory(diagonal)
 
-add_library(cint ${cintSrc})
-set_target_properties(cint PROPERTIES
-  VERSION ${cint_VERSION}
-  SOVERSION ${cint_SOVERSION}
-  LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
-if(QUADMATH_FOUND)
-	target_link_libraries(cint quadmath -flto LLDEnzymeFlags)
+if (SO)
+  set(gradSrc
+    scf/scf.c)
+  add_library(grad SHARED ${gradSrc} ${cintSrc})
+  target_link_libraries(grad -lm -flto diag LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
+else()
+  if (GRAD)
+    add_subdirectory(grad)
+  endif()
+
+  if (SCF)
+    add_subdirectory(scf)
+  endif()
 endif()
-target_link_libraries(cint -lm -flto LLDEnzymeFlags)
 
 set(CintHeaders
   ${PROJECT_SOURCE_DIR}/include/cint_funcs.h
@@ -244,39 +134,6 @@ set(CintHeaders
 
 install(TARGETS cint DESTINATION "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" COMPONENT "lib")
 install(FILES ${CintHeaders} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR} COMPONENT "dev")
-
-option(GRAD "build grad" 0)
-if (GRAD)
-  add_subdirectory(grad)
-endif()
-
-option(PY "build py" 0)
-if (PY)
-  add_subdirectory(python)
-endif()
-
-if(ENABLE_EXAMPLE)
-  enable_language(Fortran)
-  find_package(OpenMP)
-  if(OPENMP_FOUND)
-    set(HAVE_OPENMP 1)
-  else ()
-    set(OpenMP_C_FLAGS " ")
-  endif()
-  add_subdirectory(examples)
-endif()
-
-if(BUILD_SHARED_LIBS AND ENABLE_TEST)
-  find_package(PythonInterp)
-  message(STATUS "Found python  ${PYTHON_EXECUTABLE}")
-  if(PYTHONINTERP_FOUND)
-    enable_testing()
-    add_test(NAME cinttest
-      COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/testsuite/test_cint.py ${RUN_QUICK_TEST})
-    add_test(NAME cint3c2etest
-      COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/testsuite/test_3c2e.py ${RUN_QUICK_TEST})
-  endif()
-endif()
 
 include(CPackComponent)
 

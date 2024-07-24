@@ -420,7 +420,7 @@ int main()
     int nbas = 2;
     
     int nelec = 2; // ?
-    int nshells = 1; // ?
+    int nshells = 2; // ?
 
     int * atm = malloc(sizeof(int) * natm * ATM_SLOTS);
     int * bas = malloc(sizeof(int) * nbas * BAS_SLOTS);

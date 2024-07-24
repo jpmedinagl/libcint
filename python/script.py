@@ -1,45 +1,54 @@
 import libscf
 import numpy as np
+import pyscf
 
-natm, nbas, nelec = 3, 5, 10
-atm = np.array([[ 8, 20,  1, 23,  0,  0],
-       [ 1, 24,  1, 27,  0,  0],
-       [ 1, 28,  1, 31,  0,  0]], dtype=int32)
-bas = np.array([[ 0,  0,  3,  1,  0, 32, 35,  0],
-       [ 0,  0,  3,  1,  0, 38, 41,  0],
-       [ 0,  1,  3,  1,  0, 44, 47,  0],
-       [ 1,  0,  3,  1,  0, 50, 53,  0],
-       [ 2,  0,  3,  1,  0, 50, 53,  0]], dtype=int32)
-env = np.array([  0.        ,   0.        ,   0.        ,   0.        ,
-         0.        ,   0.        ,   0.        ,   0.        ,
-         0.        ,   0.        ,   0.        ,   0.        ,
-         0.        ,   0.        ,   0.        ,   0.        ,
-         0.        ,   0.        ,   0.        ,   0.        ,
-         0.        ,  -0.21042327,   0.        ,   0.        ,
-         0.        ,   0.8416929 ,  -1.47972415,   0.        ,
-         0.        ,   0.8416929 ,   1.47972415,   0.        ,
-       130.70932   ,  23.808861  ,   6.4436083 ,  15.07274649,
-        14.57770167,   4.54323359,   5.0331513 ,   1.1695961 ,
-         0.380389  ,  -0.848697  ,   1.13520079,   0.85675304,
-         5.0331513 ,   1.1695961 ,   0.380389  ,   3.42906571,
-         2.15628856,   0.34159239,   3.42525091,   0.62391373,
-         0.1688554 ,   0.98170675,   0.94946401,   0.29590645])
+mol = pyscf.gto.M(atom='''
+                    H 0 0 -0.8
+                    H 0 0 0.8''',
+                    basis='sto-3g')
 
-P = np.array([[2.14127, -0.67942, -0.00000, -0.08301, 0.00000, 0.18263, 0.18263],
-                [-0.67942, 3.52152, 0.00000, 0.65456, 0.00000, -1.44004, -1.44004],
-                [-0.00000, 0.00000, 0.00000, 0.00000, -0.00000, -0.00000, -0.00000],
-                [-0.08301, 0.65456, 0.00000, 2.30542, 0.00000, -0.67193, -0.67193],
-                [0.00000, 0.00000, -0.00000, 0.00000, 1.23675, 1.45460, -1.45460],
-                [0.18263, -1.44004, -0.00000, -0.67193, 1.45460, 3.18909, -0.23258],
-                [0.18263, -1.44004, -0.00000, -0.67193, -1.45460, -0.23258, 3.18909]])
+atm = np.asarray(mol._atm, dtype=np.int32, order='C')
+bas = np.asarray(mol._bas, dtype=np.int32, order='C')
+env = np.asarray(mol._env, dtype=np.double, order='C')
 
-# 2.105386 -0.441309 -0.000000 0.108777 -0.000000 -0.031468 -0.031468 
-# -0.441309 1.941652 0.000000 -0.617989 -0.000000 -0.019468 -0.019468 
-# -0.000000 0.000000 2.000000 -0.000000 -0.000000 0.000000 -0.000000 
-# 0.108777 -0.617989 -0.000000 1.280413 0.000000 0.472309 0.472309 
-# -0.000000 -0.000000 -0.000000 0.000000 0.720151 -0.531182 0.531182 
-# -0.031468 -0.019468 0.000000 0.472309 -0.531182 0.592718 -0.190879 
-# -0.031468 -0.019468 -0.000000 0.472309 0.531182 -0.190879 0.592718
+natm, nbas, nelec, nshells = 2, 2, 2, 2
 
-E = libscf.energy(natm, nbas, nelec, atm, bas, env, P)
-print(E)
+P = libscf.RHF(natm, nbas, nelec, nshells, atm, bas, env)
+print("P:\n", P)
+
+E = libscf.energy(natm, nbas, nshells, atm, bas, env, P)
+print("E:\n", E)
+
+denv = libscf.grad(natm, nbas, nshells, atm, bas, env, P)
+print("GRAD:\n", denv[28:34])
+
+S = libscf.int1e(natm, nbas, nshells, atm, bas, env, 'ovlp')
+print("S:\n", S)
+
+T = libscf.int1e(natm, nbas, nshells, atm, bas, env, 'kin')
+print("T:\n", T)
+
+
+mol = pyscf.gto.M(atom='''
+                    O   -0.0000000   -0.1113512    0.0000000
+                    H    0.0000000    0.4454047   -0.7830363
+                    H   -0.0000000    0.4454047    0.7830363''',
+                    basis='sto-3g')
+
+atm = np.asarray(mol._atm, dtype=np.int32, order='C')
+bas = np.asarray(mol._bas, dtype=np.int32, order='C')
+env = np.asarray(mol._env, dtype=np.double, order='C')
+
+natm, nbas, nelec, nshells = 3, 5, 10, 7
+
+P = libscf.RHF(natm, nbas, nelec, nshells, atm, bas, env)
+print("P:\n", P)
+
+E = libscf.energy(natm, nbas, nshells, atm, bas, env, P)
+print("E:\n", E)
+
+S = libscf.int1e(natm, nbas, nshells, atm, bas, env, 'ovlp')
+print("S:\n", S)
+
+T = libscf.int1e(natm, nbas, nshells, atm, bas, env, 'kin')
+print("T:\n", T)
