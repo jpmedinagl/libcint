@@ -95,6 +95,8 @@ set(cintSrc
   src/autocode/deriv3.c src/autocode/int1e_grids1.c
   src/autocode/deriv4.c src/autocode/lresc.c)
 
+set(ovlpSrc src/ovlp.c)
+
 option(BUILD_SHARED_LIBS "build shared libraries" 1)
 option(ENABLE_EXAMPLE "build examples" 0)
 option(ENABLE_TEST "build tests" 0)
@@ -104,7 +106,7 @@ if(ENABLE_STATIC)
   set(BUILD_SHARED_LIBS 0)
 endif()
 
-add_library(cint ${cintSrc})
+add_library(cint ${ovlpSrc})
 target_link_libraries(cint -lm -flto) # LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
 
 option(SO "build so" 0)

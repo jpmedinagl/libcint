@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "cint.h"
 
 extern int enzyme_dup;
 extern int enzyme_out;
@@ -10,7 +9,7 @@ extern int enzyme_const;
 
 int __enzyme_autodiff(void *, ...);
 
-int cint1e_ovlp_cart(double *buf, int *shls,
+int ovlp_cart(double *buf, int *shls,
                     int *atm, int natm, int *bas, int nbas, double *env);
 
 int main(int argc, char ** argv)
@@ -57,7 +56,7 @@ int main(int argc, char ** argv)
     denv = malloc(sizeof(double) * 1000);
 	memset(denv, 0, sizeof(double) * 1000);
 	
-	int ret = __enzyme_autodiff((void *) cint1e_ovlp_cart,
+	int ret = __enzyme_autodiff((void *) ovlp_cart,
 			enzyme_dup, buf, dbuf,
 			enzyme_const, shls,
 			enzyme_const, atm,
