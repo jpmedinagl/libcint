@@ -2,6 +2,16 @@ import librint
 import ctypes
 import numpy as np
 
+def pmat(A):
+    for i in range(len(A)):
+      for j in range(len(A[0])):
+        if (A[i,j] <= 0):
+            print("{:f} ".format(A[i,j]), end='')
+        else:
+            print(" {:f} ".format(A[i,j]), end='')
+      print()
+
+
 def int1e(natm: int, nbas: int, nshells: int, atm: np.ndarray, bas: np.ndarray, env: np.ndarray, typei: str = 'ovlp', coord: str = 'cart') -> np.ndarray:
     atm_r = atm.flatten().tolist()
     bas_r = bas.flatten().tolist()
@@ -67,12 +77,12 @@ def grad(natm: int, nbas: int, nshells: int, atm: np.ndarray, bas: np.ndarray, e
     atm_r = atm.flatten().tolist()
     bas_r = bas.flatten().tolist()
     env_r = env.flatten().tolist()
-    denv_r = [0.0 for i in range(len(env_r))]
-
     P_r = P.flatten().tolist()
-    librint.grad(natm, nbas, nshells, atm_r, bas_r, env_r, denv_r, P_r, 1.0)
 
-    return denv_r
+    denv_r = librint.grad(natm, nbas, nshells, atm_r, bas_r, env_r, P_r)
+    denv = np.array(denv_r)
+
+    return denv
 
 
 if __name__ == '__main__':

@@ -19,6 +19,9 @@ print("P:\n", P)
 E = librscf.energy(natm, nbas, nshells, atm, bas, env, P)
 print("E:\n", E)
 
+denv = librscf.grad(natm, nbas, nshells, atm, bas, env, P)
+print("grad:\n", denv[10:20])
+
 S = librscf.int1e(natm, nbas, nshells, atm, bas, env, 'ovlp')
 print("S:\n", S)
 

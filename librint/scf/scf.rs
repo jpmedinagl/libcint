@@ -647,6 +647,23 @@ pub fn energy(
     return E0 + Enuc;
 }
 
+#[no_mangle]
+pub fn denergy(
+    natm: usize,
+    nbas: usize,
+    nshells: usize,
+    atm: &mut Vec<i32>,
+    bas: &mut Vec<i32>,
+    env: &mut Vec<f64>,
+    P: &mut Vec<f64>,
+) -> Vec<f64> {
+    let mut denv: Vec<f64> = vec![0.0; 1000];
+
+    let _ = grad(natm, nbas, nshells, atm, bas, env, &mut denv, P, 1.0);
+
+    return denv;
+}
+
 fn main() -> io::Result<()> {
     const natm: usize = 3;
     const nelec: usize = 10;
@@ -671,9 +688,10 @@ fn main() -> io::Result<()> {
     let Etot: f64 = energy(natm, nbas, nshells, &mut atm, &mut bas, &mut env, &mut P);
     println!("Etot: {}", Etot);
 
-    let mut denv = vec![0.0; 1000];
+    // let mut denv = vec![0.0; 1000];
 
-    let dEtot: f64 = grad(natm, nbas, nshells, &mut atm, &mut bas, &mut env, &mut denv, &mut P, 1.0);
+    // let dEtot: f64 = grad(natm, nbas, nshells, &mut atm, &mut bas, &mut env, &mut denv, &mut P, 1.0);
+    let denv = denergy(natm, nbas, nshells, &mut atm, &mut bas, &mut env, &mut P);
 
     println!("denv:");
     for k in 32..56 {
