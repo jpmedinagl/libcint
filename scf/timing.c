@@ -561,9 +561,6 @@ double * RHF(int natm, int nbas, int nelec, int nshells, int * atm, int * bas, d
         C = NULL;
         free(epsilon);
         epsilon = NULL;
-
-        // printf("i: %d\n", i);
-        // print_arr(nshells, 2, P);
     }
 
     free(X);
@@ -579,9 +576,6 @@ double * RHF(int natm, int nbas, int nelec, int nshells, int * atm, int * bas, d
             }
         }
     }
-
-    // printf("conv P\n");
-    // print_arr(nshells, 2, P);
 
     return P;
 }
@@ -614,46 +608,6 @@ double energy(int natm, int nbas, int nshells, int * atm, int * bas, double * en
     return Enuc + E0;
 }
 
-// void energy(double * E, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P)
-// {
-//     double * S, * H;
-//     double * two;
-//     integrals(natm, nbas, nshells, atm, bas, env, &S, &H, &two);
-
-//     double * F;
-//     calc_F(nshells, P, two, H, &F);
-
-//     double E0 = 0.0;
-//     for (int mu = 0; mu < nshells; mu++) {
-//         for (int nu = 0; nu < nshells; nu++) {
-//             E0 += 0.5 * P[mu * nshells + nu] * (H[mu * nshells + nu] + F[mu * nshells + nu]);
-//         }
-//     }
-
-//     double Enuc = 0.0;
-//     for (int i = 0; i < natm; i++) {
-//         for (int j = 0; j < natm; j++) {
-//             if (i > j) {
-//                 Enuc += ((double) (atm[i*6 + 0] * atm[j*6 + 0]))/(norm(atm, env, i, j));
-//             }
-//         }
-//     }
-
-//     *E = Enuc + E0;
-// }
-
-// void energy_diff(double * E, double * dE, int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * denv, double * P) {
-// 	__enzyme_autodiff((void *) energy,
-//         enzyme_dup, E, dE,	
-//         enzyme_const, natm,
-//         enzyme_const, nbas,
-//         enzyme_const, nshells,
-//         enzyme_const, atm,
-//         enzyme_const, bas, 
-//         enzyme_dup, env, denv,
-//         enzyme_const, P);
-// }
-
 double * grad(int natm, int nbas, int nshells, int * atm, int * bas, double * env, double * P) 
 {
     double * denv = malloc(sizeof(double) * 100);
@@ -673,123 +627,70 @@ double * grad(int natm, int nbas, int nshells, int * atm, int * bas, double * en
 
 int main()
 {
-    // int natm = 2;
-    // int nbas = 2;
+    int natm = 2;
+    int nbas = 2;
     
-    // int nelec = 2;
-    // int nshells = 2;
+    int nelec = 2;
+    int nshells = 2;
 
-    // int * atm = malloc(sizeof(int) * natm * ATM_SLOTS);
-    // int * bas = malloc(sizeof(int) * nbas * BAS_SLOTS);
-    // double * env = malloc(sizeof(double) * 100);
+    int * atm = malloc(sizeof(int) * natm * ATM_SLOTS);
+    int * bas = malloc(sizeof(int) * nbas * BAS_SLOTS);
+    double * env = malloc(sizeof(double) * 100);
 
-    // FILE * file = fopen("/u/jpmedina/libcint/molecules/h2/sto3g.txt", "r");
-    // read_arrays(file, natm, nbas, &atm, &bas, &env);
+    FILE * file = fopen("/u/jpmedina/libcint/molecules/h2/sto3g.txt", "r");
+    read_arrays(file, natm, nbas, &atm, &bas, &env);
 
-    // // double * ovlp = integral1e(natm, nbas, nshells, atm, bas, env, 0, 0);
-    // // print_arr(nshells, 2, ovlp);
+    int imax = 20;
+    double conv = 0.000001;
 
-    // // double * two = integral2e(natm, nbas, nshells, atm, bas, env, 0);
-    // // print_arr(nshells, 4, two);
+    double * P = RHF(natm, nbas, nelec, nshells, atm, bas, env, imax, conv);
 
-    // // // RHF
-    // int imax = 20;
-    // double conv = 0.000001;
+    struct timeval start, end;
+    long seconds, useconds;
+    double total_time;
 
-    // double * P = RHF(natm, nbas, nelec, nshells, atm, bas, env, imax, conv);
-
-    // // printf("P:\n");
-    // // print_arr(nshells, 2, P);
-
-    // struct timeval start, end;
-    // long seconds, useconds;
-    // double total_time;
-
-    // gettimeofday(&start, NULL);
-    // double E = energy(natm, nbas, nshells, atm, bas, env, P);
-    // gettimeofday(&end, NULL);
+    gettimeofday(&start, NULL);
+    double E = energy(natm, nbas, nshells, atm, bas, env, P);
+    gettimeofday(&end, NULL);
     
-    // printf("E:\n%lf\n", E);
+    printf("E:\n%lf\n", E);
 
-    // seconds = end.tv_sec - start.tv_sec;
-    // useconds = end.tv_usec - start.tv_usec;
+    seconds = end.tv_sec - start.tv_sec;
+    useconds = end.tv_usec - start.tv_usec;
 
-    // total_time = ((seconds) * 1000000 + useconds);
+    total_time = ((seconds) * 1000000 + useconds);
 
-    // double * denv = malloc(sizeof(double) * 1000);
-    // memset(denv, 0, sizeof(double) * 1000);
+    double * denv = malloc(sizeof(double) * 1000);
+    memset(denv, 0, sizeof(double) * 1000);
 
-    // struct timeval dstart, dend;
-    // long dseconds, duseconds;
-    // double dtotal_time;
+    struct timeval dstart, dend;
+    long dseconds, duseconds;
+    double dtotal_time;
 
-    // gettimeofday(&dstart, NULL);
-    // double dE = __enzyme_autodiff((void *) energy,
-    //     enzyme_const, natm,
-    //     enzyme_const, nbas,
-    //     enzyme_const, nshells,
-    //     enzyme_const, atm,
-    //     enzyme_const, bas, 
-    //     enzyme_dup, env, denv,
-    //     enzyme_const, P);
-    // gettimeofday(&dend, NULL);
+    gettimeofday(&dstart, NULL);
+    double dE = __enzyme_autodiff((void *) energy,
+        enzyme_const, natm,
+        enzyme_const, nbas,
+        enzyme_const, nshells,
+        enzyme_const, atm,
+        enzyme_const, bas, 
+        enzyme_dup, env, denv,
+        enzyme_const, P);
+    gettimeofday(&dend, NULL);
 
-    // dseconds = dend.tv_sec - dstart.tv_sec;
-    // duseconds = dend.tv_usec - dstart.tv_usec;
+    dseconds = dend.tv_sec - dstart.tv_sec;
+    duseconds = dend.tv_usec - dstart.tv_usec;
 
-    // dtotal_time = ((dseconds) * 1000000 + duseconds);
+    dtotal_time = ((dseconds) * 1000000 + duseconds);
 
-    // printf("denv:\n");
-    // for (int k = 28; k < 34; k++) {
-    //     printf("%f ", denv[k]);
-    // }
-    // printf("\n");
+    printf("denv:\n");
+    for (int k = 28; k < 34; k++) {
+        printf("%f ", denv[k]);
+    }
+    printf("\n");
 
-    // printf("E time: %.0f\n", total_time);
-    // printf("dE time: %.0f\n", dtotal_time);
-
-    // memset(denv, 0, sizeof(double) * 100);
-    // printf("grad:\n");
-    // denv = grad(natm, nbas, nshells, atm, bas, env, P);
-    // for (int k = 28; k < 34; k++) {
-    //     printf("%f ", denv[k]);
-    // }
-    // printf("\n");
-
-    // double E;
-    // energy(&E, natm, nbas, nshells, atm, bas, env, P);
-    // printf("E: %lf\n", E);
-
-    // double E;
-    // double dE = 1.0;
-    // double * denv = malloc(sizeof(double) * 10000);
-
-    // energy_diff(&E, &dE, natm, nbas, nshells, atm, bas, env, denv, P);
-    // printf("E: %lf\n", E);
-    // printf("denv:\n");
-    // for (int k = 28; k < 34; k++) {
-    //     printf("%f ", denv[k]);
-    // }
-    // printf("\n");
-
-    // printf("finite diff:\n");
-    
-    // double grad;
-    // double E1, E2;
-    // double h = 0.000001;
-    
-    // for (int k = 28; k < 34; k++) {
-    //     env[k] += h;
-    //     E1 = energy(natm, nbas, nshells, atm, bas, env, P);
-    //     env[k] -= 2.0*h;
-    //     E2 = energy(natm, nbas, nshells, atm, bas, env, P);
-    //     env[k] += h;
-
-    //     grad = (E1 - E2)/(2.0*h);
-
-    //     printf("%lf ", grad);
-    // }
-    // printf("\n");
+    printf("E time: %.0f\n", total_time);
+    printf("dE time: %.0f\n", dtotal_time);
 
     return 0;
 }
