@@ -26,7 +26,7 @@ pub struct Rys2eT {
 pub unsafe extern "C" fn CINTinit_int2e_EnvVars(
     mut envs: &mut CINTEnvVars,
     mut ng: &[i32],
-    mut shls: &[usize],
+    mut shls: [i32; 4],
     mut atm: &[i32],
     mut natm: i32,
     mut bas: &[i32],
@@ -38,11 +38,11 @@ pub unsafe extern "C" fn CINTinit_int2e_EnvVars(
     envs.atm = atm.into();
     envs.bas = bas.into();
     envs.env = env.into();
-    envs.shls = shls.try_into().expect("wrong size shls");
-    let i_sh: usize = shls[0];
-    let j_sh: usize = shls[1];
-    let k_sh: usize = shls[2];
-    let l_sh: usize = shls[3];
+    envs.shls = shls;
+    let i_sh: usize = shls[0] as usize;
+    let j_sh: usize = shls[1] as usize;
+    let k_sh: usize = shls[2] as usize;
+    let l_sh: usize = shls[3] as usize;
     envs.i_l = bas[8 * i_sh + 1];
     envs.j_l = bas[8 * j_sh + 1];
     envs.k_l = bas[8 * k_sh + 1];
@@ -13505,7 +13505,7 @@ pub unsafe extern "C" fn CINTg0_2e(
     a0 = a1 / (aij + akl);
     fac1 = (a0 / (a1 * a1 * a1)).sqrt() * (*envs).fac[0 as i32 as usize];
     x = a0 * rr;
-    let omega: f64 = *((*envs).env).offset(8 as i32 as isize);
+    let omega: f64 = (*envs).env[8];
     let mut theta: f64 = 0 as i32 as f64;
     if omega == 0.0f64 {
         CINTrys_roots(nroots, x, u.as_mut_ptr(), w);
@@ -13579,18 +13579,12 @@ pub unsafe extern "C" fn CINTg0_2e(
     let mut tmp3: f64 = 0.;
     let mut tmp4: f64 = 0.;
     let mut tmp5: f64 = 0.;
-    let mut rijrx: f64 = *rij.offset(0 as i32 as isize)
-        - *((*envs).rx_in_rijrx).offset(0 as i32 as isize);
-    let mut rijry: f64 = *rij.offset(1 as i32 as isize)
-        - *((*envs).rx_in_rijrx).offset(1 as i32 as isize);
-    let mut rijrz: f64 = *rij.offset(2 as i32 as isize)
-        - *((*envs).rx_in_rijrx).offset(2 as i32 as isize);
-    let mut rklrx: f64 = *rkl.offset(0 as i32 as isize)
-        - *((*envs).rx_in_rklrx).offset(0 as i32 as isize);
-    let mut rklry: f64 = *rkl.offset(1 as i32 as isize)
-        - *((*envs).rx_in_rklrx).offset(1 as i32 as isize);
-    let mut rklrz: f64 = *rkl.offset(2 as i32 as isize)
-        - *((*envs).rx_in_rklrx).offset(2 as i32 as isize);
+    let mut rijrx: f64 = *rij.offset(0 as i32 as isize) - (*envs).rx_in_rijrx[0];
+    let mut rijry: f64 = *rij.offset(1 as i32 as isize) - (*envs).rx_in_rijrx[1];
+    let mut rijrz: f64 = *rij.offset(2 as i32 as isize) - (*envs).rx_in_rijrx[2];
+    let mut rklrx: f64 = *rkl.offset(0 as i32 as isize) - (*envs).rx_in_rklrx[0];
+    let mut rklry: f64 = *rkl.offset(1 as i32 as isize) - (*envs).rx_in_rklrx[1];
+    let mut rklrz: f64 = *rkl.offset(2 as i32 as isize) - (*envs).rx_in_rklrx[2];
     let mut bc: Rys2eT = Rys2eT {
         c00x: [0.; 32],
         c00y: [0.; 32],

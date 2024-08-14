@@ -29,121 +29,70 @@ fn SQUARE(r: *mut f64) -> f64 {
 
 #[no_mangle]
 pub unsafe extern "C" fn CINTinit_int1e_EnvVars(
-    mut envs: *mut CINTEnvVars,
-    mut ng: *mut i32,
-    mut shls: *mut i32,
-    mut atm: *mut i32,
+    mut envs: &mut CINTEnvVars,
+    mut ng: &[i32],
+    mut shls: [i32; 4],
+    mut atm: &[i32],
     mut natm: i32,
-    mut bas: *mut i32,
+    mut bas: &[i32],
     mut nbas: i32,
-    mut env: *mut f64,
+    mut env: &[f64],
 ) {
     (*envs).natm = natm;
     (*envs).nbas = nbas;
-    (*envs).atm = atm;
-    (*envs).bas = bas;
-    (*envs).env = env;
+    (*envs).atm = atm.into();
+    (*envs).bas = bas.into();
+    (*envs).env = env.into();
     (*envs).shls = shls;
-    let i_sh: i32 = *shls.offset(0 as i32 as isize);
-    let j_sh: i32 = *shls.offset(1 as i32 as isize);
-    (*envs).i_l = *bas.offset((8 as i32 * i_sh + 1 as i32) as isize);
-    (*envs).j_l = *bas.offset((8 as i32 * j_sh + 1 as i32) as isize);
-    (*envs)
-        .x_ctr[0 as i32
-        as usize] = *bas.offset((8 as i32 * i_sh + 3 as i32) as isize);
-    (*envs)
-        .x_ctr[1 as i32
-        as usize] = *bas.offset((8 as i32 * j_sh + 3 as i32) as isize);
-    (*envs)
-        .nfi = ((*envs).i_l + 1 as i32) * ((*envs).i_l + 2 as i32)
-        / 2 as i32;
-    (*envs)
-        .nfj = ((*envs).j_l + 1 as i32) * ((*envs).j_l + 2 as i32)
-        / 2 as i32;
+    let i_sh: usize = shls[0] as usize;
+    let j_sh: usize = shls[1] as usize;
+    (*envs).i_l = bas[8 * i_sh + 1];
+    (*envs).j_l = bas[8 * j_sh + 1];
+    (*envs).x_ctr[0] = bas[8 * i_sh + 3];
+    (*envs).x_ctr[1] = bas[8 * j_sh + 3];
+    (*envs).nfi = (envs.i_l + 1) * (envs.i_l + 2) / 2 as i32;
+    (*envs).nfj = (envs.j_l + 1) * (envs.j_l + 2) / 2 as i32;
     (*envs).nf = (*envs).nfi * (*envs).nfj;
     (*envs).common_factor = 1 as i32 as f64;
-    if *env.offset(0 as i32 as isize) == 0 as i32 as f64 {
-        (*envs).expcutoff = 60 as i32 as f64;
+    if env[0] == 0.0 {
+        (*envs).expcutoff = 60.0;
     } else {
         (*envs)
-            .expcutoff = MAX(40 as f64, *env.offset(0 as i32 as isize))
-            as f64;
+            .expcutoff = MAX(40 as f64, env[0]) as f64;
     }
-    (*envs).li_ceil = (*envs).i_l + *ng.offset(0 as i32 as isize);
-    (*envs).lj_ceil = (*envs).j_l + *ng.offset(1 as i32 as isize);
-    (*envs)
-        .ri = env
-        .offset(
-            *atm
-                .offset(
-                    (6 as i32
-                        * *bas
-                            .offset(
-                                (8 as i32 * i_sh + 0 as i32) as isize,
-                            ) + 1 as i32) as isize,
-                ) as isize,
-        );
-    (*envs)
-        .rj = env
-        .offset(
-            *atm
-                .offset(
-                    (6 as i32
-                        * *bas
-                            .offset(
-                                (8 as i32 * j_sh + 0 as i32) as isize,
-                            ) + 1 as i32) as isize,
-                ) as isize,
-        );
-    (*envs).gbits = *ng.offset(4 as i32 as isize);
-    (*envs).ncomp_e1 = *ng.offset(5 as i32 as isize);
-    (*envs).ncomp_tensor = *ng.offset(7 as i32 as isize);
-    if *ng.offset(6 as i32 as isize) > 0 as i32 {
-        (*envs).nrys_roots = *ng.offset(6 as i32 as isize);
+    (*envs).li_ceil = (*envs).i_l + ng[0];
+    (*envs).lj_ceil = (*envs).j_l + ng[1];
+    (*envs).ri = env[atm[6 * bas[8 * i_sh + 0] as usize + 1] as usize..(atm[6 * bas[8 * i_sh + 0] as usize + 1] as usize + 3)].try_into().expect("incorrect length");
+    (*envs).rj = env[atm[6 * bas[8 * j_sh + 0] as usize + 1] as usize..(atm[6 * bas[8 * j_sh + 0] as usize + 1] as usize + 3)].try_into().expect("incorrect length");
+    (*envs).gbits = ng[4];
+    (*envs).ncomp_e1 = ng[5];
+    (*envs).ncomp_tensor = ng[7];
+    if ng[6] > 0 as i32 {
+        (*envs).nrys_roots = ng[6];
     } else {
-        (*envs)
-            .nrys_roots = ((*envs).li_ceil + (*envs).lj_ceil) / 2 as i32
-            + 1 as i32;
+        (*envs).nrys_roots = (envs.li_ceil + envs.lj_ceil) / 2 as i32 + 1 as i32;
     }
     let mut dli: i32 = 0;
     let mut dlj: i32 = 0;
-    let mut ibase: i32 = ((*envs).li_ceil > (*envs).lj_ceil) as i32;
+    let mut ibase: i32 = (envs.li_ceil > envs.lj_ceil) as i32;
     if ibase != 0 {
-        dli = (*envs).li_ceil + (*envs).lj_ceil + 1 as i32;
-        dlj = (*envs).lj_ceil + 1 as i32;
-        (*envs)
-            .rirj[0 as i32
-            as usize] = *((*envs).ri).offset(0 as i32 as isize)
-            - *((*envs).rj).offset(0 as i32 as isize);
-        (*envs)
-            .rirj[1 as i32
-            as usize] = *((*envs).ri).offset(1 as i32 as isize)
-            - *((*envs).rj).offset(1 as i32 as isize);
-        (*envs)
-            .rirj[2 as i32
-            as usize] = *((*envs).ri).offset(2 as i32 as isize)
-            - *((*envs).rj).offset(2 as i32 as isize);
+        dli = envs.li_ceil + envs.lj_ceil + 1 as i32;
+        dlj = envs.lj_ceil + 1 as i32;
+        envs.rirj[0] = envs.ri[0] - envs.rj[0];
+        envs.rirj[1] = envs.ri[1] - envs.rj[1];
+        envs.rirj[2] = envs.ri[2] - envs.rj[2];
     } else {
-        dli = (*envs).li_ceil + 1 as i32;
-        dlj = (*envs).li_ceil + (*envs).lj_ceil + 1 as i32;
-        (*envs)
-            .rirj[0 as i32
-            as usize] = *((*envs).rj).offset(0 as i32 as isize)
-            - *((*envs).ri).offset(0 as i32 as isize);
-        (*envs)
-            .rirj[1 as i32
-            as usize] = *((*envs).rj).offset(1 as i32 as isize)
-            - *((*envs).ri).offset(1 as i32 as isize);
-        (*envs)
-            .rirj[2 as i32
-            as usize] = *((*envs).rj).offset(2 as i32 as isize)
-            - *((*envs).ri).offset(2 as i32 as isize);
+        dli = envs.li_ceil + 1 as i32;
+        dlj = envs.li_ceil + envs.lj_ceil + 1 as i32;
+        envs.rirj[0] = envs.rj[0] - envs.ri[0];
+        envs.rirj[1] = envs.rj[1] - envs.ri[1];
+        envs.rirj[2] = envs.rj[2] - envs.ri[2];
     }
-    (*envs).g_stride_i = (*envs).nrys_roots;
-    (*envs).g_stride_j = (*envs).nrys_roots * dli;
-    (*envs).g_size = (*envs).nrys_roots * dli * dlj;
-    (*envs).g_stride_k = (*envs).g_size;
-    (*envs).g_stride_l = (*envs).g_size;
+    envs.g_stride_i = envs.nrys_roots;
+    envs.g_stride_j = envs.nrys_roots * dli;
+    envs.g_size = envs.nrys_roots * dli * dlj;
+    envs.g_stride_k = envs.g_size;
+    envs.g_stride_l = envs.g_size;
 }
 #[no_mangle]
 pub unsafe extern "C" fn CINTg1e_index_xyz(
@@ -230,12 +179,12 @@ pub unsafe extern "C" fn CINTg1e_ovlp(
         lj = (*envs).lj_ceil;
         di = (*envs).g_stride_i;
         dj = (*envs).g_stride_j;
-        rx = (*envs).ri;
+        rx = (*envs).ri.as_mut_ptr();
     } else {
         lj = (*envs).li_ceil;
         di = (*envs).g_stride_j;
         dj = (*envs).g_stride_i;
-        rx = (*envs).rj;
+        rx = (*envs).rj.as_mut_ptr();
     }
     let mut rijrx: [f64; 3] = [0.; 3];
     rijrx[0 as i32
@@ -347,8 +296,8 @@ pub unsafe extern "C" fn CINTg1e_nuc(
     mut nuc_id: i32,
 ) -> i32 {
     let mut nrys_roots: i32 = (*envs).nrys_roots;
-    let mut atm: *mut i32 = (*envs).atm;
-    let mut env: *mut f64 = (*envs).env;
+    let mut atm: *mut i32 = (*envs).atm.as_mut_ptr();
+    let mut env: *mut f64 = (*envs).env.as_mut_ptr();
     let mut rij: *mut f64 = ((*envs).rij).as_mut_ptr();
     let mut gx: *mut f64 = g;
     let mut gy: *mut f64 = g.offset((*envs).g_size as isize);
@@ -433,12 +382,12 @@ pub unsafe extern "C" fn CINTg1e_nuc(
         lj = (*envs).lj_ceil;
         di = (*envs).g_stride_i;
         dj = (*envs).g_stride_j;
-        rx = (*envs).ri;
+        rx = (*envs).ri.as_mut_ptr();
     } else {
         lj = (*envs).li_ceil;
         di = (*envs).g_stride_j;
         dj = (*envs).g_stride_i;
-        rx = (*envs).rj;
+        rx = (*envs).rj.as_mut_ptr();
     }
     let mut rijrx: f64 = *rij.offset(0 as i32 as isize)
         - *rx.offset(0 as i32 as isize);

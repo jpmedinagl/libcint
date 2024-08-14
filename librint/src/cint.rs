@@ -36,7 +36,7 @@ pub struct CINTEnvVars {
     pub atm: Box<[i32]>,
     pub bas: Box<[i32]>,
     pub env: Box<[f64]>,
-    pub shls: [usize; 4],
+    pub shls: [i32; 4],
     pub natm: i32,
     pub nbas: i32,
     pub i_l: i32,

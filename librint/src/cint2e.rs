@@ -33,9 +33,9 @@ pub unsafe extern "C" fn CINT2e_loop_nopt(
     mut cache: *mut f64,
     mut empty: *mut i32,
 ) -> i32 {
-    let mut shls: *mut i32 = (*envs).shls;
-    let mut bas: *mut i32 = (*envs).bas;
-    let mut env: *mut f64 = (*envs).env;
+    let mut shls: *mut i32 = (*envs).shls.as_mut_ptr();
+    let mut bas: *mut i32 = (*envs).bas.as_mut_ptr();
+    let mut env: *mut f64 = (*envs).env.as_mut_ptr();
     let mut i_sh: i32 = *shls.offset(0 as i32 as isize);
     let mut j_sh: i32 = *shls.offset(1 as i32 as isize);
     let mut k_sh: i32 = *shls.offset(2 as i32 as isize);
@@ -52,8 +52,8 @@ pub unsafe extern "C" fn CINT2e_loop_nopt(
         .offset((8 as i32 * k_sh + 2 as i32) as isize);
     let mut l_prim: i32 = *bas
         .offset((8 as i32 * l_sh + 2 as i32) as isize);
-    let mut rk: *mut f64 = (*envs).rk;
-    let mut rl: *mut f64 = (*envs).c2rust_unnamed_1.rl;
+    let mut rk: *mut f64 = (*envs).rk.as_mut_ptr();
+    let mut rl: *mut f64 = (*envs).c2rust_unnamed_1.rl.as_mut_ptr();
     let mut ai: *mut f64 = env
         .offset(
             *bas.offset((8 as i32 * i_sh + 5 as i32) as isize) as isize,
@@ -122,8 +122,8 @@ pub unsafe extern "C" fn CINT2e_loop_nopt(
         pdata_base,
         ai,
         aj,
-        (*envs).ri,
-        (*envs).rj,
+        (*envs).ri.as_mut_ptr(),
+        (*envs).rj.as_mut_ptr(),
         log_maxci,
         log_maxcj,
         (*envs).li_ceil,
@@ -3010,8 +3010,8 @@ pub unsafe extern "C" fn CINT2e_drv(
         .wrapping_mul(*x_ctr.offset(3 as i32 as isize) as libc::c_ulong);
     let mut n_comp: i32 = (*envs).ncomp_e1 * (*envs).ncomp_e2 * (*envs).ncomp_tensor; // cannot handle (reverse) unknown intrinsic
     if out.is_null() {
-        let mut bas: *mut i32 = (*envs).bas;
-        let mut shls: *mut i32 = (*envs).shls;
+        let mut bas: *mut i32 = (*envs).bas.as_mut_ptr();
+        let mut shls: *mut i32 = (*envs).shls.as_mut_ptr();
         let mut i_prim: i32 = *bas
             .offset(
                 (8 as i32 * *shls.offset(0 as i32 as isize)
@@ -3084,8 +3084,8 @@ pub unsafe extern "C" fn CINT2e_drv(
     }
     let mut stack: *mut f64 = 0 as *mut f64;
     // if cache.is_null() {
-    let mut bas_0: *mut i32 = (*envs).bas;
-    let mut shls_0: *mut i32 = (*envs).shls;
+    let mut bas_0: *mut i32 = (*envs).bas.as_mut_ptr();
+    let mut shls_0: *mut i32 = (*envs).shls.as_mut_ptr();
     let mut i_prim_0: i32 = *bas_0
         .offset(
             (8 as i32 * *shls_0.offset(0 as i32 as isize)
@@ -3715,7 +3715,7 @@ pub unsafe extern "C" fn CINTgout2e(
 pub unsafe extern "C" fn int2e_sph(
     mut out: &mut [f64],
     mut dims: &mut [i32],
-    mut shls: &mut [i32],
+    mut shls: [i32; 4],
     mut atm: &mut [i32],
     mut natm: i32,
     mut bas: &mut [i32],
@@ -3724,18 +3724,9 @@ pub unsafe extern "C" fn int2e_sph(
     // mut opt: *mut CINTOpt,
     mut cache: &mut [f64],
 ) -> i32 {
-    let mut ng: [i32; 8] = [
-        0 as i32,
-        0 as i32,
-        0 as i32,
-        0 as i32,
-        0 as i32,
-        1 as i32,
-        1 as i32,
-        1 as i32,
-    ];
-    let mut envs: CINTEnvVars; // = CINTEnvVars::new();
-    CINTinit_int2e_EnvVars(&mut envs as *mut CINTEnvVars, ng.as_mut_ptr(), shls.as_mut_ptr(), atm.as_mut_ptr(), natm, bas.as_mut_ptr(), nbas, env.as_mut_ptr());
+    let mut ng: [i32; 8] = [0, 0, 0, 0, 0, 1, 1, 1];
+    let mut envs: CINTEnvVars = CINTEnvVars::new(atm, bas, env);
+    CINTinit_int2e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
     envs
         .f_gout = ::core::mem::transmute::<
         Option::<
@@ -3816,7 +3807,7 @@ pub unsafe extern "C" fn int2e_sph(
 pub unsafe fn int2e_cart(
     mut out: &mut [f64],
     mut dims: &mut [i32],
-    mut shls: &mut [usize],
+    mut shls: [i32; 4],
     mut atm: &mut [i32],
     mut natm: i32,
     mut bas: &mut [i32],
@@ -3826,7 +3817,7 @@ pub unsafe fn int2e_cart(
 ) -> i32 {
     let ng: [i32; 8] = [0, 0, 0, 0, 0, 1, 1, 1];
     let mut envs: CINTEnvVars = CINTEnvVars::new(atm, bas, env);
-    CINTinit_int2e_EnvVars(&mut envs, &ng, &shls, atm, natm, bas, nbas, env);
+    CINTinit_int2e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
     envs
         .f_gout = ::core::mem::transmute::<
         Option::<
@@ -3884,7 +3875,7 @@ pub unsafe fn int2e_cart(
 #[no_mangle]
 pub fn cint2e_sph(
     mut out: &mut [f64],
-    mut shls: &mut [i32],
+    mut shls: [i32; 4],
     mut atm: &mut [i32],
     mut natm: i32,
     mut bas: &mut [i32],
@@ -3956,7 +3947,7 @@ pub fn cint2e_sph(
 #[no_mangle]
 pub fn cint2e_cart(
     mut out: &mut [f64],
-    mut shls: &mut [i32],
+    mut shls: [i32; 4],
     mut atm: &mut [i32],
     mut natm: i32,
     mut bas: &mut [i32],

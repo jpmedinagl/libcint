@@ -136,7 +136,7 @@ pub unsafe extern "C" fn CINTgout1e_int1e_kin(
 pub unsafe fn int1e_kin_cart(
     out: &mut [f64],
     dims: &mut [i32],
-    shls: &mut [i32],
+    shls: [i32; 4],
     atm: &mut [i32],
     natm: i32,
     bas: &mut [i32],
@@ -146,7 +146,7 @@ pub unsafe fn int1e_kin_cart(
 ) -> i32 {
     let mut ng: [i32; 8] = [0, 2, 0, 0, 2, 1, 1, 1];
     let mut envs: CINTEnvVars = CINTEnvVars::new(atm, bas, env);
-    CINTinit_int1e_EnvVars(&mut envs, ng.as_mut_ptr(), shls.as_mut_ptr(), atm.as_mut_ptr(), natm, bas.as_mut_ptr(), nbas, env.as_mut_ptr());
+    CINTinit_int1e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
     envs
         .f_gout = ::core::mem::transmute::<
         Option::<
@@ -207,7 +207,7 @@ pub unsafe fn int1e_kin_cart(
 pub unsafe extern "C" fn int1e_kin_sph(
     out: &mut [f64],
     dims: &mut [i32],
-    shls: &mut [i32],
+    shls: [i32; 4],
     atm: &mut [i32],
     natm: i32,
     bas: &mut [i32],
@@ -226,7 +226,7 @@ pub unsafe extern "C" fn int1e_kin_sph(
         1 as i32,
     ];
     let mut envs: CINTEnvVars = CINTEnvVars::new(atm, bas, env);
-    CINTinit_int1e_EnvVars(&mut envs as *mut CINTEnvVars, ng.as_mut_ptr(), shls.as_mut_ptr(), atm.as_mut_ptr(), natm, bas.as_mut_ptr(), nbas, env.as_mut_ptr());
+    CINTinit_int1e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
     envs
         .f_gout = ::core::mem::transmute::<
         Option::<
@@ -340,7 +340,7 @@ pub unsafe extern "C" fn int1e_kin_sph(
 #[no_mangle]
 pub fn cint1e_kin_cart(
     out: &mut [f64],
-    shls: &mut [i32],
+    shls: [i32; 4],
     atm: &mut [i32],
     natm: i32,
     bas: &mut [i32],
@@ -367,7 +367,7 @@ pub fn cint1e_kin_cart(
 #[no_mangle]
 pub fn cint1e_kin_sph(
     out: &mut [f64],
-    shls: &mut [i32],
+    shls: [i32; 4],
     atm: &mut [i32],
     natm: i32,
     bas: &mut [i32],
