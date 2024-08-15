@@ -626,7 +626,7 @@ pub unsafe extern "C" fn int1e_ovlp_sph(
     cache: &mut [f64],
 ) -> i32 {
     let mut ng = [0, 0, 0, 0, 0, 1, 1, 1];
-    let mut envs = CINTEnvVars::new(atm, bas, env);
+    let mut envs = CINTEnvVars::new();
     CINTinit_int1e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
     envs
         .f_gout = ::core::mem::transmute::<
@@ -696,7 +696,7 @@ pub unsafe fn int1e_ovlp_cart(
     cache: &mut [f64],
 ) -> i32 {
     let mut ng = [0, 0, 0, 0, 0, 1, 1, 1];
-    let mut envs = CINTEnvVars::new(atm, bas, env);
+    let mut envs = CINTEnvVars::new();
     CINTinit_int1e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
     envs
         .f_gout = ::core::mem::transmute::<
@@ -779,7 +779,7 @@ pub unsafe extern "C" fn int1e_nuc_sph(
     cache: &mut [f64],
 ) -> i32 {
     let mut ng = [0, 0, 0, 0, 0, 1, 0, 1];
-    let mut envs = CINTEnvVars::new(atm, bas, env);
+    let mut envs = CINTEnvVars::new();
     CINTinit_int1e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
     envs
         .f_gout = ::core::mem::transmute::<
@@ -849,7 +849,7 @@ pub unsafe fn int1e_nuc_cart(
     cache: &mut [f64],
 ) -> i32 {
     let mut ng = [0, 0, 0, 0, 0, 1, 0, 1];
-    let mut envs = CINTEnvVars::new(atm, bas, env);
+    let mut envs = CINTEnvVars::new();
     CINTinit_int1e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
     envs
         .f_gout = ::core::mem::transmute::<

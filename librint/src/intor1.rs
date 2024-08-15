@@ -145,7 +145,7 @@ pub unsafe fn int1e_kin_cart(
     cache: &mut [f64],
 ) -> i32 {
     let mut ng: [i32; 8] = [0, 2, 0, 0, 2, 1, 1, 1];
-    let mut envs: CINTEnvVars = CINTEnvVars::new(atm, bas, env);
+    let mut envs: CINTEnvVars = CINTEnvVars::new();
     CINTinit_int1e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
     envs
         .f_gout = ::core::mem::transmute::<
@@ -225,7 +225,7 @@ pub unsafe extern "C" fn int1e_kin_sph(
         1 as i32,
         1 as i32,
     ];
-    let mut envs: CINTEnvVars = CINTEnvVars::new(atm, bas, env);
+    let mut envs: CINTEnvVars = CINTEnvVars::new();
     CINTinit_int1e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
     envs
         .f_gout = ::core::mem::transmute::<

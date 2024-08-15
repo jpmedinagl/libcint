@@ -33,9 +33,9 @@ impl PairData {
 #[derive(Clone)]
 #[repr(C)]
 pub struct CINTEnvVars {
-    pub atm: Box<[i32]>,
-    pub bas: Box<[i32]>,
-    pub env: Box<[f64]>,
+    pub atm: Vec<i32>,
+    pub bas: Vec<i32>,
+    pub env: Vec<f64>,
     pub shls: [i32; 4],
     pub natm: i32,
     pub nbas: i32,
@@ -112,14 +112,11 @@ pub union C2RustUnnamed_1 {
 }
 
 impl CINTEnvVars {
-    pub fn new(
-        atm: &[i32], 
-        bas: &[i32], 
-        env: &[f64]) -> Self {
+    pub fn new() -> Self {
     let mut envs: CINTEnvVars = CINTEnvVars {
-        atm: atm.into(),
-        bas: bas.into(),
-        env: env.into(),
+        atm: Vec::new(),
+        bas: Vec::new(),
+        env: Vec::new(),
         shls: [0; 4],
         natm: 0,
         nbas: 0,
