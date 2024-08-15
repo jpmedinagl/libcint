@@ -13,7 +13,7 @@ use crate::linalg::matmult;
 #[autodiff(dovlp, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
 pub fn ovlp(
     out: &mut Vec<f64>, 
-    shls: &mut Vec<i32>, 
+    shls: [i32; 4], 
     atm: &mut Vec<i32>,
     bas: &mut Vec<i32>, 
     env1: &mut Vec<f64>,
@@ -29,7 +29,7 @@ pub fn ovlp(
 #[autodiff(dkin, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
 fn kin(
     out: &mut Vec<f64>, 
-    shls: &mut Vec<i32>, 
+    shls: [i32; 4], 
     atm: &mut Vec<i32>,
     bas: &mut Vec<i32>, 
     env1: &mut Vec<f64>,
@@ -44,7 +44,7 @@ fn kin(
 #[autodiff(dnuc, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
 fn nuc(
     out: &mut Vec<f64>, 
-    shls: &mut Vec<i32>, 
+    shls: [i32; 4], 
     atm: &mut Vec<i32>,
     bas: &mut Vec<i32>, 
     env1: &mut Vec<f64>,
@@ -59,7 +59,7 @@ fn nuc(
 #[autodiff(dtwo, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
 fn two(
     out: &mut Vec<f64>, 
-    shls: &mut Vec<i32>, 
+    shls: [i32; 4], 
     atm: &mut Vec<i32>,
     bas: &mut Vec<i32>, 
     env1: &mut Vec<f64>,
@@ -86,7 +86,7 @@ fn dSf(
     let mut buf;
     let mut dbuf;
     let mut denv;
-    let mut shls = vec![0; 4];
+    let mut shls = [0; 4];
 
     let mut mu;
     let mut nu;
@@ -107,7 +107,7 @@ fn dSf(
                     dbuf[c] = 1.0;
 
                     denv = vec![0.0; env2.len()];
-                    dovlp(&mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv);
+                    dovlp(&mut buf, &mut dbuf, shls, atm, bas, env1, env2, &mut denv);
                     for l in 0..env2.len() {
                         dS[l] += Q[nuj * nshells + mui] * denv[l];
                     }
@@ -141,7 +141,7 @@ fn dTf(
     let mut buf;
     let mut dbuf;
     let mut denv;
-    let mut shls = vec![0; 4];
+    let mut shls = [0; 4];
 
     let mut mu;
     let mut nu;
@@ -162,7 +162,7 @@ fn dTf(
                     dbuf[c] = 1.0;
 
                     denv = vec![0.0; env2.len()];
-                    dkin(&mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv);
+                    dkin(&mut buf, &mut dbuf, shls, atm, bas, env1, env2, &mut denv);
                     for l in 0..env2.len() {
                         dT[l] += P[nuj * nshells + mui] * denv[l];
                     }
@@ -195,7 +195,7 @@ fn dVf(
     let mut buf;
     let mut dbuf;
     let mut denv;
-    let mut shls = vec![0; 4];
+    let mut shls = [0; 4];
 
     let mut mu;
     let mut nu;
@@ -216,7 +216,7 @@ fn dVf(
                     dbuf[c] = 1.0;
 
                     denv = vec![0.0; env2.len()];
-                    dnuc(&mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv);
+                    dnuc(&mut buf, &mut dbuf, shls, atm, bas, env1, env2, &mut denv);
                     for l in 0..env2.len() {
                         dV[l] += P[nuj * nshells + mui] * denv[l];
                     }
@@ -319,7 +319,7 @@ pub fn dRf(
     let mut buf;
     let mut dbuf;
     let mut denv;
-    let mut shls = vec![0; 4];
+    let mut shls = [0; 4];
 
     let mut mu;
     let mut nu;
@@ -350,7 +350,7 @@ pub fn dRf(
                                     dbuf[c] = 1.0;
 
                                     denv = vec![0.0; env2.len()];
-                                    dtwo(&mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv);
+                                    dtwo(&mut buf, &mut dbuf, shls, atm, bas, env1, env2, &mut denv);
                                     for l in 0..env2.len() {
                                         dR[l] += 0.5 * (P[mui*nshells + nuj] * P[sigk*nshells + laml] - 0.5 * P[mui*nshells + sigk] * P[nuj*nshells + laml]) * denv[l];
                                     }
