@@ -8,24 +8,24 @@ pub struct PairData {
     pub cceij: f64,
 }
 
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct CINTOpt {
-    pub index_xyz_array: *mut *mut i32,
-    pub non0ctr: *mut *mut i32,
-    pub sortedidx: *mut *mut i32,
-    pub nbas: i32,
-    pub log_max_coeff: *mut *mut f64,
-    pub pairdata: *mut *mut PairData,
-}
+// #[derive(Copy, Clone)]
+// #[repr(C)]
+// pub struct CINTOpt {
+//     pub index_xyz_array: *mut *mut i32,
+//     pub non0ctr: *mut *mut i32,
+//     pub sortedidx: *mut *mut i32,
+//     pub nbas: i32,
+//     pub log_max_coeff: *mut *mut f64,
+//     pub pairdata: *mut *mut PairData,
+// }
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 #[repr(C)]
 pub struct CINTEnvVars {
-    pub atm: *mut i32,
-    pub bas: *mut i32,
-    pub env: *mut f64,
-    pub shls: *mut i32,
+    pub atm: Vec<i32>,
+    pub bas: Vec<i32>,
+    pub env: Vec<f64>,
+    pub shls: [i32; 4],
     pub natm: i32,
     pub nbas: i32,
     pub i_l: i32,
@@ -59,17 +59,17 @@ pub struct CINTEnvVars {
     pub expcutoff: f64,
     pub rirj: [f64; 3],
     pub rkrl: [f64; 3],
-    pub rx_in_rijrx: *mut f64,
-    pub rx_in_rklrx: *mut f64,
-    pub ri: *mut f64,
-    pub rj: *mut f64,
-    pub rk: *mut f64,
+    pub rx_in_rijrx: [f64; 3],
+    pub rx_in_rklrx: [f64; 3],
+    pub ri: [f64; 3],
+    pub rj: [f64; 3],
+    pub rk: [f64; 3],
     pub c2rust_unnamed_1: C2RustUnnamed,
     pub f_g0_2e: Option::<unsafe extern "C" fn() -> i32>,
     pub f_g0_2d4d: Option::<unsafe extern "C" fn() -> ()>,
     pub f_gout: Option::<unsafe extern "C" fn() -> ()>,
-    pub opt: *mut CINTOpt,
-    pub idx: *mut i32,
+    // pub opt: *mut CINTOpt,
+    pub idx: Vec<i32>,
     pub ai: [f64; 1],
     pub aj: [f64; 1],
     pub ak: [f64; 1],
@@ -79,11 +79,11 @@ pub struct CINTEnvVars {
     pub rkl: [f64; 3],
 }
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 #[repr(C)]
-pub union C2RustUnnamed {
-    pub rl: *mut f64,
-    pub grids: *mut f64,
+pub struct C2RustUnnamed {
+    pub rl: [f64; 3],
+    pub grids: Vec<f64>,
 }
 
 #[derive(Copy, Clone)]
@@ -103,10 +103,10 @@ pub union C2RustUnnamed_1 {
 impl CINTEnvVars {
     pub fn new() -> Self {
     let mut envs: CINTEnvVars = CINTEnvVars {
-        atm: 0 as *mut i32,
-        bas: 0 as *mut i32,
-        env: 0 as *mut f64,
-        shls: 0 as *mut i32,
+        atm: Vec::new(),
+        bas: Vec::new(),
+        env: Vec::new(),
+        shls: [0; 4],
         natm: 0,
         nbas: 0,
         i_l: 0,
@@ -140,19 +140,20 @@ impl CINTEnvVars {
         expcutoff: 0.,
         rirj: [0.; 3],
         rkrl: [0.; 3],
-        rx_in_rijrx: 0 as *mut f64,
-        rx_in_rklrx: 0 as *mut f64,
-        ri: 0 as *mut f64,
-        rj: 0 as *mut f64,
-        rk: 0 as *mut f64,
+        rx_in_rijrx: [0.0; 3],
+        rx_in_rklrx: [0.0; 3],
+        ri: [0.0; 3],
+        rj: [0.0; 3],
+        rk: [0.0; 3],
         c2rust_unnamed_1: C2RustUnnamed {
-            rl: 0 as *mut f64,
+            rl: [0.0; 3],
+            grids: Vec::new(),
         },
         f_g0_2e: None,
         f_g0_2d4d: None,
         f_gout: None,
-        opt: 0 as *mut CINTOpt,
-        idx: 0 as *mut i32,
+        // opt: 0 as *mut CINTOpt,
+        idx: Vec::new(),
         ai: [0.; 1],
         aj: [0.; 1],
         ak: [0.; 1],
