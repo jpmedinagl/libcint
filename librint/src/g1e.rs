@@ -33,17 +33,24 @@ pub unsafe extern "C" fn CINTinit_int1e_EnvVars(
     mut ng: *mut i32,
     mut shls: *mut i32,
     mut atm: *mut i32,
+    mut atm_len: usize,
     mut natm: i32,
     mut bas: *mut i32,
+    mut bas_len: usize,
     mut nbas: i32,
     mut env: *mut f64,
+    mut env_len: usize,
 ) {
     (*envs).natm = natm;
     (*envs).nbas = nbas;
-    (*envs).atm = atm;
-    (*envs).bas = bas;
-    (*envs).env = env;
-    (*envs).shls = shls;
+    let atm_slice = unsafe { std::slice::from_raw_parts_mut(atm, atm_len) };
+    (*envs).atm = atm_slice.to_vec();
+    let bas_slice = unsafe { std::slice::from_raw_parts_mut(bas, bas_len) };
+    (*envs).bas = bas_slice.to_vec();
+    let env_slice = unsafe { std::slice::from_raw_parts_mut(env, env_len) };
+    (*envs).env = env_slice.to_vec();
+    let shls_slice = unsafe { std::slice::from_raw_parts_mut(shls, 4) };
+    (*envs).shls = [shls_slice[0], shls_slice[1], shls_slice[2], shls_slice[3]];
     let i_sh: i32 = *shls.offset(0 as i32 as isize);
     let j_sh: i32 = *shls.offset(1 as i32 as isize);
     (*envs).i_l = *bas.offset((8 as i32 * i_sh + 1 as i32) as isize);
@@ -71,8 +78,7 @@ pub unsafe extern "C" fn CINTinit_int1e_EnvVars(
     }
     (*envs).li_ceil = (*envs).i_l + *ng.offset(0 as i32 as isize);
     (*envs).lj_ceil = (*envs).j_l + *ng.offset(1 as i32 as isize);
-    (*envs)
-        .ri = env
+    let ri_slice = unsafe { std::slice::from_raw_parts_mut(env
         .offset(
             *atm
                 .offset(
@@ -82,9 +88,9 @@ pub unsafe extern "C" fn CINTinit_int1e_EnvVars(
                                 (8 as i32 * i_sh + 0 as i32) as isize,
                             ) + 1 as i32) as isize,
                 ) as isize,
-        );
-    (*envs)
-        .rj = env
+        ), 3) };
+    (*envs).ri = [ri_slice[0], ri_slice[1], ri_slice[2]];
+    let rj_slice = unsafe { std::slice::from_raw_parts_mut(env
         .offset(
             *atm
                 .offset(
@@ -94,7 +100,8 @@ pub unsafe extern "C" fn CINTinit_int1e_EnvVars(
                                 (8 as i32 * j_sh + 0 as i32) as isize,
                             ) + 1 as i32) as isize,
                 ) as isize,
-        );
+        ), 3) };
+    (*envs).rj = [rj_slice[0], rj_slice[1], rj_slice[2]];
     (*envs).gbits = *ng.offset(4 as i32 as isize);
     (*envs).ncomp_e1 = *ng.offset(5 as i32 as isize);
     (*envs).ncomp_tensor = *ng.offset(7 as i32 as isize);
@@ -113,31 +120,31 @@ pub unsafe extern "C" fn CINTinit_int1e_EnvVars(
         dlj = (*envs).lj_ceil + 1 as i32;
         (*envs)
             .rirj[0 as i32
-            as usize] = *((*envs).ri).offset(0 as i32 as isize)
-            - *((*envs).rj).offset(0 as i32 as isize);
+            as usize] = *((*envs).ri.as_mut_ptr()).offset(0 as i32 as isize)
+            - *((*envs).rj.as_mut_ptr()).offset(0 as i32 as isize);
         (*envs)
             .rirj[1 as i32
-            as usize] = *((*envs).ri).offset(1 as i32 as isize)
-            - *((*envs).rj).offset(1 as i32 as isize);
+            as usize] = *((*envs).ri.as_mut_ptr()).offset(1 as i32 as isize)
+            - *((*envs).rj.as_mut_ptr()).offset(1 as i32 as isize);
         (*envs)
             .rirj[2 as i32
-            as usize] = *((*envs).ri).offset(2 as i32 as isize)
-            - *((*envs).rj).offset(2 as i32 as isize);
+            as usize] = *((*envs).ri.as_mut_ptr()).offset(2 as i32 as isize)
+            - *((*envs).rj.as_mut_ptr()).offset(2 as i32 as isize);
     } else {
         dli = (*envs).li_ceil + 1 as i32;
         dlj = (*envs).li_ceil + (*envs).lj_ceil + 1 as i32;
         (*envs)
             .rirj[0 as i32
-            as usize] = *((*envs).rj).offset(0 as i32 as isize)
-            - *((*envs).ri).offset(0 as i32 as isize);
+            as usize] = *((*envs).rj.as_mut_ptr()).offset(0 as i32 as isize)
+            - *((*envs).ri.as_mut_ptr()).offset(0 as i32 as isize);
         (*envs)
             .rirj[1 as i32
-            as usize] = *((*envs).rj).offset(1 as i32 as isize)
-            - *((*envs).ri).offset(1 as i32 as isize);
+            as usize] = *((*envs).rj.as_mut_ptr()).offset(1 as i32 as isize)
+            - *((*envs).ri.as_mut_ptr()).offset(1 as i32 as isize);
         (*envs)
             .rirj[2 as i32
-            as usize] = *((*envs).rj).offset(2 as i32 as isize)
-            - *((*envs).ri).offset(2 as i32 as isize);
+            as usize] = *((*envs).rj.as_mut_ptr()).offset(2 as i32 as isize)
+            - *((*envs).ri.as_mut_ptr()).offset(2 as i32 as isize);
     }
     (*envs).g_stride_i = (*envs).nrys_roots;
     (*envs).g_stride_j = (*envs).nrys_roots * dli;
@@ -230,12 +237,12 @@ pub unsafe extern "C" fn CINTg1e_ovlp(
         lj = (*envs).lj_ceil;
         di = (*envs).g_stride_i;
         dj = (*envs).g_stride_j;
-        rx = (*envs).ri;
+        rx = (*envs).ri.as_mut_ptr();
     } else {
         lj = (*envs).li_ceil;
         di = (*envs).g_stride_j;
         dj = (*envs).g_stride_i;
-        rx = (*envs).rj;
+        rx = (*envs).rj.as_mut_ptr();
     }
     let mut rijrx: [f64; 3] = [0.; 3];
     rijrx[0 as i32
@@ -347,8 +354,8 @@ pub unsafe extern "C" fn CINTg1e_nuc(
     mut nuc_id: i32,
 ) -> i32 {
     let mut nrys_roots: i32 = (*envs).nrys_roots;
-    let mut atm: *mut i32 = (*envs).atm;
-    let mut env: *mut f64 = (*envs).env;
+    let mut atm: *mut i32 = (*envs).atm.as_mut_ptr();
+    let mut env: *mut f64 = (*envs).env.as_mut_ptr();
     let mut rij: *mut f64 = ((*envs).rij).as_mut_ptr();
     let mut gx: *mut f64 = g;
     let mut gy: *mut f64 = g.offset((*envs).g_size as isize);
@@ -433,12 +440,12 @@ pub unsafe extern "C" fn CINTg1e_nuc(
         lj = (*envs).lj_ceil;
         di = (*envs).g_stride_i;
         dj = (*envs).g_stride_j;
-        rx = (*envs).ri;
+        rx = (*envs).ri.as_mut_ptr();
     } else {
         lj = (*envs).li_ceil;
         di = (*envs).g_stride_j;
         dj = (*envs).g_stride_i;
-        rx = (*envs).rj;
+        rx = (*envs).rj.as_mut_ptr();
     }
     let mut rijrx: f64 = *rij.offset(0 as i32 as isize)
         - *rx.offset(0 as i32 as isize);
