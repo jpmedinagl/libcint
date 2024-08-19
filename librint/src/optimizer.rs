@@ -855,24 +855,12 @@ pub unsafe extern "C" fn CINTset_pairdata(
             if cceij < expcutoff {
                 empty = 0 as i32;
                 wj = *aj.offset(jp as isize) * aij;
-                (*pdata)
-                    .rij[0 as i32
-                    as usize] = *ri.offset(0 as i32 as isize)
-                    + wj
-                        * (*rj.offset(0 as i32 as isize)
-                            - *ri.offset(0 as i32 as isize));
-                (*pdata)
-                    .rij[1 as i32
-                    as usize] = *ri.offset(1 as i32 as isize)
-                    + wj
-                        * (*rj.offset(1 as i32 as isize)
-                            - *ri.offset(1 as i32 as isize));
-                (*pdata)
-                    .rij[2 as i32
-                    as usize] = *ri.offset(2 as i32 as isize)
-                    + wj
-                        * (*rj.offset(2 as i32 as isize)
-                            - *ri.offset(2 as i32 as isize));
+                (*pdata).rij[0] = *ri.offset(0 as i32 as isize)
+                    + wj * (*rj.offset(0 as i32 as isize) - *ri.offset(0 as i32 as isize));
+                (*pdata).rij[1] = *ri.offset(1 as i32 as isize)
+                    + wj * (*rj.offset(1 as i32 as isize) - *ri.offset(1 as i32 as isize));
+                (*pdata).rij[2] = *ri.offset(2 as i32 as isize)
+                    + wj * (*rj.offset(2 as i32 as isize) - *ri.offset(2 as i32 as isize));
                 (*pdata).eij = exp(-eij);
             } else {
                 (*pdata).rij[0 as i32 as usize] = 1e18f64;
