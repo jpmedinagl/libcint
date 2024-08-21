@@ -5,13 +5,15 @@ use std::io;
 
 use librint::utils::read_basis;
 
-use librint::cint_bas::CINTcgto_cart;
-use librint::cint1e::cint1e_ovlp_cart;
-use librint::cint2e::cint2e_cart;
+// use librint::cint_bas::CINTcgto_cart;
+// use librint::cint1e::cint1e_ovlp_cart;
+// use librint::cint2e::cint2e_cart;
 
 // use librint::scf::{density, energyfast};
-// use librint::scf::nmol;
+// use librint::scf::{nmol, angl};
+use librint::scf::{angl, integral1e, integral2e};
 // use librint::utils::{split, combine};
+use librint::utils::print_arr;
 
 pub const ATM_SLOTS: usize = 6;
 pub const BAS_SLOTS: usize = 8;
@@ -81,6 +83,56 @@ pub const BAS_SLOTS: usize = 8;
 //     return dtotal;
 // }
 
+// #[no_mangle]
+// pub fn integral1ef(
+//     atm: &mut Vec<i32>,
+//     bas: &mut Vec<i32>,
+//     env: &mut Vec<f64>,
+//     coord: i32,
+// ) -> Vec<f64> {
+//     let (natm, nbas) = nmol(atm, bas);
+//     let nshells = angl(bas, coord);
+    
+//     let mut R = vec![0.0; nshells * nshells];
+
+//     let mut buf: Vec<f64>;
+//     let mut shls: [i32; 4] = [0, 0, 0, 0];
+
+//     let mut mu;
+//     let mut nu;
+
+//     let mut di;
+//     let mut dj;
+
+//     mu = 0;
+//     for i in 0..nbas {
+//         shls[0] = i as i32;
+//         di = CINTcgto_cart(i, &bas) as usize;
+
+//         nu = 0;
+//         for j in 0..nbas {
+//             shls[1] = j as i32;
+//             dj = CINTcgto_cart(j, &bas) as usize;
+
+//             buf = vec![0.0; di * dj];
+
+//             cint1e_ovlp_cart(&mut buf, shls, atm, natm as i32, bas, nbas as i32, env);
+//             let mut c: usize = 0;
+//             for nuj in nu..(nu + dj) {
+//                 for mui in mu..(mu + di) {
+//                     R[mui * nshells + nuj] = buf[c];
+//                     c += 1;
+//                 }
+//             }
+
+//             nu += dj;
+//         }
+//         mu += di;
+//     }
+    
+//     return R;
+// }
+
 fn main() -> io::Result<()>{
     let mut atm: Vec<i32> = Vec::new();
     let mut bas: Vec<i32> = Vec::new();
@@ -89,31 +141,15 @@ fn main() -> io::Result<()>{
     let path = "/u/jpmedina/libcint/librint/molecules/h2/sto3g.txt";
     read_basis(path, &mut atm, &mut bas, &mut env)?;
 
-    const natm: usize = 2;
-    const nbas: usize = 2;
-    
-    let mut shls: [i32; 4] = [0, 0, 0, 0];
+    let nshells = angl(&mut bas, 0);
 
-    let mut buf;
+    let mut S = integral1e(&mut atm, &mut bas, &mut env, 0, 0);
+    println!("ovlp");
+    print_arr(nshells, 2, &mut S);
 
-	println!("ovlp");
-    for i in 0..nbas {
-        for j in 0..nbas {
-            shls[0] = i as i32;
-            shls[1] = j as i32;
-            
-            let di = CINTcgto_cart(i, &bas);
-            let dj = CINTcgto_cart(j, &bas);
-
-            buf = vec![0.0; (di * dj) as usize];
-            cint1e_ovlp_cart(&mut buf, shls, &mut atm, natm as i32, &mut bas, nbas as i32, &mut env);
-
-            for i in 0..((di*dj) as usize) {
-                print!("{} ", buf[i]);
-            }
-        }
-        println!();
-    }
+    let mut R = integral2e(&mut atm, &mut bas, &mut env, 0);
+    println!("repulsion");
+    print_arr(nshells, 4, &mut R);
 
     // let (s1, s2) = split(&mut bas);
 
@@ -144,33 +180,34 @@ fn main() -> io::Result<()>{
     //     println!();
     // }
 
-    println!("repulsion");
-    for i in 0..nbas {
-        for j in 0..nbas {
-            for k in 0..nbas {
-                for l in 0..nbas {
-                    shls[0] = i as i32;
-                    shls[1] = j as i32;
-                    shls[2] = k as i32;
-                    shls[3] = l as i32;
+    // println!("repulsion");
+    // for i in 0..nbas {
+    //     for j in 0..nbas {
+    //         for k in 0..nbas {
+    //             for l in 0..nbas {
+    //                 shls[0] = i as i32;
+    //                 shls[1] = j as i32;
+    //                 shls[2] = k as i32;
+    //                 shls[3] = l as i32;
                     
-                    let di = CINTcgto_cart(i, &bas);
-                    let dj = CINTcgto_cart(j, &bas);
-                    let dk = CINTcgto_cart(k, &bas);
-                    let dl = CINTcgto_cart(l, &bas);
+    //                 let di = CINTcgto_cart(i, &bas);
+    //                 let dj = CINTcgto_cart(j, &bas);
+    //                 let dk = CINTcgto_cart(k, &bas);
+    //                 let dl = CINTcgto_cart(l, &bas);
 
-                    buf = vec![0.0; (di * dj * dk * dl) as usize];
-                    cint2e_cart(&mut buf, shls, &mut atm, natm as i32, &mut bas, nbas as i32, &mut env);
+    //                 buf = vec![0.0; (di * dj * dk * dl) as usize];
+    //                 cint2e_cart(&mut buf, shls, &mut atm, natm as i32, &mut bas, nbas as i32, &mut env);
 
-                    for i in 0..((di * dj * dk * dl) as usize) {
-                        print!("{} ", buf[i]);
-                    }
-                }
-                println!();
-            }
-        }
-        println!();
-    }
+    //                 for i in 0..((di * dj * dk * dl) as usize) {
+    //                     print!("{:.5} ", buf[i]);
+    //                 }
+    //             }
+    //             println!();
+    //         }
+    //         println!();
+    //     }
+    //     println!();
+    // }
 
     // let nelec = 2;
 

@@ -36,6 +36,7 @@ pub struct Rys2eT {
 type FG0_2E_2D4D = fn(&mut [f64], &Rys2eT, &CINTEnvVars) -> ();
 type FG0_2E = fn(&mut [f64], &[f64], &[f64], f64, &CINTEnvVars) -> i32;
 type FGOUT = fn(&mut [f64], &[f64], &[i32], &CINTEnvVars, i32) -> ();
+pub type F_FC2S = fn(&mut [f64], &mut [f64], &[i32], &CINTEnvVars, &mut [f64]) -> ();
 
 #[derive(Clone)]
 #[repr(C)]
@@ -106,14 +107,14 @@ pub struct C2RustUnnamed {
 
 #[derive(Copy, Clone)]
 #[repr(C)]
-pub union C2RustUnnamed_0 {
+pub struct C2RustUnnamed_0 {
     pub nfl: i32,
     pub ngrids: i32,
 }
 
 #[derive(Copy, Clone)]
 #[repr(C)]
-pub union C2RustUnnamed_1 {
+pub struct C2RustUnnamed_1 {
     pub nfk: i32,
     pub grids_offset: i32,
 }
@@ -133,8 +134,8 @@ impl CINTEnvVars {
         l_l: 0,
         nfi: 0,
         nfj: 0,
-        c2rust_unnamed: C2RustUnnamed_1 { nfk: 0 },
-        c2rust_unnamed_0: C2RustUnnamed_0 { nfl: 0 },
+        c2rust_unnamed: C2RustUnnamed_1 { nfk: 0, grids_offset: 0 },
+        c2rust_unnamed_0: C2RustUnnamed_0 { nfl: 0, ngrids: 0 },
         nf: 0,
         rys_order: 0,
         x_ctr: [0; 4],

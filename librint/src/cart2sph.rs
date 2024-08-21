@@ -90774,7 +90774,55 @@ unsafe extern "C" fn dcopy_iklj(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn c2s_dset0(
+pub fn c2s_dset0_cpy(
+    mut out: &mut [f64],
+    dims: &[i32],
+    counts: &[i32],
+) {
+    let ni: usize = dims[0] as usize;
+    let nj: usize = dims[1] as usize;
+    let nk: usize = dims[2] as usize;
+    let nij: usize = ni * nj;
+    let nijk: usize = nij * nk;
+    
+    let mut same = true;
+    for p in 0..4 {
+        if dims[p] != counts[p] {
+            same = false;
+            break;
+        }
+    }
+
+    if same {
+        for i in 0..(nijk * counts[3] as usize) {
+            out[i] = 0.0;
+        }
+        return;
+    }
+
+    let di: usize = counts[0] as usize;
+    let dj: usize = counts[1] as usize;
+    let dk: usize = counts[2] as usize;
+    let dl: usize = counts[3] as usize;
+    
+    let mut out_index = 0;
+    
+    for l in 0..dl {
+        for k in 0..dk {
+            let pout_index = out_index + (k * nij);
+            
+            for j in 0..dj {
+                for i in 0..di {
+                    out[pout_index + (j * ni + i)] = 0.0;
+                }
+            }
+            
+            out_index += nijk;
+        }
+    }
+}
+#[no_mangle]
+pub unsafe fn c2s_dset0(
     mut out: *mut f64,
     mut dims: *mut i32,
     mut counts: *mut i32,
@@ -90788,12 +90836,16 @@ pub unsafe extern "C" fn c2s_dset0(
     let mut j: i32 = 0;
     let mut k: i32 = 0;
     let mut l: i32 = 0;
-    if dims == counts {
+    let mut same = true;
+    for i in 0..4 {
+        if dims.offset(i) != counts.offset(i) {
+            same = false;
+            break;
+        }
+    }
+    if same {
         i = 0 as i32;
-        while (i as libc::c_ulong)
-            < nijk
-                .wrapping_mul(*counts.offset(3 as i32 as isize) as libc::c_ulong)
-        {
+        while (i as libc::c_ulong) < nijk * (counts.offset(3) as u64) {
             *out.offset(i as isize) = 0 as i32 as f64;
             i += 1;
         }
@@ -90913,6 +90965,59 @@ unsafe extern "C" fn sph2e_inner(
         }
     }
     return gsph;
+}
+#[no_mangle]
+pub fn c2s_sph_1e_cpy(
+    opij: &mut [f64],
+    mut gctr: &mut [f64],
+    dims: &[i32],
+    envs: &CINTEnvVars,
+    cache: &mut [f64],
+) {
+    let i_l: i32 = envs.i_l;
+    let j_l: i32 = envs.j_l;
+    let i_ctr: i32 = envs.x_ctr[0];
+    let j_ctr: i32 = envs.x_ctr[1];
+    let di: i32 = i_l * 2 + 1; // cannot handle (augmented) unknown intrinsic
+    let dj: i32 = j_l * 2 + 1; // cannot handle (augmented) unknown intrinsic
+    let ni: i32 = dims[0];
+    let nj: i32 = dims[1];
+    let ofj: i32 = ni * dj;
+    let nfi: i32 = envs.nfi;
+    let nf: i32 = envs.nf;
+    let mut buflen: i32 = nfi * dj;
+
+    let mut cache_offset = 0;
+    cache_offset = (cache_offset + 7) & !7; 
+    let (buf1, cache) = cache.split_at_mut((cache_offset + buflen) as usize);
+    let (buf2, _cache) = cache.split_at_mut(buflen as usize);
+
+    let mut pij;
+    let mut tmp1;
+    
+    for jc in 0..j_ctr {
+        for ic in 0..i_ctr {
+            // Call the function pointer for c2s_ket_sph
+            unsafe {
+                tmp1 = (c2s_ket_sph[j_l as usize]).expect("non-null function pointer")(buf1.as_mut_ptr(), gctr.as_mut_ptr(), nfi, nfi, j_l);
+
+                tmp1 = ::core::mem::transmute::<
+                    _,
+                    fn(_, _, _, _) -> *mut f64,
+                >(
+                    (c2s_bra_sph[i_l as usize]).expect("non-null function pointer"),
+                )(buf2.as_mut_ptr(), dj, tmp1, i_l);
+            }
+
+            pij = &mut opij[(ofj * jc) as usize..][..(di * ic) as usize];
+            
+            unsafe {
+                dcopy_ij(pij.as_mut_ptr(), tmp1, ni, nj, di, dj);
+            }
+            
+            gctr = &mut gctr[nf as usize..];
+        }
+    }
 }
 #[no_mangle]
 pub unsafe extern "C" fn c2s_sph_1e(
@@ -91088,6 +91193,91 @@ pub unsafe extern "C" fn c2s_sph_1e(
 //         grids_offset += 104 as i32;
 //     }
 // }
+#[no_mangle]
+pub  fn c2s_sph_2e1_cpy(
+    out: &mut [f64],
+    mut gctr: &mut [f64],
+    dims: &[i32],
+    envs: &CINTEnvVars,
+    cache: &mut [f64],
+) {
+    let i_l = envs.i_l;
+    let j_l = envs.j_l;
+    let k_l = envs.k_l;
+    let l_l = envs.l_l;
+    let i_ctr = envs.x_ctr[0];
+    let j_ctr = envs.x_ctr[1];
+    let k_ctr = envs.x_ctr[2];
+    let l_ctr = envs.x_ctr[3];
+    let di = i_l * 2 + 1;
+    let dj = j_l * 2 + 1;
+    let dk = k_l * 2 + 1;
+    let dl = l_l * 2 + 1;
+
+    let ni = dims[0];
+    let nj = dims[1];
+    let nk = dims[2];
+    let nl = dims[3];
+
+    let nfi = envs.nfi;
+    let nfk = envs.c2rust_unnamed.nfk;
+    let nfl = envs.c2rust_unnamed_0.nfl;
+
+    let nfik = nfi * nfk;
+    let nfikl = nfik * nfl;
+    let dlj = dl * dj;
+    let nf = envs.nf;
+
+    let ofj = ni * dj;
+    let ofk = ni * nj * dk;
+    let ofl = ni * nj * nk * dl;
+
+    let buflen = nfikl * dj;
+
+    let (buf1, rest) = cache.split_at_mut(buflen as usize);
+    let (buf2, rest) = rest.split_at_mut(buflen as usize);
+    let (buf3, buf4) = rest.split_at_mut(buflen as usize);
+
+    let mut ic;
+    let mut jc;
+    let mut kc;
+    let mut lc = 0;
+
+    while lc < l_ctr {
+        kc = 0;
+        while kc < k_ctr {
+            jc = 0;
+            while jc < j_ctr {
+                ic = 0;
+                while ic < i_ctr {
+                    unsafe {
+                        let tmp1 = (c2s_ket_sph[j_l as usize])
+                            .expect("non-null function pointer")(buf1.as_mut_ptr(), gctr.as_mut_ptr(), nfikl, nfikl, j_l);
+                        let tmp1 = sph2e_inner(buf2.as_mut_ptr(), tmp1, l_l, nfik, dj, nfik * dl, nfikl);
+                        let tmp1 = sph2e_inner(buf3.as_mut_ptr(), tmp1, k_l, nfi, dlj, nfi * dk, nfik);
+                        let tmp1 = ::core::mem::transmute::<
+                            _,
+                            fn(_, _, _, _) -> *mut f64,
+                        >(
+                            (c2s_bra_sph[i_l as usize]).expect("non-null function pointer"),
+                        )(buf4.as_mut_ptr(), dk * dlj, tmp1, i_l);
+
+                        let pout_index = (ofl * lc + ofk * kc + ofj * jc + di * ic) as usize;
+                        let pout = &mut out[pout_index..];
+
+                        dcopy_iklj(pout.as_mut_ptr(), tmp1, ni, nj, nk, nl, di, dj, dk, dl);
+                    }
+
+                    gctr = &mut gctr[nf as usize..];
+                    ic += 1;
+                }
+                jc += 1;
+            }
+            kc += 1;
+        }
+        lc += 1;
+    }
+}
 #[no_mangle]
 pub unsafe extern "C" fn c2s_sph_2e1(
     mut out: *mut f64,
@@ -91458,6 +91648,61 @@ pub unsafe extern "C" fn c2s_cart_1e(
             ic += 1;
         }
         jc += 1;
+    }
+}
+
+#[no_mangle]
+pub fn c2s_cart_2e1_cpy(
+    fijkl: &mut [f64],
+    mut gctr: &mut [f64],
+    dims: &[i32],
+    envs: &CINTEnvVars,
+    _cache: &mut [f64],
+) {
+    let i_ctr = envs.x_ctr[0];
+    let j_ctr = envs.x_ctr[1];
+    let k_ctr = envs.x_ctr[2];
+    let l_ctr = envs.x_ctr[3];
+    let nfi = envs.nfi;
+    let nfj = envs.nfj;
+    let nfk = envs.c2rust_unnamed.nfk;
+    let nfl = envs.c2rust_unnamed_0.nfl;
+    let nf = envs.nf;
+
+    let ni = dims[0];
+    let nj = dims[1];
+    let nk = dims[2];
+    let nl = dims[3];
+
+    let ofj = ni * nfj;
+    let ofk = ni * nj * nfk;
+    let ofl = ni * nj * nk * nfl;
+
+    let mut ic = 0;
+    let mut jc;
+    let mut kc;
+    let mut lc = 0;
+
+    while lc < l_ctr {
+        kc = 0;
+        while kc < k_ctr {
+            jc = 0;
+            while jc < j_ctr {
+                ic = 0;
+                while ic < i_ctr {
+                    let pfijkl_index = (ofl * lc + ofk * kc + ofj * jc + nfi * ic) as usize;
+                    let pfijkl = &mut fijkl[pfijkl_index..];
+                    unsafe {
+                        dcopy_iklj(pfijkl.as_mut_ptr(), gctr.as_mut_ptr(), ni, nj, nk, nl, nfi, nfj, nfk, nfl);
+                    }
+                    gctr = &mut gctr[nf as usize..];
+                    ic += 1;
+                }
+                jc += 1;
+            }
+            kc += 1;
+        }
+        lc += 1;
     }
 }
 #[no_mangle]
