@@ -29,14 +29,14 @@ fn SQUARE(r: *mut f64) -> f64 {
 
 #[no_mangle]
 pub fn CINTinit_int1e_EnvVars(
-    mut envs: &mut CINTEnvVars,
-    mut ng: &[i32],
-    mut shls: [i32; 4],
-    mut atm: &[i32],
-    mut natm: i32,
-    mut bas: &[i32],
-    mut nbas: i32,
-    mut env: &[f64],
+    envs: &mut CINTEnvVars,
+    ng: &[i32],
+    shls: [i32; 4],
+    atm: &[i32],
+    natm: i32,
+    bas: &[i32],
+    nbas: i32,
+    env: &[f64],
 ) {
     envs.natm = natm;
     envs.nbas = nbas;
