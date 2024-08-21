@@ -91620,6 +91620,40 @@ pub unsafe extern "C" fn c2s_sph_2e1(
 //     }
 // }
 #[no_mangle]
+pub fn c2s_cart_1e_cpy(
+    opij: &mut [f64],
+    gctr: &mut [f64],
+    dims: &[i32],
+    envs: &CINTEnvVars,
+    _cache: &mut [f64],
+) {
+    let mut i_ctr: i32 = envs.x_ctr[0];
+    let mut j_ctr: i32 = envs.x_ctr[1];
+    let mut nfi: i32 = envs.nfi;
+    let mut nfj: i32 = envs.nfj;
+    let mut nf: i32 = envs.nf;
+    let mut ni: i32 = dims[0];
+    let mut nj: i32 = dims[1];
+    let mut ofj: i32 = ni * nfj;
+    
+    let mut gctr_offset = 0;
+
+    for jc in 0..j_ctr {
+        for ic in 0..i_ctr {
+            let opij_offset = (ofj * jc + nfi * ic) as usize;
+            let popij = &mut opij[opij_offset..];
+
+            unsafe {
+                dcopy_ij(popij.as_mut_ptr(), (&mut gctr[gctr_offset..]).as_mut_ptr(), ni, nj, nfi, nfj);
+            }
+            
+            gctr_offset += nf as usize;
+        }
+    }
+}
+
+
+#[no_mangle]
 pub unsafe extern "C" fn c2s_cart_1e(
     mut opij: *mut f64,
     mut gctr: *mut f64,

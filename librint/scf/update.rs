@@ -144,11 +144,35 @@ fn main() -> io::Result<()>{
     let nshells = angl(&mut bas, 0);
 
     let mut S = integral1e(&mut atm, &mut bas, &mut env, 0, 0);
-    println!("ovlp");
+    println!("ovlp cart");
     print_arr(nshells, 2, &mut S);
 
+    S = integral1e(&mut atm, &mut bas, &mut env, 1, 0);
+    println!("ovlp sph");
+    print_arr(nshells, 2, &mut S);
+
+    let mut T = integral1e(&mut atm, &mut bas, &mut env, 0, 1);
+    println!("kin cart");
+    print_arr(nshells, 2, &mut T);
+
+    let mut T = integral1e(&mut atm, &mut bas, &mut env, 1, 1);
+    println!("kin sph");
+    print_arr(nshells, 2, &mut T);
+
+    let mut V = integral1e(&mut atm, &mut bas, &mut env, 0, 2);
+    println!("nuc cart");
+    print_arr(nshells, 2, &mut V);
+
+    let mut V = integral1e(&mut atm, &mut bas, &mut env, 1, 2);
+    println!("nuc sph");
+    print_arr(nshells, 2, &mut V);
+
     let mut R = integral2e(&mut atm, &mut bas, &mut env, 0);
-    println!("repulsion");
+    println!("repulsion cart");
+    print_arr(nshells, 4, &mut R);
+
+    R = integral2e(&mut atm, &mut bas, &mut env, 1);
+    println!("repulsion sph");
     print_arr(nshells, 4, &mut R);
 
     // let (s1, s2) = split(&mut bas);
