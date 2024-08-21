@@ -34,7 +34,7 @@ pub struct Rys2eT {
 // }
 
 type FG0_2E_2D4D = fn(&mut [f64], &Rys2eT, &CINTEnvVars) -> ();
-type FG0_2E = fn(&mut [f64], &mut [f64], &mut [f64], f64, &mut CINTEnvVars) -> i32;
+type FG0_2E = fn(&mut [f64], &[f64], &[f64], f64, &CINTEnvVars) -> i32;
 
 #[derive(Clone)]
 #[repr(C)]

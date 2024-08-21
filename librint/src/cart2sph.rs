@@ -90788,7 +90788,13 @@ pub unsafe extern "C" fn c2s_dset0(
     let mut j: i32 = 0;
     let mut k: i32 = 0;
     let mut l: i32 = 0;
-    if dims == counts {
+    let mut same = true;
+    for i in 0..4 {
+        if dims.offset(i) != counts.offset(i) {
+            same = false;
+        }
+    }
+    if same {
         i = 0 as i32;
         while (i as libc::c_ulong)
             < nijk

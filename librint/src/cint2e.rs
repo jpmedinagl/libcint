@@ -27,78 +27,43 @@ pub type size_t = libc::c_ulong;
 pub type uintptr_t = libc::c_ulong;
 
 #[no_mangle]
-pub unsafe extern "C" fn CINT2e_loop_nopt(
-    mut gctr: *mut f64,
-    mut envs: *mut CINTEnvVars,
-    mut cache: *mut f64,
-    mut empty: *mut i32,
+pub unsafe fn CINT2e_loop_nopt(
+    gctr: &mut [f64],
+    envs: &CINTEnvVars,
+    cache: &mut [f64],
+    empty: &i32,
 ) -> i32 {
-    let mut shls: *mut i32 = (*envs).shls.as_mut_ptr();
-    let mut bas: *mut i32 = (*envs).bas.as_mut_ptr();
-    let mut env: *mut f64 = (*envs).env.as_mut_ptr();
-    let mut i_sh: i32 = *shls.offset(0 as i32 as isize);
-    let mut j_sh: i32 = *shls.offset(1 as i32 as isize);
-    let mut k_sh: i32 = *shls.offset(2 as i32 as isize);
-    let mut l_sh: i32 = *shls.offset(3 as i32 as isize);
-    let mut i_ctr: i32 = (*envs).x_ctr[0 as i32 as usize];
-    let mut j_ctr: i32 = (*envs).x_ctr[1 as i32 as usize];
-    let mut k_ctr: i32 = (*envs).x_ctr[2 as i32 as usize];
-    let mut l_ctr: i32 = (*envs).x_ctr[3 as i32 as usize];
-    let mut i_prim: i32 = *bas
-        .offset((8 as i32 * i_sh + 2 as i32) as isize);
-    let mut j_prim: i32 = *bas
-        .offset((8 as i32 * j_sh + 2 as i32) as isize);
-    let mut k_prim: i32 = *bas
-        .offset((8 as i32 * k_sh + 2 as i32) as isize);
-    let mut l_prim: i32 = *bas
-        .offset((8 as i32 * l_sh + 2 as i32) as isize);
-    let mut rk: *mut f64 = (*envs).rk.as_mut_ptr();
-    let mut rl: *mut f64 = (*envs).c2rust_unnamed_1.rl.as_mut_ptr();
-    let mut ai: *mut f64 = env
-        .offset(
-            *bas.offset((8 as i32 * i_sh + 5 as i32) as isize) as isize,
-        );
-    let mut aj: *mut f64 = env
-        .offset(
-            *bas.offset((8 as i32 * j_sh + 5 as i32) as isize) as isize,
-        );
-    let mut ak: *mut f64 = env
-        .offset(
-            *bas.offset((8 as i32 * k_sh + 5 as i32) as isize) as isize,
-        );
-    let mut al: *mut f64 = env
-        .offset(
-            *bas.offset((8 as i32 * l_sh + 5 as i32) as isize) as isize,
-        );
-    let mut ci: *mut f64 = env
-        .offset(
-            *bas.offset((8 as i32 * i_sh + 6 as i32) as isize) as isize,
-        );
-    let mut cj: *mut f64 = env
-        .offset(
-            *bas.offset((8 as i32 * j_sh + 6 as i32) as isize) as isize,
-        );
-    let mut ck: *mut f64 = env
-        .offset(
-            *bas.offset((8 as i32 * k_sh + 6 as i32) as isize) as isize,
-        );
-    let mut cl: *mut f64 = env
-        .offset(
-            *bas.offset((8 as i32 * l_sh + 6 as i32) as isize) as isize,
-        );
-    let mut expcutoff: f64 = (*envs).expcutoff;
-    let mut rr_ij: f64 = (*envs).rirj[0 as i32 as usize]
-        * (*envs).rirj[0 as i32 as usize]
-        + (*envs).rirj[1 as i32 as usize]
-            * (*envs).rirj[1 as i32 as usize]
-        + (*envs).rirj[2 as i32 as usize]
-            * (*envs).rirj[2 as i32 as usize];
-    let mut rr_kl: f64 = (*envs).rkrl[0 as i32 as usize]
-        * (*envs).rkrl[0 as i32 as usize]
-        + (*envs).rkrl[1 as i32 as usize]
-            * (*envs).rkrl[1 as i32 as usize]
-        + (*envs).rkrl[2 as i32 as usize]
-            * (*envs).rkrl[2 as i32 as usize];
+    let shls: [i32; 4] = envs.shls;
+    let bas: &[i32] = &envs.bas;
+    let env: &[f64] = &envs.env;
+    let mut i_sh: i32 = shls[0];
+    let mut j_sh: i32 = shls[1];
+    let mut k_sh: i32 = shls[2];
+    let mut l_sh: i32 = shls[3];
+    let mut i_ctr: i32 = envs.x_ctr[0];
+    let mut j_ctr: i32 = envs.x_ctr[1];
+    let mut k_ctr: i32 = envs.x_ctr[2];
+    let mut l_ctr: i32 = envs.x_ctr[3];
+    let mut i_prim: i32 = bas[8 * i_sh as usize + 2];
+    let mut j_prim: i32 = bas[8 * j_sh as usize + 2];
+    let mut k_prim: i32 = bas[8 * k_sh as usize + 2];
+    let mut l_prim: i32 = bas[8 * l_sh as usize + 2];
+    let mut rk: [f64; 3] = envs.rk;
+    let mut rl: [f64; 3] = envs.c2rust_unnamed_1.rl;
+
+    let mut ai: *mut f64 = (&env[bas[8 * i_sh as usize + 5] as usize..]).as_mut_ptr();
+    let mut aj: *mut f64 = (&env[bas[8 * j_sh as usize + 5] as usize..]).as_mut_ptr();
+    let mut ak: *mut f64 = (&env[bas[8 * k_sh as usize + 5] as usize..]).as_mut_ptr();
+    let mut al: *mut f64 = (&env[bas[8 * l_sh as usize + 5] as usize..]).as_mut_ptr();
+    let mut ci: *mut f64 = (&env[bas[8 * i_sh as usize + 6] as usize..]).as_mut_ptr();
+    let mut cj: *mut f64 = (&env[bas[8 * j_sh as usize + 6] as usize..]).as_mut_ptr();
+    let mut ck: *mut f64 = (&env[bas[8 * k_sh as usize + 6] as usize..]).as_mut_ptr();
+    let mut cl: *mut f64 = (&env[bas[8 * l_sh as usize + 6] as usize..]).as_mut_ptr();
+
+    let mut expcutoff: f64 = envs.expcutoff;
+    let mut rr_ij: f64 = envs.rirj[0] * envs.rirj[0] + envs.rirj[1] * envs.rirj[1] + envs.rirj[2] * envs.rirj[2];
+    let mut rr_kl: f64 = envs.rkrl[0] * envs.rkrl[0] + envs.rkrl[1] * envs.rkrl[1] + envs.rkrl[2] * envs.rkrl[2];
+    
     let mut log_maxci: *mut f64 = 0 as *mut f64;
     let mut log_maxcj: *mut f64 = 0 as *mut f64;
     let mut log_maxck: *mut f64 = 0 as *mut f64;
@@ -113,6 +78,7 @@ pub unsafe extern "C" fn CINT2e_loop_nopt(
         & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
         as *mut PairData;
     cache = pdata_base.offset((i_prim * j_prim) as isize) as *mut f64;
+
     log_maxcj = log_maxci.offset(i_prim as isize);
     log_maxck = log_maxcj.offset(j_prim as isize);
     log_maxcl = log_maxck.offset(k_prim as isize);
@@ -2993,165 +2959,125 @@ pub unsafe extern "C" fn CINT2e_loop_nopt(
 //     ]
 // };
 #[no_mangle]
-pub unsafe extern "C" fn CINT2e_drv(
-    mut out: *mut f64,
-    mut dims: *mut i32,
-    mut envs: *mut CINTEnvVars,
+pub fn CINT2e_drv(
+    out: &mut [f64],
+    dims: &mut [i32],
+    envs: &mut CINTEnvVars,
     // mut opt: *mut CINTOpt,
-    mut cache: *mut f64,
-    mut f_c2s: Option::<unsafe extern "C" fn() -> ()>,
+    cache: Vec<f64>,
+    f_c2s: Option::<unsafe extern "C" fn() -> ()>,
 ) -> i32 {
-    let mut x_ctr: *mut i32 = ((*envs).x_ctr).as_mut_ptr();
-    let mut nf: size_t = (*envs).nf as size_t;
-    let mut nc: size_t = nf
-        .wrapping_mul(*x_ctr.offset(0 as i32 as isize) as libc::c_ulong)
-        .wrapping_mul(*x_ctr.offset(1 as i32 as isize) as libc::c_ulong)
-        .wrapping_mul(*x_ctr.offset(2 as i32 as isize) as libc::c_ulong)
-        .wrapping_mul(*x_ctr.offset(3 as i32 as isize) as libc::c_ulong);
-    let mut n_comp: i32 = (*envs).ncomp_e1 * (*envs).ncomp_e2 * (*envs).ncomp_tensor; // cannot handle (reverse) unknown intrinsic
-    if out.is_null() {
-        let mut bas: *mut i32 = (*envs).bas.as_mut_ptr();
-        let mut shls: *mut i32 = (*envs).shls.as_mut_ptr();
-        let mut i_prim: i32 = *bas
-            .offset(
-                (8 as i32 * *shls.offset(0 as i32 as isize)
-                    + 2 as i32) as isize,
-            );
-        let mut j_prim: i32 = *bas
-            .offset(
-                (8 as i32 * *shls.offset(1 as i32 as isize)
-                    + 2 as i32) as isize,
-            );
-        let mut k_prim: i32 = *bas
-            .offset(
-                (8 as i32 * *shls.offset(2 as i32 as isize)
-                    + 2 as i32) as isize,
-            );
-        let mut l_prim: i32 = *bas
-            .offset(
-                (8 as i32 * *shls.offset(3 as i32 as isize)
-                    + 2 as i32) as isize,
-            );
-        let mut pdata_size: size_t = (((i_prim * j_prim + k_prim * l_prim)
-            * 5 as i32 + i_prim * *x_ctr.offset(0 as i32 as isize)
-            + j_prim * *x_ctr.offset(1 as i32 as isize)
-            + k_prim * *x_ctr.offset(2 as i32 as isize)
-            + l_prim * *x_ctr.offset(3 as i32 as isize)
-            + (i_prim + j_prim + k_prim + l_prim) * 2 as i32) as libc::c_ulong)
-            .wrapping_add(nf.wrapping_mul(3 as i32 as libc::c_ulong));
-        let mut leng: size_t = ((*envs).g_size * 3 as i32
-            * (((1 as i32) << (*envs).gbits) + 1 as i32)) as size_t;
-        let mut len0: size_t = nf.wrapping_mul(n_comp as libc::c_ulong);
-        let mut cache_size: size_t = if leng
-            .wrapping_add(len0)
-            .wrapping_add(
-                nc
-                    .wrapping_mul(n_comp as libc::c_ulong)
-                    .wrapping_mul(3 as i32 as libc::c_ulong),
-            )
-            .wrapping_add(pdata_size)
-            > nc
-                .wrapping_mul(n_comp as libc::c_ulong)
-                .wrapping_add(nf.wrapping_mul(4 as i32 as libc::c_ulong))
-        {
-            leng.wrapping_add(len0)
-                .wrapping_add(
-                    nc
-                        .wrapping_mul(n_comp as libc::c_ulong)
-                        .wrapping_mul(3 as i32 as libc::c_ulong),
-                )
-                .wrapping_add(pdata_size)
-        } else {
-            nc.wrapping_mul(n_comp as libc::c_ulong)
-                .wrapping_add(nf.wrapping_mul(4 as i32 as libc::c_ulong))
-        };
-        if cache_size >= 2147483647 as i32 as libc::c_ulong {
-            println!("CINT2e_drv cache_size overflow: cache_size {} > {}, nf {}, nc {}, n_comp {}\n", 
-                cache_size, 2147483647, nf, nc, n_comp);
-            // fprintf(
-            //     stderr,
-            //     b"CINT2e_drv cache_size overflow: cache_size %zu > %d, nf %zu, nc %zu, n_comp %d\n\0"
-            //         as *const u8 as *const libc::c_char,
-            //     cache_size,
-            //     2147483647 as i32,
-            //     nf,
-            //     nc,
-            //     n_comp,
-            // );
-            cache_size = 0 as i32 as size_t;
-        }
-        return cache_size as i32;
-    }
-    let mut stack: *mut f64 = 0 as *mut f64;
-    // if cache.is_null() {
-    let mut bas_0: *mut i32 = (*envs).bas.as_mut_ptr();
-    let mut shls_0: *mut i32 = (*envs).shls.as_mut_ptr();
-    let mut i_prim_0: i32 = *bas_0
-        .offset(
-            (8 as i32 * *shls_0.offset(0 as i32 as isize)
-                + 2 as i32) as isize,
-        );
-    let mut j_prim_0: i32 = *bas_0
-        .offset(
-            (8 as i32 * *shls_0.offset(1 as i32 as isize)
-                + 2 as i32) as isize,
-        );
-    let mut k_prim_0: i32 = *bas_0
-        .offset(
-            (8 as i32 * *shls_0.offset(2 as i32 as isize)
-                + 2 as i32) as isize,
-        );
-    let mut l_prim_0: i32 = *bas_0
-        .offset(
-            (8 as i32 * *shls_0.offset(3 as i32 as isize)
-                + 2 as i32) as isize,
-        );
-    let mut pdata_size_0: size_t = (((i_prim_0 * j_prim_0 + k_prim_0 * l_prim_0)
-        * 5 as i32 + i_prim_0 * *x_ctr.offset(0 as i32 as isize)
-        + j_prim_0 * *x_ctr.offset(1 as i32 as isize)
-        + k_prim_0 * *x_ctr.offset(2 as i32 as isize)
-        + l_prim_0 * *x_ctr.offset(3 as i32 as isize)
-        + (i_prim_0 + j_prim_0 + k_prim_0 + l_prim_0) * 2 as i32)
-        as libc::c_ulong)
-        .wrapping_add(nf.wrapping_mul(3 as i32 as libc::c_ulong));
-    let mut leng_0: size_t = ((*envs).g_size * 3 as i32
-        * (((1 as i32) << (*envs).gbits) + 1 as i32)) as size_t;
-    let mut len0_0: size_t = nf.wrapping_mul(n_comp as libc::c_ulong);
-    let mut cache_size_0: size_t = if leng_0
-        .wrapping_add(len0_0)
-        .wrapping_add(
-            nc
-                .wrapping_mul(n_comp as libc::c_ulong)
-                .wrapping_mul(3 as i32 as libc::c_ulong),
-        )
-        .wrapping_add(pdata_size_0)
-        > nc
-            .wrapping_mul(n_comp as libc::c_ulong)
-            .wrapping_add(nf.wrapping_mul(4 as i32 as libc::c_ulong))
-    {
-        leng_0
-            .wrapping_add(len0_0)
-            .wrapping_add(
-                nc
-                    .wrapping_mul(n_comp as libc::c_ulong)
-                    .wrapping_mul(3 as i32 as libc::c_ulong),
-            )
-            .wrapping_add(pdata_size_0)
-    } else {
-        nc.wrapping_mul(n_comp as libc::c_ulong)
-            .wrapping_add(nf.wrapping_mul(4 as i32 as libc::c_ulong))
-    };
-    stack = malloc(
-        (::core::mem::size_of::<f64>() as libc::c_ulong)
-            .wrapping_mul(cache_size_0),
-    ) as *mut f64;
-    cache = stack;
+    let mut x_ctr: [i32; 4] = envs.x_ctr;
+    let mut nf: size_t = envs.nf as size_t;
+    let mut nc: size_t = nf * (x_ctr[0] * x_ctr[1] * x_ctr[2] * x_ctr[3]) as u64;
+    let mut n_comp: i32 = envs.ncomp_e1 * envs.ncomp_e2 * envs.ncomp_tensor; // cannot handle (reverse) unknown intrinsic
+    // if out.is_null() {
+    //     let mut bas: *mut i32 = (*envs).bas.as_mut_ptr();
+    //     let mut shls: *mut i32 = (*envs).shls.as_mut_ptr();
+    //     let mut i_prim: i32 = *bas
+    //         .offset(
+    //             (8 as i32 * *shls.offset(0 as i32 as isize)
+    //                 + 2 as i32) as isize,
+    //         );
+    //     let mut j_prim: i32 = *bas
+    //         .offset(
+    //             (8 as i32 * *shls.offset(1 as i32 as isize)
+    //                 + 2 as i32) as isize,
+    //         );
+    //     let mut k_prim: i32 = *bas
+    //         .offset(
+    //             (8 as i32 * *shls.offset(2 as i32 as isize)
+    //                 + 2 as i32) as isize,
+    //         );
+    //     let mut l_prim: i32 = *bas
+    //         .offset(
+    //             (8 as i32 * *shls.offset(3 as i32 as isize)
+    //                 + 2 as i32) as isize,
+    //         );
+    //     let mut pdata_size: size_t = (((i_prim * j_prim + k_prim * l_prim)
+    //         * 5 as i32 + i_prim * *x_ctr.offset(0 as i32 as isize)
+    //         + j_prim * *x_ctr.offset(1 as i32 as isize)
+    //         + k_prim * *x_ctr.offset(2 as i32 as isize)
+    //         + l_prim * *x_ctr.offset(3 as i32 as isize)
+    //         + (i_prim + j_prim + k_prim + l_prim) * 2 as i32) as libc::c_ulong)
+    //         .wrapping_add(nf.wrapping_mul(3 as i32 as libc::c_ulong));
+    //     let mut leng: size_t = ((*envs).g_size * 3 as i32
+    //         * (((1 as i32) << (*envs).gbits) + 1 as i32)) as size_t;
+    //     let mut len0: size_t = nf.wrapping_mul(n_comp as libc::c_ulong);
+    //     let mut cache_size: size_t = if leng
+    //         .wrapping_add(len0)
+    //         .wrapping_add(
+    //             nc
+    //                 .wrapping_mul(n_comp as libc::c_ulong)
+    //                 .wrapping_mul(3 as i32 as libc::c_ulong),
+    //         )
+    //         .wrapping_add(pdata_size)
+    //         > nc
+    //             .wrapping_mul(n_comp as libc::c_ulong)
+    //             .wrapping_add(nf.wrapping_mul(4 as i32 as libc::c_ulong))
+    //     {
+    //         leng.wrapping_add(len0)
+    //             .wrapping_add(
+    //                 nc
+    //                     .wrapping_mul(n_comp as libc::c_ulong)
+    //                     .wrapping_mul(3 as i32 as libc::c_ulong),
+    //             )
+    //             .wrapping_add(pdata_size)
+    //     } else {
+    //         nc.wrapping_mul(n_comp as libc::c_ulong)
+    //             .wrapping_add(nf.wrapping_mul(4 as i32 as libc::c_ulong))
+    //     };
+    //     if cache_size >= 2147483647 as i32 as libc::c_ulong {
+    //         println!("CINT2e_drv cache_size overflow: cache_size {} > {}, nf {}, nc {}, n_comp {}\n", 
+    //             cache_size, 2147483647, nf, nc, n_comp);
+    //         // fprintf(
+    //         //     stderr,
+    //         //     b"CINT2e_drv cache_size overflow: cache_size %zu > %d, nf %zu, nc %zu, n_comp %d\n\0"
+    //         //         as *const u8 as *const libc::c_char,
+    //         //     cache_size,
+    //         //     2147483647 as i32,
+    //         //     nf,
+    //         //     nc,
+    //         //     n_comp,
+    //         // );
+    //         cache_size = 0 as i32 as size_t;
+    //     }
+    //     return cache_size as i32;
     // }
-    let mut gctr: *mut f64 = 0 as *mut f64;
-    gctr = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
-        & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
-        as *mut f64;
-    cache = gctr.offset(nc.wrapping_mul(n_comp as libc::c_ulong) as isize);
+    // let mut stack: &mut [f64]; // = 0 as *mut f64;
+    // if cache.is_null() {
+    let mut bas_0: &mut [i32] = &mut envs.bas;
+    let mut shls_0: [i32; 4] = envs.shls;
+    let mut i_prim_0: i32 = bas_0[8 * shls_0[0] as usize + 2];
+    let mut j_prim_0: i32 = bas_0[8 * shls_0[1] as usize + 2];
+    let mut k_prim_0: i32 = bas_0[8 * shls_0[2] as usize + 2];
+    let mut l_prim_0: i32 = bas_0[8 * shls_0[3] as usize + 2];
+    let mut pdata_size_0: size_t = (((i_prim_0 * j_prim_0 + k_prim_0 * l_prim_0) * 5 as i32 
+        + i_prim_0 * x_ctr[0]
+        + j_prim_0 * x_ctr[1]
+        + k_prim_0 * x_ctr[2]
+        + l_prim_0 * x_ctr[3]
+        + (i_prim_0 + j_prim_0 + k_prim_0 + l_prim_0) * 2 as i32)
+        as u64) + nf * 3;
+    let mut leng_0: size_t = (envs.g_size * 3 * ((1 << envs.gbits) + 1)) as size_t;
+    let mut len0_0: size_t = nf * n_comp as u64;
+    let mut cache_size_0: size_t = 
+        if leng_0 + len0_0 + nc * (n_comp as u64) * 3 + pdata_size_0
+        > nc * (n_comp as u64) + nf * 4
+        {
+            leng_0 + len0_0 + nc * (n_comp as u64) * 3 + pdata_size_0
+        } else {
+            nc * (n_comp as u64) + nf * 4
+        };
+    // stack = malloc(
+    //     (::core::mem::size_of::<f64>() as libc::c_ulong)
+    //         .wrapping_mul(cache_size_0),
+    // ) as *mut f64;
+    let mut cache_full = vec![0.0; cache_size_0 as usize];
+    // }
+    // let gctr: &mut [f64] = &mut cache_full[..];
+    // let cache: &mut [f64] = &mut cache_full[(nc * n_comp as u64) as usize..];
+    let (gctr, cache) = cache_full.split_at_mut((nc * (n_comp as u64)) as usize);
     let mut n: i32 = 0;
     let mut empty: i32 = 1 as i32;
     // if !opt.is_null() {
@@ -3167,9 +3093,12 @@ pub unsafe extern "C" fn CINT2e_drv(
         // (CINTf_2e_loop[n as usize])
         //     .expect("non-null function pointer")(gctr, envs, cache, &mut empty);
     // } else {
-    CINT2e_loop_nopt(gctr, envs, cache, &mut empty);
+    unsafe {
+        CINT2e_loop_nopt(gctr, envs, cache, &empty);
+    }
     // }
     let mut counts: [i32; 4] = [0; 4];
+    unsafe {
     if f_c2s
         == ::core::mem::transmute::<
             Option::<
@@ -3195,65 +3124,55 @@ pub unsafe extern "C" fn CINT2e_drv(
             ),
         )
     {
-        counts[0 as i32
-            as usize] = ((*envs).i_l * 2 as i32 + 1 as i32)
-            * *x_ctr.offset(0 as i32 as isize);
-        counts[1 as i32
-            as usize] = ((*envs).j_l * 2 as i32 + 1 as i32)
-            * *x_ctr.offset(1 as i32 as isize);
-        counts[2 as i32
-            as usize] = ((*envs).k_l * 2 as i32 + 1 as i32)
-            * *x_ctr.offset(2 as i32 as isize);
-        counts[3 as i32
-            as usize] = ((*envs).l_l * 2 as i32 + 1 as i32)
-            * *x_ctr.offset(3 as i32 as isize);
+        counts[0] = (envs.i_l * 2 + 1) * x_ctr[0];
+        counts[1] = (envs.j_l * 2 + 1) * x_ctr[1];
+        counts[2] = (envs.k_l * 2 + 1) * x_ctr[2];
+        counts[3] = (envs.l_l * 2 + 1) * x_ctr[3];
     } else {
-        counts[0 as i32
-            as usize] = (*envs).nfi * *x_ctr.offset(0 as i32 as isize);
-        counts[1 as i32
-            as usize] = (*envs).nfj * *x_ctr.offset(1 as i32 as isize);
-        counts[2 as i32
-            as usize] = (*envs).c2rust_unnamed.nfk
-            * *x_ctr.offset(2 as i32 as isize);
-        counts[3 as i32
-            as usize] = (*envs).c2rust_unnamed_0.nfl
-            * *x_ctr.offset(3 as i32 as isize);
+        counts[0] = envs.nfi * x_ctr[0];
+        counts[1] = envs.nfj * x_ctr[1];
+        counts[2] = envs.c2rust_unnamed.nfk * x_ctr[2];
+        counts[3] = envs.c2rust_unnamed_0.nfl* x_ctr[3];
     }
-    // if dims.is_null() {
-    dims = counts.as_mut_ptr();
-    // }
-    let mut nout: i32 = *dims.offset(0 as i32 as isize)
-        * *dims.offset(1 as i32 as isize)
-        * *dims.offset(2 as i32 as isize)
-        * *dims.offset(3 as i32 as isize);
+    }
+    if dims.len() == 0 {
+        for i in 0..4 {
+            dims[i] = counts[i];
+        }
+    }
+    let mut nout: i32 = dims[0] * dims[1] * dims[2] * dims[3];
     if empty == 0 {
         n = 0 as i32;
         while n < n_comp {
-            ::core::mem::transmute::<
-                _,
-                fn(_, _, _, _, _),
-            >(
-                (Some(f_c2s.expect("non-null function pointer")))
-                    .expect("non-null function pointer"),
-            )(
-                out.offset((nout * n) as isize),
-                gctr.offset(nc.wrapping_mul(n as libc::c_ulong) as isize),
-                dims,
-                envs,
-                cache,
-            );
-            n += 1;
+            unsafe {
+                ::core::mem::transmute::<
+                    _,
+                    fn(_, _, _, _, _),
+                >(
+                    (Some(f_c2s.expect("non-null function pointer")))
+                        .expect("non-null function pointer"),
+                )(
+                    (&mut out[(nout * n) as usize..]).as_mut_ptr(),
+                    (&mut gctr[(nc * n as u64) as usize..]).as_mut_ptr(),
+                    dims.as_mut_ptr(),
+                    envs as *mut CINTEnvVars,
+                    cache.as_mut_ptr(),
+                );
+                n += 1;
+            }
         }
     } else {
         n = 0 as i32;
         while n < n_comp {
-            c2s_dset0(out.offset((nout * n) as isize), dims, counts.as_mut_ptr());
+            unsafe {
+                c2s_dset0((&mut out[(nout * n) as usize..]).as_mut_ptr(), dims.as_mut_ptr(), counts.as_mut_ptr());
+            }
             n += 1;
         }
     }
-    if !stack.is_null() {
-        free(stack as *mut libc::c_void);
-    }
+    // if !stack.is_null() {
+    //     free(stack as *mut libc::c_void);
+    // }
     return (empty == 0) as i32;
 }
 #[no_mangle]
@@ -3722,7 +3641,7 @@ pub unsafe extern "C" fn int2e_sph(
     mut nbas: i32,
     mut env: &mut [f64],
     // mut opt: *mut CINTOpt,
-    mut cache: &mut [f64],
+    mut cache: Vec<f64>,
 ) -> i32 {
     let mut ng: [i32; 8] = [0, 0, 0, 0, 0, 1, 1, 1];
     let mut envs: CINTEnvVars = CINTEnvVars::new();
@@ -3752,11 +3671,11 @@ pub unsafe extern "C" fn int2e_sph(
         ),
     );
     return CINT2e_drv(
-        out.as_mut_ptr(),
-        dims.as_mut_ptr(),
-        &mut envs as *mut CINTEnvVars,
+        out,
+        dims,
+        &mut envs,
         // opt,
-        cache.as_mut_ptr(),
+        cache,
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
@@ -3782,7 +3701,7 @@ pub unsafe extern "C" fn int2e_sph(
         ),
     );
 }
-#[no_mangle]
+// #[no_mangle]
 // pub unsafe extern "C" fn int2e_optimizer(
 //     mut opt: *mut *mut CINTOpt,
 //     mut atm: *mut i32,
@@ -3813,7 +3732,7 @@ pub unsafe fn int2e_cart(
     mut bas: &mut [i32],
     mut nbas: i32,
     mut env: &mut [f64],
-    mut cache: &mut [f64],
+    mut cache: Vec<f64>,
 ) -> i32 {
     let ng: [i32; 8] = [0, 0, 0, 0, 0, 1, 1, 1];
     let mut envs: CINTEnvVars = CINTEnvVars::new();
@@ -3843,10 +3762,10 @@ pub unsafe fn int2e_cart(
         ),
     );
     return CINT2e_drv(
-        out.as_mut_ptr(),
-        dims.as_mut_ptr(),
-        &mut envs as *mut CINTEnvVars,
-        cache.as_mut_ptr(),
+        out,
+        dims,
+        &mut envs,
+        cache,
         ::core::mem::transmute::<
             Option::<
                 unsafe extern "C" fn(
@@ -3884,7 +3803,7 @@ pub fn cint2e_sph(
     // mut opt: *mut CINTOpt,
 ) -> i32 {
     let mut dims = [0;0];
-    let mut cache = [0.0;0];
+    let mut cache = vec![0.0;0];
     unsafe {
         return int2e_sph(
             out,
@@ -3895,7 +3814,7 @@ pub fn cint2e_sph(
             bas,
             nbas,
             env,
-            &mut cache,
+            cache,
         );
     }
     // return int2e_sph(
@@ -3955,7 +3874,7 @@ pub fn cint2e_cart(
     mut env: &mut [f64],
 ) -> i32 {
     let mut dims = [0;0];
-    let mut cache = [0.0;0];
+    let mut cache = vec![0.0;0];
     unsafe {
         return int2e_cart(
             out,
@@ -3966,7 +3885,7 @@ pub fn cint2e_cart(
             bas,
             nbas,
             env,
-            &mut cache,
+            cache,
         );
     }
 }

@@ -127,19 +127,27 @@ pub unsafe fn CINTinit_int2e_EnvVars(
     }
     if rys_order <= 2 as i32 {
         envs.f_g0_2d4d = Some(CINTg0_2e_2d4d_unrolled);
-        if rys_order != nrys_roots {
-            envs.f_g0_2d4d = Some(CINTsrg0_2e_2d4d_unrolled);
-        }
+        // if rys_order != nrys_roots {
+        //     envs.f_g0_2d4d = Some(CINTsrg0_2e_2d4d_unrolled);
+        // }
     } else if kbase != 0 {
         if ibase != 0 {
-            envs.f_g0_2d4d = Some(CINTg0_2e_ik2d4d);
+            // envs.f_g0_2d4d = Some(CINTg0_2e_ik2d4d);
+            println!("CINTg0_2e_ik2d4d unimplemented");
+            panic!();
         } else {
-            envs.f_g0_2d4d = Some(CINTg0_2e_kj2d4d);
+            // envs.f_g0_2d4d = Some(CINTg0_2e_kj2d4d);
+            println!("CINTg0_2e_kj2d4d");
+            panic!();
         }
     } else if ibase != 0 {
-        envs.f_g0_2d4d = Some(CINTg0_2e_il2d4d);
+        // envs.f_g0_2d4d = Some(CINTg0_2e_il2d4d);
+        println!("CINTg0_2e_il2d4d");
+        panic!();
     } else {
-        envs.f_g0_2d4d = Some(CINTg0_2e_lj2d4d);
+        // envs.f_g0_2d4d = Some(CINTg0_2e_lj2d4d);
+        println!("CINTg0_2e_lj2d4d");
+        panic!();
     }
     envs.f_g0_2e = Some(CINTg0_2e);
 }
@@ -298,9 +306,8 @@ pub fn CINTg0_2e_2d(
     let mut m: usize = 0;
     let mut n: usize = 0;
     let mut off: usize = 0;
-    let gx: &mut [f64] = &mut g[..envs.g_size as usize];
-    let gy: &mut [f64] = &mut g[envs.g_size as usize..(2 * envs.g_size) as usize];
-    let gz: &mut [f64] = &mut g[(2 * envs.g_size) as usize..(3 * envs.g_size) as usize];
+    let (gx, rest) = g.split_at_mut(envs.g_size as usize);
+    let (gy, gz) = rest.split_at_mut(envs.g_size as usize);
     let mut p0x: *mut f64 = 0 as *mut f64;
     let mut p0y: *mut f64 = 0 as *mut f64;
     let mut p0z: *mut f64 = 0 as *mut f64;
@@ -10520,121 +10527,109 @@ pub unsafe extern "C" fn CINTsrg0_2e_2d4d_unrolled(
     //     (*envs).lj_ceil,
     // );
 }
+// #[no_mangle]
+// pub unsafe extern "C" fn CINTg0_2e_lj2d4d(
+//     mut g: *mut f64,
+//     mut bc: *mut Rys2eT,
+//     mut envs: *mut CINTEnvVars,
+// ) {
+//     CINTg0_2e_2d(g, bc, envs);
+//     CINTg0_lj2d_4d(g, envs);
+// }
+// #[no_mangle]
+// pub unsafe extern "C" fn CINTg0_2e_kj2d4d(
+//     mut g: *mut f64,
+//     mut bc: *mut Rys2eT,
+//     mut envs: *mut CINTEnvVars,
+// ) {
+//     CINTg0_2e_2d(g, bc, envs);
+//     CINTg0_kj2d_4d(g, envs);
+// }
+// #[no_mangle]
+// pub fn CINTg0_2e_ik2d4d(
+//     g: &mut [f64],
+//     bc: &Rys2eT,
+//     envs: &CINTEnvVars,
+// ) {
+//     CINTg0_2e_2d(g, bc, envs);
+//     CINTg0_ik2d_4d(g, envs); // ?
+// }
+// #[no_mangle]
+// pub unsafe extern "C" fn CINTg0_2e_il2d4d(
+//     mut g: *mut f64,
+//     mut bc: *mut Rys2eT,
+//     mut envs: *mut CINTEnvVars,
+// ) {
+//     CINTg0_2e_2d(g, bc, envs);
+//     CINTg0_il2d_4d(g, envs);
+// }
 #[no_mangle]
-pub unsafe extern "C" fn CINTg0_2e_lj2d4d(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
-) {
-    CINTg0_2e_2d(g, bc, envs);
-    CINTg0_lj2d_4d(g, envs);
-}
-#[no_mangle]
-pub unsafe extern "C" fn CINTg0_2e_kj2d4d(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
-) {
-    CINTg0_2e_2d(g, bc, envs);
-    CINTg0_kj2d_4d(g, envs);
-}
-#[no_mangle]
-pub fn CINTg0_2e_ik2d4d(
+pub fn CINTg0_2e(
     g: &mut [f64],
-    bc: &Rys2eT,
-    envs: &CINTEnvVars,
-) {
-    CINTg0_2e_2d(g, bc, envs);
-    CINTg0_ik2d_4d(g, envs); // ?
-}
-#[no_mangle]
-pub unsafe extern "C" fn CINTg0_2e_il2d4d(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
-) {
-    CINTg0_2e_2d(g, bc, envs);
-    CINTg0_il2d_4d(g, envs);
-}
-#[no_mangle]
-pub unsafe extern "C" fn CINTg0_2e(
-    g: &mut [f64],
-    rij: &mut [f64],
-    rkl: &mut [f64],
+    rij: &[f64],
+    rkl: &[f64],
     cutoff: f64,
     envs: &CINTEnvVars,
 ) -> i32 {
-    let mut irys: i32 = 0;
-    let mut nroots: i32 = (*envs).nrys_roots;
-    let mut aij: f64 = (*envs).ai[0 as i32 as usize]
-        + (*envs).aj[0 as i32 as usize];
-    let mut akl: f64 = (*envs).ak[0 as i32 as usize]
-        + (*envs).al[0 as i32 as usize];
+    let mut irys: usize = 0;
+    let mut nroots: usize = envs.nrys_roots as usize;
+    let mut aij: f64 = envs.ai[0] + envs.aj[0];
+    let mut akl: f64 = envs.ak[0] + envs.al[0];
     let mut a0: f64 = 0.;
     let mut a1: f64 = 0.;
     let mut fac1: f64 = 0.;
     let mut x: f64 = 0.;
     let mut u: [f64; 32] = [0.; 32];
-    let mut w: *mut f64 = g
-        .offset(((*envs).g_size * 2 as i32) as isize);
-    let mut xij_kl: f64 = *rij.offset(0 as i32 as isize)
-        - *rkl.offset(0 as i32 as isize);
-    let mut yij_kl: f64 = *rij.offset(1 as i32 as isize)
-        - *rkl.offset(1 as i32 as isize);
-    let mut zij_kl: f64 = *rij.offset(2 as i32 as isize)
-        - *rkl.offset(2 as i32 as isize);
+    let mut w: &mut [f64] = &mut g[(envs.g_size * 2) as usize..(envs.g_size * 3) as usize];
+    let mut xij_kl: f64 = rij[0] - rkl[0];
+    let mut yij_kl: f64 = rij[1] - rkl[1];
+    let mut zij_kl: f64 = rij[2] - rkl[2];
     let mut rr: f64 = xij_kl * xij_kl + yij_kl * yij_kl + zij_kl * zij_kl;
     a1 = aij * akl;
     a0 = a1 / (aij + akl);
-    fac1 = (a0 / (a1 * a1 * a1)).sqrt() * (*envs).fac[0 as i32 as usize];
+    fac1 = (a0 / (a1 * a1 * a1)).sqrt() * envs.fac[0];
     x = a0 * rr;
-    let omega: f64 = (*envs).env[8];
+    let omega: f64 = envs.env[8];
     let mut theta: f64 = 0 as i32 as f64;
     if omega == 0.0f64 {
-        CINTrys_roots(nroots, x, u.as_mut_ptr(), w);
+        unsafe {
+            CINTrys_roots(nroots as i32, x, u.as_mut_ptr(), w.as_mut_ptr());
+        }
     } else if omega < 0.0f64 {
         theta = omega * omega / (omega * omega + a0);
         if theta * x > cutoff || theta * x > 40 as i32 as f64 {
             return 0 as i32;
         }
-        let mut rorder: i32 = (*envs).rys_order;
+        let rorder: usize = envs.rys_order as usize;
         if rorder == nroots {
-            CINTsr_rys_roots(nroots, x, (theta).sqrt(), u.as_mut_ptr(), w);
+            unsafe {
+                CINTsr_rys_roots(nroots as i32, x, (theta).sqrt(), u.as_mut_ptr(), w.as_mut_ptr());
+            }
         } else {
             let mut sqrt_theta: f64 = -(theta.sqrt());
-            CINTrys_roots(rorder, x, u.as_mut_ptr(), w);
-            CINTrys_roots(
-                rorder,
-                theta * x,
-                u.as_mut_ptr().offset(rorder as isize),
-                w.offset(rorder as isize),
-            );
-            if (*envs).g_size == 2 as i32 {
-                *g
-                    .offset(
-                        0 as i32 as isize,
-                    ) = 1 as i32 as f64;
-                *g
-                    .offset(
-                        1 as i32 as isize,
-                    ) = 1 as i32 as f64;
-                *g
-                    .offset(
-                        2 as i32 as isize,
-                    ) = 1 as i32 as f64;
-                *g
-                    .offset(
-                        3 as i32 as isize,
-                    ) = 1 as i32 as f64;
-                *g.offset(4 as i32 as isize) *= fac1;
-                *g.offset(5 as i32 as isize) *= fac1 * sqrt_theta;
+            unsafe {
+                CINTrys_roots(rorder as i32, x, u.as_mut_ptr(), w.as_mut_ptr());
+                CINTrys_roots(
+                    rorder as i32,
+                    theta * x,
+                    u.as_mut_ptr().offset(rorder as isize),
+                    (&mut w[rorder..]).as_mut_ptr(),
+                );
+            }
+            if envs.g_size == 2 as i32 {
+                g[0] = 1.0;
+                g[1] = 1.0;
+                g[2] = 1.0;
+                g[3] = 1.0;
+                g[4] *= fac1;
+                g[5] *= fac1 * sqrt_theta;
                 return 1 as i32;
             }
             irys = rorder;
             while irys < nroots {
-                let mut ut: f64 = u[irys as usize] * theta;
-                u[irys as usize] = ut / (u[irys as usize] + 1.0f64 - ut);
-                *w.offset(irys as isize) *= sqrt_theta;
+                let mut ut: f64 = u[irys] * theta;
+                u[irys] = ut / (u[irys] + 1.0f64 - ut);
+                w[irys] *= sqrt_theta;
                 irys += 1;
             }
         }
@@ -10642,19 +10637,21 @@ pub unsafe extern "C" fn CINTg0_2e(
         theta = omega * omega / (omega * omega + a0);
         x *= theta;
         fac1 *= theta.sqrt();
-        CINTrys_roots(nroots, x, u.as_mut_ptr(), w);
-        irys = 0 as i32;
+        unsafe {
+            CINTrys_roots(nroots as i32, x, u.as_mut_ptr(), w.as_mut_ptr());
+        }
+        irys = 0;
         while irys < nroots {
-            let mut ut_0: f64 = u[irys as usize] * theta;
-            u[irys as usize] = ut_0 / (u[irys as usize] + 1.0f64 - ut_0);
+            let mut ut_0: f64 = u[irys] * theta;
+            u[irys] = ut_0 / (u[irys] + 1.0f64 - ut_0);
             irys += 1;
         }
     }
     if (*envs).g_size == 1 as i32 {
-        *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-        *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-        *g.offset(2 as i32 as isize) *= fac1;
-        return 1 as i32;
+        g[0] = 1.0;
+        g[1] = 1.0;
+        g[2] *= fac1;
+        return 1;
     }
     let mut u2: f64 = 0.;
     let mut tmp1: f64 = 0.;
@@ -10662,12 +10659,12 @@ pub unsafe extern "C" fn CINTg0_2e(
     let mut tmp3: f64 = 0.;
     let mut tmp4: f64 = 0.;
     let mut tmp5: f64 = 0.;
-    let mut rijrx: f64 = *rij.offset(0 as i32 as isize) - (*envs).rx_in_rijrx[0];
-    let mut rijry: f64 = *rij.offset(1 as i32 as isize) - (*envs).rx_in_rijrx[1];
-    let mut rijrz: f64 = *rij.offset(2 as i32 as isize) - (*envs).rx_in_rijrx[2];
-    let mut rklrx: f64 = *rkl.offset(0 as i32 as isize) - (*envs).rx_in_rklrx[0];
-    let mut rklry: f64 = *rkl.offset(1 as i32 as isize) - (*envs).rx_in_rklrx[1];
-    let mut rklrz: f64 = *rkl.offset(2 as i32 as isize) - (*envs).rx_in_rklrx[2];
+    let mut rijrx: f64 = rij[0] - envs.rx_in_rijrx[0];
+    let mut rijry: f64 = rij[1] - envs.rx_in_rijrx[1];
+    let mut rijrz: f64 = rij[2] - envs.rx_in_rijrx[2];
+    let mut rklrx: f64 = rkl[0] - envs.rx_in_rklrx[0];
+    let mut rklry: f64 = rkl[1] - envs.rx_in_rklrx[1];
+    let mut rklrz: f64 = rkl[2] - envs.rx_in_rklrx[2];
     let mut bc: Rys2eT = Rys2eT {
         c00x: [0.; 32],
         c00y: [0.; 32],
@@ -10679,16 +10676,16 @@ pub unsafe extern "C" fn CINTg0_2e(
         b00: [0.; 32],
         b10: [0.; 32],
     };
-    let mut b00: *mut f64 = (bc.b00).as_mut_ptr();
-    let mut b10: *mut f64 = (bc.b10).as_mut_ptr();
-    let mut b01: *mut f64 = (bc.b01).as_mut_ptr();
-    let mut c00x: *mut f64 = (bc.c00x).as_mut_ptr();
-    let mut c00y: *mut f64 = (bc.c00y).as_mut_ptr();
-    let mut c00z: *mut f64 = (bc.c00z).as_mut_ptr();
-    let mut c0px: *mut f64 = (bc.c0px).as_mut_ptr();
-    let mut c0py: *mut f64 = (bc.c0py).as_mut_ptr();
-    let mut c0pz: *mut f64 = (bc.c0pz).as_mut_ptr();
-    irys = 0 as i32;
+    let mut b00: [f64; 32] = bc.b00;
+    let mut b10: [f64; 32] = bc.b10;
+    let mut b01: [f64; 32] = bc.b01;
+    let mut c00x: [f64; 32] = bc.c00x;
+    let mut c00y: [f64; 32] = bc.c00y;
+    let mut c00z: [f64; 32] = bc.c00z;
+    let mut c0px: [f64; 32] = bc.c0px;
+    let mut c0py: [f64; 32] = bc.c0py;
+    let mut c0pz: [f64; 32] = bc.c0pz;
+    irys = 0;
     while irys < nroots {
         u2 = a0 * u[irys as usize];
         tmp4 = 0.5f64 / (u2 * (aij + akl) + a1);
@@ -10696,16 +10693,16 @@ pub unsafe extern "C" fn CINTg0_2e(
         tmp1 = 2.0f64 * tmp5;
         tmp2 = tmp1 * akl;
         tmp3 = tmp1 * aij;
-        *b00.offset(irys as isize) = tmp5;
-        *b10.offset(irys as isize) = tmp5 + tmp4 * akl;
-        *b01.offset(irys as isize) = tmp5 + tmp4 * aij;
-        *c00x.offset(irys as isize) = rijrx - tmp2 * xij_kl;
-        *c00y.offset(irys as isize) = rijry - tmp2 * yij_kl;
-        *c00z.offset(irys as isize) = rijrz - tmp2 * zij_kl;
-        *c0px.offset(irys as isize) = rklrx + tmp3 * xij_kl;
-        *c0py.offset(irys as isize) = rklry + tmp3 * yij_kl;
-        *c0pz.offset(irys as isize) = rklrz + tmp3 * zij_kl;
-        *w.offset(irys as isize) *= fac1;
+        b00[irys] = tmp5;
+        b10[irys] = tmp5 + tmp4 * akl;
+        b01[irys] = tmp5 + tmp4 * aij;
+        c00x[irys] = rijrx - tmp2 * xij_kl;
+        c00y[irys] = rijry - tmp2 * yij_kl;
+        c00z[irys] = rijrz - tmp2 * zij_kl;
+        c0px[irys] = rklrx + tmp3 * xij_kl;
+        c0py[irys] = rklry + tmp3 * yij_kl;
+        c0pz[irys] = rklrz + tmp3 * zij_kl;
+        w[irys] *= fac1;
         irys += 1;
     }
 
