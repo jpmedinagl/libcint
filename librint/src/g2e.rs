@@ -6,24 +6,10 @@ use crate::rys_roots::CINTrys_roots;
 use crate::rys_roots::CINTsr_rys_roots;
 
 use crate::cint::CINTEnvVars;
-
-
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Rys2eT {
-    pub c00x: [f64; 32],
-    pub c00y: [f64; 32],
-    pub c00z: [f64; 32],
-    pub c0px: [f64; 32],
-    pub c0py: [f64; 32],
-    pub c0pz: [f64; 32],
-    pub b01: [f64; 32],
-    pub b00: [f64; 32],
-    pub b10: [f64; 32],
-}
+use crate::cint::Rys2eT;
 
 #[no_mangle]
-pub unsafe extern "C" fn CINTinit_int2e_EnvVars(
+pub unsafe fn CINTinit_int2e_EnvVars(
     mut envs: &mut CINTEnvVars,
     mut ng: &[i32],
     mut shls: [i32; 4],
