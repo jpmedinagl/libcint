@@ -38,39 +38,38 @@ pub unsafe extern "C" fn CINTinit_int1e_EnvVars(
     mut nbas: i32,
     mut env: &[f64],
 ) {
-    (*envs).natm = natm;
-    (*envs).nbas = nbas;
-    (*envs).atm = atm.into();
-    (*envs).bas = bas.into();
-    (*envs).env = env.into();
-    (*envs).shls = shls;
+    envs.natm = natm;
+    envs.nbas = nbas;
+    envs.atm = atm.into();
+    envs.bas = bas.into();
+    envs.env = env.into();
+    envs.shls = shls;
     let i_sh: usize = shls[0] as usize;
     let j_sh: usize = shls[1] as usize;
-    (*envs).i_l = bas[8 * i_sh + 1];
-    (*envs).j_l = bas[8 * j_sh + 1];
-    (*envs).x_ctr[0] = bas[8 * i_sh + 3];
-    (*envs).x_ctr[1] = bas[8 * j_sh + 3];
-    (*envs).nfi = (envs.i_l + 1) * (envs.i_l + 2) / 2 as i32;
-    (*envs).nfj = (envs.j_l + 1) * (envs.j_l + 2) / 2 as i32;
-    (*envs).nf = (*envs).nfi * (*envs).nfj;
-    (*envs).common_factor = 1 as i32 as f64;
+    envs.i_l = bas[8 * i_sh + 1];
+    envs.j_l = bas[8 * j_sh + 1];
+    envs.x_ctr[0] = bas[8 * i_sh + 3];
+    envs.x_ctr[1] = bas[8 * j_sh + 3];
+    envs.nfi = (envs.i_l + 1) * (envs.i_l + 2) / 2 as i32;
+    envs.nfj = (envs.j_l + 1) * (envs.j_l + 2) / 2 as i32;
+    envs.nf = (*envs).nfi * (*envs).nfj;
+    envs.common_factor = 1 as i32 as f64;
     if env[0] == 0.0 {
-        (*envs).expcutoff = 60.0;
+        envs.expcutoff = 60.0;
     } else {
-        (*envs)
-            .expcutoff = MAX(40 as f64, env[0]) as f64;
+        envs.expcutoff = MAX(40 as f64, env[0]) as f64;
     }
-    (*envs).li_ceil = (*envs).i_l + ng[0];
-    (*envs).lj_ceil = (*envs).j_l + ng[1];
-    (*envs).ri = env[atm[6 * bas[8 * i_sh + 0] as usize + 1] as usize..(atm[6 * bas[8 * i_sh + 0] as usize + 1] as usize + 3)].try_into().expect("incorrect length");
-    (*envs).rj = env[atm[6 * bas[8 * j_sh + 0] as usize + 1] as usize..(atm[6 * bas[8 * j_sh + 0] as usize + 1] as usize + 3)].try_into().expect("incorrect length");
-    (*envs).gbits = ng[4];
-    (*envs).ncomp_e1 = ng[5];
-    (*envs).ncomp_tensor = ng[7];
+    envs.li_ceil = (*envs).i_l + ng[0];
+    envs.lj_ceil = (*envs).j_l + ng[1];
+    envs.ri = env[atm[6 * bas[8 * i_sh + 0] as usize + 1] as usize..(atm[6 * bas[8 * i_sh + 0] as usize + 1] as usize + 3)].try_into().expect("incorrect length");
+    envs.rj = env[atm[6 * bas[8 * j_sh + 0] as usize + 1] as usize..(atm[6 * bas[8 * j_sh + 0] as usize + 1] as usize + 3)].try_into().expect("incorrect length");
+    envs.gbits = ng[4];
+    envs.ncomp_e1 = ng[5];
+    envs.ncomp_tensor = ng[7];
     if ng[6] > 0 as i32 {
-        (*envs).nrys_roots = ng[6];
+        envs.nrys_roots = ng[6];
     } else {
-        (*envs).nrys_roots = (envs.li_ceil + envs.lj_ceil) / 2 as i32 + 1 as i32;
+        envs.nrys_roots = (envs.li_ceil + envs.lj_ceil) / 2 as i32 + 1 as i32;
     }
     let mut dli: i32 = 0;
     let mut dlj: i32 = 0;
