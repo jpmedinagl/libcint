@@ -3712,7 +3712,7 @@ pub unsafe extern "C" fn CINTgout2e(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn int2e_sph(
+pub unsafe fn int2e_sph(
     mut out: &mut [f64],
     mut dims: &mut [i32],
     mut shls: [i32; 4],
@@ -3782,7 +3782,7 @@ pub unsafe extern "C" fn int2e_sph(
         ),
     );
 }
-#[no_mangle]
+// #[no_mangle]
 // pub unsafe extern "C" fn int2e_optimizer(
 //     mut opt: *mut *mut CINTOpt,
 //     mut atm: *mut i32,

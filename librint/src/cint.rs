@@ -8,15 +8,18 @@ pub struct PairData {
     pub cceij: f64,
 }
 
-impl PairData {
-        pub fn new() -> Self {
-        let mut pd: PairData = PairData {
-            rij: [0.0; 3],
-            eij: 0.0,
-            cceij: 0.0,
-        };
-        pd
-    }
+#[derive(Copy, Clone)]
+#[repr(C)]
+pub struct Rys2eT {
+    pub c00x: [f64; 32],
+    pub c00y: [f64; 32],
+    pub c00z: [f64; 32],
+    pub c0px: [f64; 32],
+    pub c0py: [f64; 32],
+    pub c0pz: [f64; 32],
+    pub b01: [f64; 32],
+    pub b00: [f64; 32],
+    pub b10: [f64; 32],
 }
 
 // #[derive(Copy, Clone)]
@@ -29,6 +32,10 @@ impl PairData {
 //     pub log_max_coeff: *mut *mut f64,
 //     pub pairdata: *mut *mut PairData,
 // }
+
+type FG0_2E_2D4D = fn(&mut [f64], &Rys2eT, &CINTEnvVars) -> ();
+type FG0_2E = fn(&mut [f64], &[f64], &[f64], f64, &CINTEnvVars) -> i32;
+type FGOUT = fn(&mut [f64], &[f64], &[i32], &CINTEnvVars, i32) -> ();
 
 #[derive(Clone)]
 #[repr(C)]

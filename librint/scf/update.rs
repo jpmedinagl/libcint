@@ -1,5 +1,5 @@
 #![allow(non_snake_case, non_upper_case_globals)]
-#![feature(autodiff)]
+// #![feature(autodiff)]
 
 use std::io;
 
@@ -10,8 +10,8 @@ use librint::cint1e::cint1e_ovlp_cart;
 use librint::cint2e::cint2e_cart;
 
 // use librint::scf::{density, energyfast};
-use librint::scf::nmol;
-use librint::utils::{split, combine};
+// use librint::scf::nmol;
+// use librint::utils::{split, combine};
 
 pub const ATM_SLOTS: usize = 6;
 pub const BAS_SLOTS: usize = 8;
@@ -87,7 +87,7 @@ fn main() -> io::Result<()>{
     let mut env: Vec<f64> = Vec::new();
 
     let path = "/u/jpmedina/libcint/librint/molecules/h2/sto3g.txt";
-    read_basis(path, &mut atm, &mut bas, &mut env);
+    read_basis(path, &mut atm, &mut bas, &mut env)?;
 
     const natm: usize = 2;
     const nbas: usize = 2;

@@ -613,7 +613,7 @@ pub unsafe extern "C" fn CINTgout1e_nuc(
     };
 }
 #[no_mangle]
-pub unsafe extern "C" fn int1e_ovlp_sph(
+pub unsafe fn int1e_ovlp_sph(
     out: &mut [f64],
     dims: &mut [i32],
     shls: [i32; 4],
@@ -766,7 +766,7 @@ pub unsafe fn int1e_ovlp_cart(
 //     *opt = 0 as *mut CINTOpt;
 // }
 #[no_mangle]
-pub unsafe extern "C" fn int1e_nuc_sph(
+pub unsafe fn int1e_nuc_sph(
     out: &mut [f64],
     dims: &mut [i32],
     shls: [i32; 4],
