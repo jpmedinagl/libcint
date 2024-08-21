@@ -6,24 +6,10 @@ use crate::rys_roots::CINTrys_roots;
 use crate::rys_roots::CINTsr_rys_roots;
 
 use crate::cint::CINTEnvVars;
-
-
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Rys2eT {
-    pub c00x: [f64; 32],
-    pub c00y: [f64; 32],
-    pub c00z: [f64; 32],
-    pub c0px: [f64; 32],
-    pub c0py: [f64; 32],
-    pub c0pz: [f64; 32],
-    pub b01: [f64; 32],
-    pub b00: [f64; 32],
-    pub b10: [f64; 32],
-}
+use crate::cint::Rys2eT;
 
 #[no_mangle]
-pub unsafe extern "C" fn CINTinit_int2e_EnvVars(
+pub unsafe fn CINTinit_int2e_EnvVars(
     mut envs: &mut CINTEnvVars,
     mut ng: &[i32],
     mut shls: [i32; 4],
@@ -140,152 +126,22 @@ pub unsafe extern "C" fn CINTinit_int2e_EnvVars(
         envs.rirj[2] = envs.rj[2] - envs.ri[2];
     }
     if rys_order <= 2 as i32 {
-        envs.f_g0_2d4d = ::core::mem::transmute::<
-            Option::<
-                unsafe extern "C" fn(
-                    *mut f64,
-                    *mut Rys2eT,
-                    *mut CINTEnvVars,
-                ) -> (),
-            >,
-            Option::<unsafe extern "C" fn() -> ()>,
-        >(
-            Some(
-                CINTg0_2e_2d4d_unrolled
-                    as unsafe extern "C" fn(
-                        *mut f64,
-                        *mut Rys2eT,
-                        *mut CINTEnvVars,
-                    ) -> (),
-            ),
-        );
+        envs.f_g0_2d4d = Some(CINTg0_2e_2d4d_unrolled);
         if rys_order != nrys_roots {
-            envs.f_g0_2d4d = ::core::mem::transmute::<
-                Option::<
-                    unsafe extern "C" fn(
-                        *mut f64,
-                        *mut Rys2eT,
-                        *mut CINTEnvVars,
-                    ) -> (),
-                >,
-                Option::<unsafe extern "C" fn() -> ()>,
-            >(
-                Some(
-                    CINTsrg0_2e_2d4d_unrolled
-                        as unsafe extern "C" fn(
-                            *mut f64,
-                            *mut Rys2eT,
-                            *mut CINTEnvVars,
-                        ) -> (),
-                ),
-            );
+            envs.f_g0_2d4d = Some(CINTsrg0_2e_2d4d_unrolled);
         }
     } else if kbase != 0 {
         if ibase != 0 {
-            envs.f_g0_2d4d = ::core::mem::transmute::<
-                Option::<
-                    unsafe extern "C" fn(
-                        *mut f64,
-                        *mut Rys2eT,
-                        *mut CINTEnvVars,
-                    ) -> (),
-                >,
-                Option::<unsafe extern "C" fn() -> ()>,
-            >(
-                Some(
-                    CINTg0_2e_ik2d4d
-                        as unsafe extern "C" fn(
-                            *mut f64,
-                            *mut Rys2eT,
-                            *mut CINTEnvVars,
-                        ) -> (),
-                ),
-            );
+            envs.f_g0_2d4d = Some(CINTg0_2e_ik2d4d);
         } else {
-            envs.f_g0_2d4d = ::core::mem::transmute::<
-                Option::<
-                    unsafe extern "C" fn(
-                        *mut f64,
-                        *mut Rys2eT,
-                        *mut CINTEnvVars,
-                    ) -> (),
-                >,
-                Option::<unsafe extern "C" fn() -> ()>,
-            >(
-                Some(
-                    CINTg0_2e_kj2d4d
-                        as unsafe extern "C" fn(
-                            *mut f64,
-                            *mut Rys2eT,
-                            *mut CINTEnvVars,
-                        ) -> (),
-                ),
-            );
+            envs.f_g0_2d4d = Some(CINTg0_2e_kj2d4d);
         }
     } else if ibase != 0 {
-        envs.f_g0_2d4d = ::core::mem::transmute::<
-            Option::<
-                unsafe extern "C" fn(
-                    *mut f64,
-                    *mut Rys2eT,
-                    *mut CINTEnvVars,
-                ) -> (),
-            >,
-            Option::<unsafe extern "C" fn() -> ()>,
-        >(
-            Some(
-                CINTg0_2e_il2d4d
-                    as unsafe extern "C" fn(
-                        *mut f64,
-                        *mut Rys2eT,
-                        *mut CINTEnvVars,
-                    ) -> (),
-            ),
-        );
+        envs.f_g0_2d4d = Some(CINTg0_2e_il2d4d);
     } else {
-        envs.f_g0_2d4d = ::core::mem::transmute::<
-            Option::<
-                unsafe extern "C" fn(
-                    *mut f64,
-                    *mut Rys2eT,
-                    *mut CINTEnvVars,
-                ) -> (),
-            >,
-            Option::<unsafe extern "C" fn() -> ()>,
-        >(
-            Some(
-                CINTg0_2e_lj2d4d
-                    as unsafe extern "C" fn(
-                        *mut f64,
-                        *mut Rys2eT,
-                        *mut CINTEnvVars,
-                    ) -> (),
-            ),
-        );
+        envs.f_g0_2d4d = Some(CINTg0_2e_lj2d4d);
     }
-    envs.f_g0_2e = ::core::mem::transmute::<
-        Option::<
-            unsafe extern "C" fn(
-                *mut f64,
-                *mut f64,
-                *mut f64,
-                f64,
-                *mut CINTEnvVars,
-            ) -> i32,
-        >,
-        Option::<unsafe extern "C" fn() -> i32>,
-    >(
-        Some(
-            CINTg0_2e
-                as unsafe extern "C" fn(
-                    *mut f64,
-                    *mut f64,
-                    *mut f64,
-                    f64,
-                    *mut CINTEnvVars,
-                ) -> i32,
-        ),
-    );
+    envs.f_g0_2e = Some(CINTg0_2e);
 }
 #[no_mangle]
 pub unsafe extern "C" fn CINTg2e_index_xyz(
@@ -427,25 +283,24 @@ pub unsafe extern "C" fn CINTg2e_index_xyz(
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn CINTg0_2e_2d(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+pub fn CINTg0_2e_2d(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let nroots: i32 = (*envs).nrys_roots;
-    let nmax: i32 = (*envs).li_ceil + (*envs).lj_ceil;
-    let mmax: i32 = (*envs).lk_ceil + (*envs).ll_ceil;
-    let dm: i32 = (*envs).g2d_klmax;
-    let dn: i32 = (*envs).g2d_ijmax;
-    let mut i: i32 = 0;
-    let mut j: i32 = 0;
-    let mut m: i32 = 0;
-    let mut n: i32 = 0;
-    let mut off: i32 = 0;
-    let mut gx: *mut f64 = g;
-    let mut gy: *mut f64 = g.offset((*envs).g_size as isize);
-    let mut gz: *mut f64 = g
-        .offset(((*envs).g_size * 2 as i32) as isize);
+    let nroots: usize = envs.nrys_roots as usize;
+    let nmax: usize = (envs.li_ceil + envs.lj_ceil) as usize;
+    let mmax: usize = (envs.lk_ceil + envs.ll_ceil) as usize;
+    let dm: usize = envs.g2d_klmax as usize;
+    let dn: usize = envs.g2d_ijmax as usize;
+    let mut i: usize = 0;
+    let mut j: usize = 0;
+    let mut m: usize = 0;
+    let mut n: usize = 0;
+    let mut off: usize = 0;
+    let gx: &mut [f64] = &mut g[..envs.g_size as usize];
+    let gy: &mut [f64] = &mut g[envs.g_size as usize..(2 * envs.g_size) as usize];
+    let gz: &mut [f64] = &mut g[(2 * envs.g_size) as usize..(3 * envs.g_size) as usize];
     let mut p0x: *mut f64 = 0 as *mut f64;
     let mut p0y: *mut f64 = 0 as *mut f64;
     let mut p0z: *mut f64 = 0 as *mut f64;
@@ -454,10 +309,10 @@ pub unsafe extern "C" fn CINTg0_2e_2d(
     let mut p1z: *mut f64 = 0 as *mut f64;
     let mut nb1: f64 = 0.;
     let mut mb0: f64 = 0.;
-    i = 0 as i32;
+    i = 0;
     while i < nroots {
-        *gx.offset(i as isize) = 1 as i32 as f64;
-        *gy.offset(i as isize) = 1 as i32 as f64;
+        gx[i] = 1.0;
+        gy[i] = 1.0;
         i += 1;
     }
     let mut s0x: f64 = 0.;
@@ -484,35 +339,35 @@ pub unsafe extern "C" fn CINTg0_2e_2d(
     let mut b10: f64 = 0.;
     let mut b01: f64 = 0.;
     let mut b00: f64 = 0.;
-    i = 0 as i32;
+    i = 0;
     while i < nroots {
-        c00x = (*bc).c00x[i as usize];
-        c00y = (*bc).c00y[i as usize];
-        c00z = (*bc).c00z[i as usize];
-        c0px = (*bc).c0px[i as usize];
-        c0py = (*bc).c0py[i as usize];
-        c0pz = (*bc).c0pz[i as usize];
-        b10 = (*bc).b10[i as usize];
-        b01 = (*bc).b01[i as usize];
-        b00 = (*bc).b00[i as usize];
-        if nmax > 0 as i32 {
-            s0x = *gx.offset(i as isize);
-            s0y = *gy.offset(i as isize);
-            s0z = *gz.offset(i as isize);
+        c00x = bc.c00x[i];
+        c00y = bc.c00y[i];
+        c00z = bc.c00z[i];
+        c0px = bc.c0px[i];
+        c0py = bc.c0py[i];
+        c0pz = bc.c0pz[i];
+        b10 = bc.b10[i];
+        b01 = bc.b01[i];
+        b00 = bc.b00[i];
+        if nmax > 0 {
+            s0x = gx[i];
+            s0y = gy[i];
+            s0z = gz[i];
             s1x = c00x * s0x;
             s1y = c00y * s0y;
             s1z = c00z * s0z;
-            *gx.offset((i + dn) as isize) = s1x;
-            *gy.offset((i + dn) as isize) = s1y;
-            *gz.offset((i + dn) as isize) = s1z;
-            n = 1 as i32;
+            gx[i + dn] = s1x;
+            gy[i + dn] = s1y;
+            gz[i + dn] = s1z;
+            n = 1;
             while n < nmax {
                 s2x = c00x * s1x + n as f64 * b10 * s0x;
                 s2y = c00y * s1y + n as f64 * b10 * s0y;
                 s2z = c00z * s1z + n as f64 * b10 * s0z;
-                *gx.offset((i + (n + 1 as i32) * dn) as isize) = s2x;
-                *gy.offset((i + (n + 1 as i32) * dn) as isize) = s2y;
-                *gz.offset((i + (n + 1 as i32) * dn) as isize) = s2z;
+                gx[i + (n + 1) * dn] = s2x;
+                gy[i + (n + 1) * dn] = s2y;
+                gz[i + (n + 1) * dn] = s2z;
                 s0x = s1x;
                 s0y = s1y;
                 s0z = s1z;
@@ -522,24 +377,24 @@ pub unsafe extern "C" fn CINTg0_2e_2d(
                 n += 1;
             }
         }
-        if mmax > 0 as i32 {
-            s0x = *gx.offset(i as isize);
-            s0y = *gy.offset(i as isize);
-            s0z = *gz.offset(i as isize);
+        if mmax > 0 {
+            s0x = gx[i];
+            s0y = gy[i];
+            s0z = gz[i];
             s1x = c0px * s0x;
             s1y = c0py * s0y;
             s1z = c0pz * s0z;
-            *gx.offset((i + dm) as isize) = s1x;
-            *gy.offset((i + dm) as isize) = s1y;
-            *gz.offset((i + dm) as isize) = s1z;
-            m = 1 as i32;
+            gx[i + dm] = s1x;
+            gy[i + dm] = s1y;
+            gz[i + dm] = s1z;
+            m = 1;
             while m < mmax {
                 s2x = c0px * s1x + m as f64 * b01 * s0x;
                 s2y = c0py * s1y + m as f64 * b01 * s0y;
                 s2z = c0pz * s1z + m as f64 * b01 * s0z;
-                *gx.offset((i + (m + 1 as i32) * dm) as isize) = s2x;
-                *gy.offset((i + (m + 1 as i32) * dm) as isize) = s2y;
-                *gz.offset((i + (m + 1 as i32) * dm) as isize) = s2z;
+                gx[i + (m + 1) * dm] = s2x;
+                gy[i + (m + 1) * dm] = s2y;
+                gz[i + (m + 1) * dm] = s2z;
                 s0x = s1x;
                 s0y = s1y;
                 s0z = s1z;
@@ -548,27 +403,24 @@ pub unsafe extern "C" fn CINTg0_2e_2d(
                 s1z = s2z;
                 m += 1;
             }
-            if nmax > 0 as i32 {
-                s0x = *gx.offset((i + dn) as isize);
-                s0y = *gy.offset((i + dn) as isize);
-                s0z = *gz.offset((i + dn) as isize);
-                s1x = c0px * s0x + b00 * *gx.offset(i as isize);
-                s1y = c0py * s0y + b00 * *gy.offset(i as isize);
-                s1z = c0pz * s0z + b00 * *gz.offset(i as isize);
-                *gx.offset((i + dn + dm) as isize) = s1x;
-                *gy.offset((i + dn + dm) as isize) = s1y;
-                *gz.offset((i + dn + dm) as isize) = s1z;
-                m = 1 as i32;
+            if nmax > 0 {
+                s0x = gx[i + dn];
+                s0y = gy[i + dn];
+                s0z = gz[i + dn];
+                s1x = c0px * s0x + b00 * gx[i];
+                s1y = c0py * s0y + b00 * gy[i];
+                s1z = c0pz * s0z + b00 * gz[i];
+                gx[i + dn + dm] = s1x;
+                gy[i + dn + dm] = s1y;
+                gz[i + dn + dm] = s1z;
+                m = 1;
                 while m < mmax {
-                    s2x = c0px * s1x + m as f64 * b01 * s0x
-                        + b00 * *gx.offset((i + m * dm) as isize);
-                    s2y = c0py * s1y + m as f64 * b01 * s0y
-                        + b00 * *gy.offset((i + m * dm) as isize);
-                    s2z = c0pz * s1z + m as f64 * b01 * s0z
-                        + b00 * *gz.offset((i + m * dm) as isize);
-                    *gx.offset((i + dn + (m + 1 as i32) * dm) as isize) = s2x;
-                    *gy.offset((i + dn + (m + 1 as i32) * dm) as isize) = s2y;
-                    *gz.offset((i + dn + (m + 1 as i32) * dm) as isize) = s2z;
+                    s2x = c0px * s1x + m as f64 * b01 * s0x + b00 * gx[i + m * dm];
+                    s2y = c0py * s1y + m as f64 * b01 * s0y + b00 * gy[i + m * dm];
+                    s2z = c0pz * s1z + m as f64 * b01 * s0z + b00 * gz[i + m * dm];
+                    gx[i + dn + (m + 1) * dm] = s2x;
+                    gy[i + dn + (m + 1) * dm] = s2y;
+                    gz[i + dn + (m + 1) * dm] = s2z;
                     s0x = s1x;
                     s0y = s1y;
                     s0z = s1z;
@@ -579,27 +431,24 @@ pub unsafe extern "C" fn CINTg0_2e_2d(
                 }
             }
         }
-        m = 1 as i32;
+        m = 1;
         while m <= mmax {
             off = m * dm;
             j = off + i;
-            s0x = *gx.offset(j as isize);
-            s0y = *gy.offset(j as isize);
-            s0z = *gz.offset(j as isize);
-            s1x = *gx.offset((j + dn) as isize);
-            s1y = *gy.offset((j + dn) as isize);
-            s1z = *gz.offset((j + dn) as isize);
-            n = 1 as i32;
+            s0x = gx[j];
+            s0y = gy[j];
+            s0z = gz[j];
+            s1x = gx[j + dn];
+            s1y = gy[j + dn];
+            s1z = gz[j + dn];
+            n = 1;
             while n < nmax {
-                s2x = c00x * s1x + n as f64 * b10 * s0x
-                    + m as f64 * b00 * *gx.offset((j + n * dn - dm) as isize);
-                s2y = c00y * s1y + n as f64 * b10 * s0y
-                    + m as f64 * b00 * *gy.offset((j + n * dn - dm) as isize);
-                s2z = c00z * s1z + n as f64 * b10 * s0z
-                    + m as f64 * b00 * *gz.offset((j + n * dn - dm) as isize);
-                *gx.offset((j + (n + 1 as i32) * dn) as isize) = s2x;
-                *gy.offset((j + (n + 1 as i32) * dn) as isize) = s2y;
-                *gz.offset((j + (n + 1 as i32) * dn) as isize) = s2z;
+                s2x = c00x * s1x + n as f64 * b10 * s0x + m as f64 * b00 * gx[j + n * dn - dm];
+                s2y = c00y * s1y + n as f64 * b10 * s0y + m as f64 * b00 * gy[j + n * dn - dm];
+                s2z = c00z * s1z + n as f64 * b10 * s0z + m as f64 * b00 * gz[j + n * dn - dm];
+                gx[j + (n + 1) * dn] = s2x;
+                gy[j + (n + 1) * dn] = s2y;
+                gz[j + (n + 1) * dn] = s2z;
                 s0x = s1x;
                 s0y = s1y;
                 s0z = s1z;
@@ -962,4411 +811,1645 @@ pub unsafe extern "C" fn CINTg0_il2d_4d(
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn CINTg0_ik2d_4d(
-    mut g: *mut f64,
-    mut envs: *mut CINTEnvVars,
+pub fn CINTg0_ik2d_4d(
+    g: &mut [f64],
+    envs: &CINTEnvVars,
 ) {
-    let mut lj: i32 = (*envs).lj_ceil;
-    let mut ll: i32 = (*envs).ll_ceil;
-    if lj == 0 as i32 && ll == 0 as i32 {
-        return;
-    }
-    let mut nmax: i32 = (*envs).li_ceil + (*envs).lj_ceil;
-    let mut mmax: i32 = (*envs).lk_ceil + (*envs).ll_ceil;
-    let mut lk: i32 = (*envs).lk_ceil;
-    let mut nroots: i32 = (*envs).nrys_roots;
-    let mut i: i32 = 0;
-    let mut j: i32 = 0;
-    let mut k: i32 = 0;
-    let mut l: i32 = 0;
-    let mut ptr: i32 = 0;
-    let mut n: i32 = 0;
-    let mut di: i32 = (*envs).g_stride_i;
-    let mut dk: i32 = (*envs).g_stride_k;
-    let mut dl: i32 = (*envs).g_stride_l;
-    let mut dj: i32 = (*envs).g_stride_j;
-    let mut rirj: *mut f64 = ((*envs).rirj).as_mut_ptr();
-    let mut rkrl: *mut f64 = ((*envs).rkrl).as_mut_ptr();
-    let mut gx: *mut f64 = g;
-    let mut gy: *mut f64 = g.offset((*envs).g_size as isize);
-    let mut gz: *mut f64 = g
-        .offset(((*envs).g_size * 2 as i32) as isize);
-    let mut p1x: *mut f64 = 0 as *mut f64;
-    let mut p1y: *mut f64 = 0 as *mut f64;
-    let mut p1z: *mut f64 = 0 as *mut f64;
-    let mut p2x: *mut f64 = 0 as *mut f64;
-    let mut p2y: *mut f64 = 0 as *mut f64;
-    let mut p2z: *mut f64 = 0 as *mut f64;
-    let mut rx: f64 = 0.;
-    let mut ry: f64 = 0.;
-    let mut rz: f64 = 0.;
-    rx = *rkrl.offset(0 as i32 as isize);
-    ry = *rkrl.offset(1 as i32 as isize);
-    rz = *rkrl.offset(2 as i32 as isize);
-    p1x = gx.offset(-(dl as isize));
-    p1y = gy.offset(-(dl as isize));
-    p1z = gz.offset(-(dl as isize));
-    p2x = gx.offset(-(dl as isize)).offset(dk as isize);
-    p2y = gy.offset(-(dl as isize)).offset(dk as isize);
-    p2z = gz.offset(-(dl as isize)).offset(dk as isize);
-    l = 1 as i32;
-    while l <= ll {
-        k = 0 as i32;
-        while k <= mmax - l {
-            i = 0 as i32;
-            while i <= nmax {
-                ptr = l * dl + k * dk + i * di;
-                n = ptr;
-                while n < ptr + nroots {
-                    *gx
-                        .offset(
-                            n as isize,
-                        ) = rx * *p1x.offset(n as isize) + *p2x.offset(n as isize);
-                    *gy
-                        .offset(
-                            n as isize,
-                        ) = ry * *p1y.offset(n as isize) + *p2y.offset(n as isize);
-                    *gz
-                        .offset(
-                            n as isize,
-                        ) = rz * *p1z.offset(n as isize) + *p2z.offset(n as isize);
-                    n += 1;
-                }
-                i += 1;
-            }
-            k += 1;
-        }
-        l += 1;
-    }
-    rx = *rirj.offset(0 as i32 as isize);
-    ry = *rirj.offset(1 as i32 as isize);
-    rz = *rirj.offset(2 as i32 as isize);
-    p1x = gx.offset(-(dj as isize));
-    p1y = gy.offset(-(dj as isize));
-    p1z = gz.offset(-(dj as isize));
-    p2x = gx.offset(-(dj as isize)).offset(di as isize);
-    p2y = gy.offset(-(dj as isize)).offset(di as isize);
-    p2z = gz.offset(-(dj as isize)).offset(di as isize);
-    j = 1 as i32;
-    while j <= lj {
-        l = 0 as i32;
-        while l <= ll {
-            k = 0 as i32;
-            while k <= lk {
-                ptr = j * dj + l * dl + k * dk;
-                n = ptr;
-                while n < ptr + dk - di * j {
-                    *gx
-                        .offset(
-                            n as isize,
-                        ) = rx * *p1x.offset(n as isize) + *p2x.offset(n as isize);
-                    *gy
-                        .offset(
-                            n as isize,
-                        ) = ry * *p1y.offset(n as isize) + *p2y.offset(n as isize);
-                    *gz
-                        .offset(
-                            n as isize,
-                        ) = rz * *p1z.offset(n as isize) + *p2z.offset(n as isize);
-                    n += 1;
-                }
-                k += 1;
-            }
-            l += 1;
-        }
-        j += 1;
-    }
+    // let mut lj: i32 = envs.lj_ceil;
+    // let mut ll: usize = envs.ll_ceil as usize;
+    // if lj == 0 as i32 && ll == 0 {
+    //     return;
+    // }
+    // let mut nmax: usize = (envs.li_ceil + envs.lj_ceil) as usize;
+    // let mut mmax: usize = (envs.lk_ceil + envs.ll_ceil) as usize;
+    // let mut lk: i32 = envs.lk_ceil;
+    // let mut nroots: usize = envs.nrys_roots as usize;
+    // let mut i: usize = 0;
+    // let mut j: i32 = 0;
+    // let mut k: usize = 0;
+    // let mut l: usize = 0;
+    // let mut ptr: usize = 0;
+    // let mut n: i32 = 0;
+    // let mut di: usize = envs.g_stride_i as usize;
+    // let mut dk: usize = envs.g_stride_k as usize;
+    // let mut dl: usize = envs.g_stride_l as usize;
+    // let mut dj: usize = envs.g_stride_j as usize;
+    // let rirj: [f64; 3] = envs.rirj;
+    // let rkrl: [f64; 3] = envs.rkrl;
+    // let gx: &mut [f64] = &mut g[..envs.g_size as usize];
+    // let gy: &mut [f64] = &mut g[envs.g_size as usize..(2 * envs.g_size) as usize];
+    // let gz: &mut [f64] = &mut g[(2 * envs.g_size) as usize..(3 * envs.g_size) as usize];
+    // let mut p1x: &mut [f64];
+    // let mut p1y: &mut [f64];
+    // let mut p1z: &mut [f64];
+    // let mut p2x: &mut [f64];
+    // let mut p2y: &mut [f64];
+    // let mut p2z: &mut [f64];
+    // let mut rx: f64 = 0.;
+    // let mut ry: f64 = 0.;
+    // let mut rz: f64 = 0.;
+    // rx = rkrl[0];
+    // ry = rkrl[1];
+    // rz = rkrl[2];
+    // let gsize: usize = envs.g_size as usize;
+    // p1x = &mut gx[..gsize - dl];
+    // p1y = &mut gy[..gsize - dl];
+    // p1z = &mut gz[..gsize - dl];
+    // p2x = &mut gx[dk..gsize - dl + dk];
+    // p2y = &mut gy[dk..gsize - dl + dk];
+    // p2z = &mut gz[dk..gsize - dl + dk];;
+    // for l in 1..=ll {
+    //     for k in 0..=mmax - l {
+    //         for i in 0..=nmax {
+    //             ptr = l * dl + k * dk + i * di;
+    //             for n in ptr..ptr + nroots {
+    //                 gx[n] = rx * p1x[n] + p2x[n];
+    //                 gy[n] = ry * p1y[n] + p2y[n];
+    //                 gz[n] = rz * p1z[n] + p2z[n];
+    //             }
+    //         }
+    //     }
+    // }
+    // rx = rirj[0];
+    // ry = rirj[1];
+    // rz = rirj[2];
+    // p1x = gx.offset(-(dj as isize));
+    // p1y = gy.offset(-(dj as isize));
+    // p1z = gz.offset(-(dj as isize));
+    // p2x = gx.offset(-(dj as isize)).offset(di as isize);
+    // p2y = gy.offset(-(dj as isize)).offset(di as isize);
+    // p2z = gz.offset(-(dj as isize)).offset(di as isize);
+    // j = 1 as i32;
+    // while j <= lj {
+    //     l = 0 as i32;
+    //     while l <= ll {
+    //         k = 0 as i32;
+    //         while k <= lk {
+    //             ptr = j * dj + l * dl + k * dk;
+    //             n = ptr;
+    //             while n < ptr + dk - di * j {
+    //                 *gx
+    //                     .offset(
+    //                         n as isize,
+    //                     ) = rx * *p1x.offset(n as isize) + *p2x.offset(n as isize);
+    //                 *gy
+    //                     .offset(
+    //                         n as isize,
+    //                     ) = ry * *p1y.offset(n as isize) + *p2y.offset(n as isize);
+    //                 *gz
+    //                     .offset(
+    //                         n as isize,
+    //                     ) = rz * *p1z.offset(n as isize) + *p2z.offset(n as isize);
+    //                 n += 1;
+    //             }
+    //             k += 1;
+    //         }
+    //         l += 1;
+    //     }
+    //     j += 1;
+    // }
+    // ??????????????????????????????????????????????????????????????????????????????????????????????????????/
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0000(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0000(
+    g: &mut [f64],
+    _bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
+    g[0] = 1.0;
+    g[1] = 1.0;
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0001(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0001(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(2 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(3 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(4 as i32 as isize);
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    g[0] = 1.0;
+    g[1] = cpx[0];
+    g[2] = 1.0;
+    g[3] = cpy[0];
+    g[5] = cpz[0] * g[4];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0002(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0002(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *cpx.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *cpx.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g.offset(6 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(7 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(8 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(9 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *cpy.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *cpy.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(12 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(13 as i32 as isize);
-    *g
-        .offset(
-            16 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(14 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(12 as i32 as isize);
-    *g
-        .offset(
-            17 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(15 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(13 as i32 as isize);
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[6] = 1.0;
+    g[7] = 1.0;
+    g[8] = cpy[0];
+    g[9] = cpy[1];
+    g[10] = cpy[0] * cpy[0] + b01[0];
+    g[11] = cpy[1] * cpy[1] + b01[1];
+    g[14] = cpz[0] * g[12];
+    g[15] = cpz[1] * g[13];
+    g[16] = cpz[0] * g[14] + b01[0] * g[12];
+    g[17] = cpz[1] * g[15] + b01[1] * g[13];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0003(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0003(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *cpx.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *cpx.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (*g.offset(4 as i32 as isize)
-            + 2 as i32 as f64
-                * *b01.offset(0 as i32 as isize));
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (*g.offset(5 as i32 as isize)
-            + 2 as i32 as f64
-                * *b01.offset(1 as i32 as isize));
-    *g.offset(8 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(9 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(10 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(11 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            12 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *cpy.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            13 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *cpy.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (*g.offset(12 as i32 as isize)
-            + 2 as i32 as f64
-                * *b01.offset(0 as i32 as isize));
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (*g.offset(13 as i32 as isize)
-            + 2 as i32 as f64
-                * *b01.offset(1 as i32 as isize));
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(18 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(19 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(20 as i32 as isize)
-        + 2 as i32 as f64 * *b01.offset(0 as i32 as isize)
-            * *g.offset(18 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(21 as i32 as isize)
-        + 2 as i32 as f64 * *b01.offset(1 as i32 as isize)
-            * *g.offset(19 as i32 as isize);
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[6] = cpx[0] * (g[4] + 2.0 * b01[0]);
+    g[7] = cpx[1] * (g[5] + 2.0 * b01[1]);
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = cpy[0];
+    g[11] = cpy[1];
+    g[12] = cpy[0] * cpy[0] + b01[0];
+    g[13] = cpy[1] * cpy[1] + b01[1];
+    g[14] = cpy[0] * (g[12] + 2.0 * b01[0]);
+    g[15] = cpy[1] * (g[13] + 2.0 * b01[1]);
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = cpz[0] * g[16];
+    g[19] = cpz[1] * g[17];
+    g[20] = cpz[0] * g[18] + b01[0] * g[16];
+    g[21] = cpz[1] * g[19] + b01[1] * g[17];
+    g[22] = cpz[0] * g[20] + 2.0 * b01[0] * g[18];
+    g[23] = cpz[1] * g[21] + 2.0 * b01[1] * g[19];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0010(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0010(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(2 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(3 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(4 as i32 as isize);
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    g[0] = 1.0;
+    g[1] = cpx[0];
+    g[2] = 1.0;
+    g[3] = cpy[0];
+    //g[4] = w[0];
+    g[5] = cpz[0] * g[4];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0011(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0011(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    let mut xkxl: f64 = (*envs).rkrl[0 as i32 as usize];
-    let mut ykyl: f64 = (*envs).rkrl[1 as i32 as usize];
-    let mut zkzl: f64 = (*envs).rkrl[2 as i32 as usize];
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(4 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (xkxl + *cpx.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (xkxl + *cpx.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize);
-    *g.offset(2 as i32 as isize) = xkxl + *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = xkxl + *cpx.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(13 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(16 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(17 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (ykyl + *cpy.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (ykyl + *cpy.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = ykyl + *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = ykyl + *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *g.offset(28 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *g.offset(29 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *g.offset(24 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize));
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *g.offset(25 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize));
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    let xkxl: f64 = envs.rkrl[0];
+    let ykyl: f64 = envs.rkrl[1];
+    let zkzl: f64 = envs.rkrl[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[6] = cpx[0] * (xkxl + cpx[0]) + b01[0];
+    g[7] = cpx[1] * (xkxl + cpx[1]) + b01[1];
+    g[2] = xkxl + cpx[0];
+    g[3] = xkxl + cpx[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[16] = cpy[0];
+    g[17] = cpy[1];
+    g[18] = cpy[0] * (ykyl + cpy[0]) + b01[0];
+    g[19] = cpy[1] * (ykyl + cpy[1]) + b01[1];
+    g[14] = ykyl + cpy[0];
+    g[15] = ykyl + cpy[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[28] = cpz[0] * g[24];
+    g[29] = cpz[1] * g[25];
+    g[30] = g[28] * (zkzl + cpz[0]) + b01[0] * g[24];
+    g[31] = g[29] * (zkzl + cpz[1]) + b01[1] * g[25];
+    g[26] = g[24] * (zkzl + cpz[0]);
+    g[27] = g[25] * (zkzl + cpz[1]);
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0012(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0012(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    let mut xkxl: f64 = (*envs).rkrl[0 as i32 as usize];
-    let mut ykyl: f64 = (*envs).rkrl[1 as i32 as usize];
-    let mut zkzl: f64 = (*envs).rkrl[2 as i32 as usize];
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(4 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            8 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *cpx.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            9 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *cpx.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *g.offset(8 as i32 as isize)
-        * (xkxl + *cpx.offset(0 as i32 as isize))
-        + *cpx.offset(0 as i32 as isize) * 2 as i32 as f64
-            * *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *g.offset(9 as i32 as isize)
-        * (xkxl + *cpx.offset(1 as i32 as isize))
-        + *cpx.offset(1 as i32 as isize) * 2 as i32 as f64
-            * *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (xkxl + *cpx.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (xkxl + *cpx.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize);
-    *g.offset(2 as i32 as isize) = xkxl + *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = xkxl + *cpx.offset(1 as i32 as isize);
-    *g.offset(16 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(17 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(20 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(21 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            24 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *cpy.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            25 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *cpy.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *g.offset(24 as i32 as isize)
-        * (ykyl + *cpy.offset(0 as i32 as isize))
-        + *cpy.offset(0 as i32 as isize) * 2 as i32 as f64
-            * *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *g.offset(25 as i32 as isize)
-        * (ykyl + *cpy.offset(1 as i32 as isize))
-        + *cpy.offset(1 as i32 as isize) * 2 as i32 as f64
-            * *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (ykyl + *cpy.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (ykyl + *cpy.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = ykyl + *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = ykyl + *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            36 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(32 as i32 as isize);
-    *g
-        .offset(
-            37 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(33 as i32 as isize);
-    *g
-        .offset(
-            40 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(36 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(32 as i32 as isize);
-    *g
-        .offset(
-            41 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(37 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(33 as i32 as isize);
-    *g
-        .offset(
-            42 as i32 as isize,
-        ) = *g.offset(40 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize))
-        + 2 as i32 as f64 * *b01.offset(0 as i32 as isize)
-            * *g.offset(36 as i32 as isize);
-    *g
-        .offset(
-            43 as i32 as isize,
-        ) = *g.offset(41 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize))
-        + 2 as i32 as f64 * *b01.offset(1 as i32 as isize)
-            * *g.offset(37 as i32 as isize);
-    *g
-        .offset(
-            38 as i32 as isize,
-        ) = *g.offset(36 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize) * *g.offset(32 as i32 as isize);
-    *g
-        .offset(
-            39 as i32 as isize,
-        ) = *g.offset(37 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize) * *g.offset(33 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *g.offset(32 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize));
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *g.offset(33 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize));
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    let xkxl: f64 = envs.rkrl[0];
+    let ykyl: f64 = envs.rkrl[1];
+    let zkzl: f64 = envs.rkrl[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[8] = cpx[0] * cpx[0] + b01[0];
+    g[9] = cpx[1] * cpx[1] + b01[1];
+    g[10] = g[8] * (xkxl + cpx[0]) + cpx[0] * 2.0 * b01[0];
+    g[11] = g[9] * (xkxl + cpx[1]) + cpx[1] * 2.0 * b01[1];
+    g[6] = cpx[0] * (xkxl + cpx[0]) + b01[0];
+    g[7] = cpx[1] * (xkxl + cpx[1]) + b01[1];
+    g[2] = xkxl + cpx[0];
+    g[3] = xkxl + cpx[1];
+    g[16] = 1.0;
+    g[17] = 1.0;
+    g[20] = cpy[0];
+    g[21] = cpy[1];
+    g[24] = cpy[0] * cpy[0] + b01[0];
+    g[25] = cpy[1] * cpy[1] + b01[1];
+    g[26] = g[24] * (ykyl + cpy[0]) + cpy[0] * 2.0 * b01[0];
+    g[27] = g[25] * (ykyl + cpy[1]) + cpy[1] * 2.0 * b01[1];
+    g[22] = cpy[0] * (ykyl + cpy[0]) + b01[0];
+    g[23] = cpy[1] * (ykyl + cpy[1]) + b01[1];
+    g[18] = ykyl + cpy[0];
+    g[19] = ykyl + cpy[1];
+    //g[32] = w[0];
+    //g[33] = w[1];
+    g[36] = cpz[0] * g[32];
+    g[37] = cpz[1] * g[33];
+    g[40] = cpz[0] * g[36] + b01[0] * g[32];
+    g[41] = cpz[1] * g[37] + b01[1] * g[33];
+    g[42] = g[40] * (zkzl + cpz[0]) + 2.0 * b01[0] * g[36];
+    g[43] = g[41] * (zkzl + cpz[1]) + 2.0 * b01[1] * g[37];
+    g[38] = g[36] * (zkzl + cpz[0]) + b01[0] * g[32];
+    g[39] = g[37] * (zkzl + cpz[1]) + b01[1] * g[33];
+    g[34] = g[32] * (zkzl + cpz[0]);
+    g[35] = g[33] * (zkzl + cpz[1]);
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0020(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0020(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *cpx.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *cpx.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g.offset(6 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(7 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(8 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(9 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *cpy.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *cpy.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(12 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(13 as i32 as isize);
-    *g
-        .offset(
-            16 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(14 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(12 as i32 as isize);
-    *g
-        .offset(
-            17 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(15 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(13 as i32 as isize);
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[6] = 1.0;
+    g[7] = 1.0;
+    g[8] = cpy[0];
+    g[9] = cpy[1];
+    g[10] = cpy[0] * cpy[0] + b01[0];
+    g[11] = cpy[1] * cpy[1] + b01[1];
+    //g[12] = w[0];
+    //g[13] = w[1];
+    g[14] = cpz[0] * g[12];
+    g[15] = cpz[1] * g[13];
+    g[16] = cpz[0] * g[14] + b01[0] * g[12];
+    g[17] = cpz[1] * g[15] + b01[1] * g[13];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0021(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0021(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    let mut xkxl: f64 = (*envs).rkrl[0 as i32 as usize];
-    let mut ykyl: f64 = (*envs).rkrl[1 as i32 as usize];
-    let mut zkzl: f64 = (*envs).rkrl[2 as i32 as usize];
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *cpx.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *cpx.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g.offset(8 as i32 as isize) = xkxl + *cpx.offset(0 as i32 as isize);
-    *g.offset(9 as i32 as isize) = xkxl + *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (xkxl + *cpx.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (xkxl + *cpx.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            12 as i32 as isize,
-        ) = *g.offset(4 as i32 as isize)
-        * (xkxl + *cpx.offset(0 as i32 as isize))
-        + *cpx.offset(0 as i32 as isize) * 2 as i32 as f64
-            * *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            13 as i32 as isize,
-        ) = *g.offset(5 as i32 as isize)
-        * (xkxl + *cpx.offset(1 as i32 as isize))
-        + *cpx.offset(1 as i32 as isize) * 2 as i32 as f64
-            * *b01.offset(1 as i32 as isize);
-    *g.offset(16 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(17 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(18 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(19 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *cpy.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *cpy.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            24 as i32 as isize,
-        ) = ykyl + *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            25 as i32 as isize,
-        ) = ykyl + *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (ykyl + *cpy.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (ykyl + *cpy.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = *g.offset(20 as i32 as isize)
-        * (ykyl + *cpy.offset(0 as i32 as isize))
-        + *cpy.offset(0 as i32 as isize) * 2 as i32 as f64
-            * *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = *g.offset(21 as i32 as isize)
-        * (ykyl + *cpy.offset(1 as i32 as isize))
-        + *cpy.offset(1 as i32 as isize) * 2 as i32 as f64
-            * *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(32 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(33 as i32 as isize);
-    *g
-        .offset(
-            36 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(34 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(32 as i32 as isize);
-    *g
-        .offset(
-            37 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(35 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(33 as i32 as isize);
-    *g
-        .offset(
-            40 as i32 as isize,
-        ) = *g.offset(32 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize));
-    *g
-        .offset(
-            41 as i32 as isize,
-        ) = *g.offset(33 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize));
-    *g
-        .offset(
-            42 as i32 as isize,
-        ) = *g.offset(34 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize) * *g.offset(32 as i32 as isize);
-    *g
-        .offset(
-            43 as i32 as isize,
-        ) = *g.offset(35 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize) * *g.offset(33 as i32 as isize);
-    *g
-        .offset(
-            44 as i32 as isize,
-        ) = *g.offset(36 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize))
-        + 2 as i32 as f64 * *b01.offset(0 as i32 as isize)
-            * *g.offset(34 as i32 as isize);
-    *g
-        .offset(
-            45 as i32 as isize,
-        ) = *g.offset(37 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize))
-        + 2 as i32 as f64 * *b01.offset(1 as i32 as isize)
-            * *g.offset(35 as i32 as isize);
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    let xkxl: f64 = envs.rkrl[0];
+    let ykyl: f64 = envs.rkrl[1];
+    let zkzl: f64 = envs.rkrl[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[8] = xkxl + cpx[0];
+    g[9] = xkxl + cpx[1];
+    g[10] = cpx[0] * (xkxl + cpx[0]) + b01[0];
+    g[11] = cpx[1] * (xkxl + cpx[1]) + b01[1];
+    g[12] = g[4] * (xkxl + cpx[0]) + cpx[0] * 2.0 * b01[0];
+    g[13] = g[5] * (xkxl + cpx[1]) + cpx[1] * 2.0 * b01[1];
+    g[16] = 1.0;
+    g[17] = 1.0;
+    g[18] = cpy[0];
+    g[19] = cpy[1];
+    g[20] = cpy[0] * cpy[0] + b01[0];
+    g[21] = cpy[1] * cpy[1] + b01[1];
+    g[24] = ykyl + cpy[0];
+    g[25] = ykyl + cpy[1];
+    g[26] = cpy[0] * (ykyl + cpy[0]) + b01[0];
+    g[27] = cpy[1] * (ykyl + cpy[1]) + b01[1];
+    g[28] = g[20] * (ykyl + cpy[0]) + cpy[0] * 2.0 * b01[0];
+    g[29] = g[21] * (ykyl + cpy[1]) + cpy[1] * 2.0 * b01[1];
+    //g[32] = w[0];
+    //g[33] = w[1];
+    g[34] = cpz[0] * g[32];
+    g[35] = cpz[1] * g[33];
+    g[36] = cpz[0] * g[34] + b01[0] * g[32];
+    g[37] = cpz[1] * g[35] + b01[1] * g[33];
+    g[40] = g[32] * (zkzl + cpz[0]);
+    g[41] = g[33] * (zkzl + cpz[1]);
+    g[42] = g[34] * (zkzl + cpz[0]) + b01[0] * g[32];
+    g[43] = g[35] * (zkzl + cpz[1]) + b01[1] * g[33];
+    g[44] = g[36] * (zkzl + cpz[0]) + 2.0 * b01[0] * g[34];
+    g[45] = g[37] * (zkzl + cpz[1]) + 2.0 * b01[1] * g[35];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0030(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0030(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *cpx.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *cpx.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (*g.offset(4 as i32 as isize)
-            + 2 as i32 as f64
-                * *b01.offset(0 as i32 as isize));
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (*g.offset(5 as i32 as isize)
-            + 2 as i32 as f64
-                * *b01.offset(1 as i32 as isize));
-    *g.offset(8 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(9 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(10 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(11 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            12 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *cpy.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            13 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *cpy.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (*g.offset(12 as i32 as isize)
-            + 2 as i32 as f64
-                * *b01.offset(0 as i32 as isize));
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (*g.offset(13 as i32 as isize)
-            + 2 as i32 as f64
-                * *b01.offset(1 as i32 as isize));
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(18 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(19 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(20 as i32 as isize)
-        + 2 as i32 as f64 * *b01.offset(0 as i32 as isize)
-            * *g.offset(18 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(21 as i32 as isize)
-        + 2 as i32 as f64 * *b01.offset(1 as i32 as isize)
-            * *g.offset(19 as i32 as isize);
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[6] = cpx[0] * (g[4] + 2.0 * b01[0]);
+    g[7] = cpx[1] * (g[5] + 2.0 * b01[1]);
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = cpy[0];
+    g[11] = cpy[1];
+    g[12] = cpy[0] * cpy[0] + b01[0];
+    g[13] = cpy[1] * cpy[1] + b01[1];
+    g[14] = cpy[0] * (g[12] + 2.0 * b01[0]);
+    g[15] = cpy[1] * (g[13] + 2.0 * b01[1]);
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = cpz[0] * g[16];
+    g[19] = cpz[1] * g[17];
+    g[20] = cpz[0] * g[18] + b01[0] * g[16];
+    g[21] = cpz[1] * g[19] + b01[1] * g[17];
+    g[22] = cpz[0] * g[20] + 2.0 * b01[0] * g[18];
+    g[23] = cpz[1] * g[21] + 2.0 * b01[1] * g[19];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0100(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0100(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(2 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(3 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(4 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    g[0] = 1.0;
+    g[1] = c0x[0];
+    g[2] = 1.0;
+    g[3] = c0y[0];
+    //g[4] = w[0];
+    g[5] = c0z[0] * g[4];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0101(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0101(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g.offset(4 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g.offset(8 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(9 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(10 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(11 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(13 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(20 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(21 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(17 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = c0x[0];
+    g[5] = c0x[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = cpy[0];
+    g[11] = cpy[1];
+    g[12] = c0y[0];
+    g[13] = c0y[1];
+    g[14] = cpy[0] * c0y[0] + b00[0];
+    g[15] = cpy[1] * c0y[1] + b00[1];
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = cpz[0] * g[16];
+    g[19] = cpz[1] * g[17];
+    g[20] = c0z[0] * g[16];
+    g[21] = c0z[1] * g[17];
+    g[22] = cpz[0] * g[20] + b00[0] * g[16];
+    g[23] = cpz[1] * g[21] + b00[1] * g[17];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0102(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0102(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g.offset(6 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(7 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *cpx.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *cpx.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            8 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            9 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (*g.offset(8 as i32 as isize) + *b00.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize)
-            * *c0x.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (*g.offset(9 as i32 as isize) + *b00.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize)
-            * *c0x.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(13 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(14 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(15 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g.offset(18 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(19 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            16 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *cpy.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            17 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *cpy.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (*g.offset(20 as i32 as isize)
-            + *b00.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize)
-            * *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (*g.offset(21 as i32 as isize)
-            + *b00.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize)
-            * *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(26 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(27 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            32 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(30 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            33 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(31 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(32 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(30 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(26 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(33 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(31 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(27 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[6] = c0x[0];
+    g[7] = c0x[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[8] = cpx[0] * c0x[0] + b00[0];
+    g[9] = cpx[1] * c0x[1] + b00[1];
+    g[10] = cpx[0] * (g[8] + b00[0]) + b01[0] * c0x[0];
+    g[11] = cpx[1] * (g[9] + b00[1]) + b01[1] * c0x[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = cpy[0];
+    g[15] = cpy[1];
+    g[18] = c0y[0];
+    g[19] = c0y[1];
+    g[16] = cpy[0] * cpy[0] + b01[0];
+    g[17] = cpy[1] * cpy[1] + b01[1];
+    g[20] = cpy[0] * c0y[0] + b00[0];
+    g[21] = cpy[1] * c0y[1] + b00[1];
+    g[22] = cpy[0] * (g[20] + b00[0]) + b01[0] * c0y[0];
+    g[23] = cpy[1] * (g[21] + b00[1]) + b01[1] * c0y[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = cpz[0] * g[24];
+    g[27] = cpz[1] * g[25];
+    g[30] = c0z[0] * g[24];
+    g[31] = c0z[1] * g[25];
+    g[28] = cpz[0] * g[26] + b01[0] * g[24];
+    g[29] = cpz[1] * g[27] + b01[1] * g[25];
+    g[32] = cpz[0] * g[30] + b00[0] * g[24];
+    g[33] = cpz[1] * g[31] + b00[1] * g[25];
+    g[34] = cpz[0] * g[32] + b01[0] * g[30] + b00[0] * g[26];
+    g[35] = cpz[1] * g[33] + b01[1] * g[31] + b00[1] * g[27];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0110(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0110(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g.offset(4 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g.offset(8 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(9 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(10 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(11 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(13 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(20 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(21 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(17 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = c0x[0];
+    g[5] = c0x[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = cpy[0];
+    g[11] = cpy[1];
+    g[12] = c0y[0];
+    g[13] = c0y[1];
+    g[14] = cpy[0] * c0y[0] + b00[0];
+    g[15] = cpy[1] * c0y[1] + b00[1];
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = cpz[0] * g[16];
+    g[19] = cpz[1] * g[17];
+    g[20] = c0z[0] * g[16];
+    g[21] = c0z[1] * g[17];
+    g[22] = cpz[0] * g[20] + b00[0] * g[16];
+    g[23] = cpz[1] * g[21] + b00[1] * g[17];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0111(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0111(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    let mut xkxl: f64 = (*envs).rkrl[0 as i32 as usize];
-    let mut ykyl: f64 = (*envs).rkrl[1 as i32 as usize];
-    let mut zkzl: f64 = (*envs).rkrl[2 as i32 as usize];
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(12 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(13 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g.offset(4 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            16 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            17 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (xkxl + *cpx.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (xkxl + *cpx.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *g.offset(16 as i32 as isize)
-        * (xkxl + *cpx.offset(0 as i32 as isize))
-        + *cpx.offset(0 as i32 as isize) * *b00.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize)
-            * *c0x.offset(0 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *g.offset(17 as i32 as isize)
-        * (xkxl + *cpx.offset(1 as i32 as isize))
-        + *cpx.offset(1 as i32 as isize) * *b00.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize)
-            * *c0x.offset(1 as i32 as isize);
-    *g.offset(2 as i32 as isize) = xkxl + *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = xkxl + *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (xkxl + *cpx.offset(0 as i32 as isize))
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (xkxl + *cpx.offset(1 as i32 as isize))
-        + *b00.offset(1 as i32 as isize);
-    *g.offset(24 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(25 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(36 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(37 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g.offset(28 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(29 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            40 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            41 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (ykyl + *cpy.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (ykyl + *cpy.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            42 as i32 as isize,
-        ) = *g.offset(40 as i32 as isize)
-        * (ykyl + *cpy.offset(0 as i32 as isize))
-        + *cpy.offset(0 as i32 as isize) * *b00.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize)
-            * *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            43 as i32 as isize,
-        ) = *g.offset(41 as i32 as isize)
-        * (ykyl + *cpy.offset(1 as i32 as isize))
-        + *cpy.offset(1 as i32 as isize) * *b00.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize)
-            * *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = ykyl + *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = ykyl + *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            38 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (ykyl + *cpy.offset(0 as i32 as isize))
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            39 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (ykyl + *cpy.offset(1 as i32 as isize))
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            60 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            61 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            52 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            53 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            64 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(60 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            65 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(61 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            54 as i32 as isize,
-        ) = *g.offset(52 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize) * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            55 as i32 as isize,
-        ) = *g.offset(53 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize) * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            66 as i32 as isize,
-        ) = *g.offset(64 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize) * *g.offset(60 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(52 as i32 as isize);
-    *g
-        .offset(
-            67 as i32 as isize,
-        ) = *g.offset(65 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize) * *g.offset(61 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(53 as i32 as isize);
-    *g
-        .offset(
-            50 as i32 as isize,
-        ) = *g.offset(48 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize));
-    *g
-        .offset(
-            51 as i32 as isize,
-        ) = *g.offset(49 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize));
-    *g
-        .offset(
-            62 as i32 as isize,
-        ) = *g.offset(60 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize))
-        + *b00.offset(0 as i32 as isize) * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            63 as i32 as isize,
-        ) = *g.offset(61 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize))
-        + *b00.offset(1 as i32 as isize) * *g.offset(49 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b01: [f64; 32] = bc.b01;
+    let mut xkxl: f64 = envs.rkrl[0];
+    let mut ykyl: f64 = envs.rkrl[1];
+    let mut zkzl: f64 = envs.rkrl[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[12] = c0x[0];
+    g[13] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[16] = cpx[0] * c0x[0] + b00[0];
+    g[17] = cpx[1] * c0x[1] + b00[1];
+    g[6] = cpx[0] * (xkxl + cpx[0]) + b01[0];
+    g[7] = cpx[1] * (xkxl + cpx[1]) + b01[1];
+    g[18] = g[16] * (xkxl + cpx[0]) + cpx[0] * b00[0] + b01[0] * c0x[0];
+    g[19] = g[17] * (xkxl + cpx[1]) + cpx[1] * b00[1] + b01[1] * c0x[1];
+    g[2] = xkxl + cpx[0];
+    g[3] = xkxl + cpx[1];
+    g[14] = c0x[0] * (xkxl + cpx[0]) + b00[0];
+    g[15] = c0x[1] * (xkxl + cpx[1]) + b00[1];
+    g[24] = 1.0;
+    g[25] = 1.0;
+    g[36] = c0y[0];
+    g[37] = c0y[1];
+    g[28] = cpy[0];
+    g[29] = cpy[1];
+    g[40] = cpy[0] * c0y[0] + b00[0];
+    g[41] = cpy[1] * c0y[1] + b00[1];
+    g[30] = cpy[0] * (ykyl + cpy[0]) + b01[0];
+    g[31] = cpy[1] * (ykyl + cpy[1]) + b01[1];
+    g[42] = g[40] * (ykyl + cpy[0]) + cpy[0] * b00[0] + b01[0] * c0y[0];
+    g[43] = g[41] * (ykyl + cpy[1]) + cpy[1] * b00[1] + b01[1] * c0y[1];
+    g[26] = ykyl + cpy[0];
+    g[27] = ykyl + cpy[1];
+    g[38] = c0y[0] * (ykyl + cpy[0]) + b00[0];
+    g[39] = c0y[1] * (ykyl + cpy[1]) + b00[1];
+    //g[48] = w[0];
+    //g[49] = w[1];
+    g[60] = c0z[0] * g[48];
+    g[61] = c0z[1] * g[49];
+    g[52] = cpz[0] * g[48];
+    g[53] = cpz[1] * g[49];
+    g[64] = cpz[0] * g[60] + b00[0] * g[48];
+    g[65] = cpz[1] * g[61] + b00[1] * g[49];
+    g[54] = g[52] * (zkzl + cpz[0]) + b01[0] * g[48];
+    g[55] = g[53] * (zkzl + cpz[1]) + b01[1] * g[49];
+    g[66] = g[64] * (zkzl + cpz[0]) + b01[0] * g[60] + b00[0] * g[52];
+    g[67] = g[65] * (zkzl + cpz[1]) + b01[1] * g[61] + b00[1] * g[53];
+    g[50] = g[48] * (zkzl + cpz[0]);
+    g[51] = g[49] * (zkzl + cpz[1]);
+    g[62] = g[60] * (zkzl + cpz[0]) + b00[0] * g[48];
+    g[63] = g[61] * (zkzl + cpz[1]) + b00[1] * g[49];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0120(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0120(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g.offset(6 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(7 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *cpx.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *cpx.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            8 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            9 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (*g.offset(8 as i32 as isize) + *b00.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize)
-            * *c0x.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (*g.offset(9 as i32 as isize) + *b00.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize)
-            * *c0x.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(13 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(14 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(15 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g.offset(18 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(19 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            16 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *cpy.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            17 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *cpy.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (*g.offset(20 as i32 as isize)
-            + *b00.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize)
-            * *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (*g.offset(21 as i32 as isize)
-            + *b00.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize)
-            * *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(26 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(27 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            32 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(30 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            33 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(31 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(32 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(30 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(26 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(33 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(31 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(27 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[6] = c0x[0];
+    g[7] = c0x[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[8] = cpx[0] * c0x[0] + b00[0];
+    g[9] = cpx[1] * c0x[1] + b00[1];
+    g[10] = cpx[0] * (g[8] + b00[0]) + b01[0] * c0x[0];
+    g[11] = cpx[1] * (g[9] + b00[1]) + b01[1] * c0x[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = cpy[0];
+    g[15] = cpy[1];
+    g[18] = c0y[0];
+    g[19] = c0y[1];
+    g[16] = cpy[0] * cpy[0] + b01[0];
+    g[17] = cpy[1] * cpy[1] + b01[1];
+    g[20] = cpy[0] * c0y[0] + b00[0];
+    g[21] = cpy[1] * c0y[1] + b00[1];
+    g[22] = cpy[0] * (g[20] + b00[0]) + b01[0] * c0y[0];
+    g[23] = cpy[1] * (g[21] + b00[1]) + b01[1] * c0y[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = cpz[0] * g[24];
+    g[27] = cpz[1] * g[25];
+    g[30] = c0z[0] * g[24];
+    g[31] = c0z[1] * g[25];
+    g[28] = cpz[0] * g[26] + b01[0] * g[24];
+    g[29] = cpz[1] * g[27] + b01[1] * g[25];
+    g[32] = cpz[0] * g[30] + b00[0] * g[24];
+    g[33] = cpz[1] * g[31] + b00[1] * g[25];
+    g[34] = cpz[0] * g[32] + b01[0] * g[30] + b00[0] * g[26];
+    g[35] = cpz[1] * g[33] + b01[1] * g[31] + b00[1] * g[27];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0200(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0200(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(6 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(7 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(8 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(9 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(12 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(13 as i32 as isize);
-    *g
-        .offset(
-            16 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(14 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(12 as i32 as isize);
-    *g
-        .offset(
-            17 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(15 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(13 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[6] = 1.0;
+    g[7] = 1.0;
+    g[8] = c0y[0];
+    g[9] = c0y[1];
+    g[10] = c0y[0] * c0y[0] + b10[0];
+    g[11] = c0y[1] * c0y[1] + b10[1];
+    //g[12] = w[0];
+    //g[13] = w[1];
+    g[14] = c0z[0] * g[12];
+    g[15] = c0z[1] * g[13];
+    g[16] = c0z[0] * g[14] + b10[0] * g[12];
+    g[17] = c0z[1] * g[15] + b10[1] * g[13];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0201(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0201(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(4 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            8 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            9 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(2 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (*g.offset(6 as i32 as isize) + *b00.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize)
-            * *cpx.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (*g.offset(7 as i32 as isize) + *b00.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize)
-            * *cpx.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(13 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(16 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(17 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(14 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(15 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (*g.offset(18 as i32 as isize)
-            + *b00.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize)
-            * *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (*g.offset(19 as i32 as isize)
-            + *b00.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize)
-            * *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            32 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(28 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            33 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(29 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(28 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(29 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(30 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(26 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(28 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(31 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(27 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(29 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[4] = c0x[0];
+    g[5] = c0x[1];
+    g[8] = c0x[0] * c0x[0] + b10[0];
+    g[9] = c0x[1] * c0x[1] + b10[1];
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[10] = c0x[0] * (g[6] + b00[0]) + b10[0] * cpx[0];
+    g[11] = c0x[1] * (g[7] + b00[1]) + b10[1] * cpx[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[16] = c0y[0];
+    g[17] = c0y[1];
+    g[20] = c0y[0] * c0y[0] + b10[0];
+    g[21] = c0y[1] * c0y[1] + b10[1];
+    g[14] = cpy[0];
+    g[15] = cpy[1];
+    g[18] = cpy[0] * c0y[0] + b00[0];
+    g[19] = cpy[1] * c0y[1] + b00[1];
+    g[22] = c0y[0] * (g[18] + b00[0]) + b10[0] * cpy[0];
+    g[23] = c0y[1] * (g[19] + b00[1]) + b10[1] * cpy[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[28] = c0z[0] * g[24];
+    g[29] = c0z[1] * g[25];
+    g[32] = c0z[0] * g[28] + b10[0] * g[24];
+    g[33] = c0z[1] * g[29] + b10[1] * g[25];
+    g[26] = cpz[0] * g[24];
+    g[27] = cpz[1] * g[25];
+    g[30] = cpz[0] * g[28] + b00[0] * g[24];
+    g[31] = cpz[1] * g[29] + b00[1] * g[25];
+    g[34] = c0z[0] * g[30] + b10[0] * g[26] + b00[0] * g[28];
+    g[35] = c0z[1] * g[31] + b10[1] * g[27] + b00[1] * g[29];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0210(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0210(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g.offset(4 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            8 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            9 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (*g.offset(6 as i32 as isize) + *b00.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize)
-            * *cpx.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (*g.offset(7 as i32 as isize) + *b00.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize)
-            * *cpx.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(13 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(14 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(15 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g.offset(16 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(17 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (*g.offset(18 as i32 as isize)
-            + *b00.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize)
-            * *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (*g.offset(19 as i32 as isize)
-            + *b00.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize)
-            * *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(28 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(29 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            32 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(28 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            33 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(29 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(30 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(26 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(28 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(31 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(27 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(29 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = c0x[0];
+    g[5] = c0x[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = c0x[0] * c0x[0] + b10[0];
+    g[9] = c0x[1] * c0x[1] + b10[1];
+    g[10] = c0x[0] * (g[6] + b00[0]) + b10[0] * cpx[0];
+    g[11] = c0x[1] * (g[7] + b00[1]) + b10[1] * cpx[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = cpy[0];
+    g[15] = cpy[1];
+    g[16] = c0y[0];
+    g[17] = c0y[1];
+    g[18] = cpy[0] * c0y[0] + b00[0];
+    g[19] = cpy[1] * c0y[1] + b00[1];
+    g[20] = c0y[0] * c0y[0] + b10[0];
+    g[21] = c0y[1] * c0y[1] + b10[1];
+    g[22] = c0y[0] * (g[18] + b00[0]) + b10[0] * cpy[0];
+    g[23] = c0y[1] * (g[19] + b00[1]) + b10[1] * cpy[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = cpz[0] * g[24];
+    g[27] = cpz[1] * g[25];
+    g[28] = c0z[0] * g[24];
+    g[29] = c0z[1] * g[25];
+    g[30] = cpz[0] * g[28] + b00[0] * g[24];
+    g[31] = cpz[1] * g[29] + b00[1] * g[25];
+    g[32] = c0z[0] * g[28] + b10[0] * g[24];
+    g[33] = c0z[1] * g[29] + b10[1] * g[25];
+    g[34] = c0z[0] * g[30] + b10[0] * g[26] + b00[0] * g[28];
+    g[35] = c0z[1] * g[31] + b10[1] * g[27] + b00[1] * g[29];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_0300(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_0300(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (*g.offset(4 as i32 as isize)
-            + 2 as i32 as f64
-                * *b10.offset(0 as i32 as isize));
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (*g.offset(5 as i32 as isize)
-            + 2 as i32 as f64
-                * *b10.offset(1 as i32 as isize));
-    *g.offset(8 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(9 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(10 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(11 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            12 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            13 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (*g.offset(12 as i32 as isize)
-            + 2 as i32 as f64
-                * *b10.offset(0 as i32 as isize));
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (*g.offset(13 as i32 as isize)
-            + 2 as i32 as f64
-                * *b10.offset(1 as i32 as isize));
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(18 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(19 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(20 as i32 as isize)
-        + 2 as i32 as f64 * *b10.offset(0 as i32 as isize)
-            * *g.offset(18 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(21 as i32 as isize)
-        + 2 as i32 as f64 * *b10.offset(1 as i32 as isize)
-            * *g.offset(19 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[6] = c0x[0] * (g[4] + 2.0 * b10[0]);
+    g[7] = c0x[1] * (g[5] + 2.0 * b10[1]);
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = c0y[0];
+    g[11] = c0y[1];
+    g[12] = c0y[0] * c0y[0] + b10[0];
+    g[13] = c0y[1] * c0y[1] + b10[1];
+    g[14] = c0y[0] * (g[12] + 2.0 * b10[0]);
+    g[15] = c0y[1] * (g[13] + 2.0 * b10[1]);
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = c0z[0] * g[16];
+    g[19] = c0z[1] * g[17];
+    g[20] = c0z[0] * g[18] + b10[0] * g[16];
+    g[21] = c0z[1] * g[19] + b10[1] * g[17];
+    g[22] = c0z[0] * g[20] + 2.0 * b10[0] * g[18];
+    g[23] = c0z[1] * g[21] + 2.0 * b10[1] * g[19];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_1000(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_1000(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(2 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(3 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(4 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    g[0] = 1.0;
+    g[1] = c0x[0];
+    g[2] = 1.0;
+    g[3] = c0y[0];
+    //g[4] = w[0];
+    g[5] = c0z[0] * g[4];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_1001(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_1001(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g.offset(4 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g.offset(8 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(9 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(10 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(11 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(13 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(18 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(19 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(17 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = c0y[0];
+    g[11] = c0y[1];
+    g[12] = cpy[0];
+    g[13] = cpy[1];
+    g[14] = cpy[0] * c0y[0] + b00[0];
+    g[15] = cpy[1] * c0y[1] + b00[1];
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = c0z[0] * g[16];
+    g[19] = c0z[1] * g[17];
+    g[20] = cpz[0] * g[16];
+    g[21] = cpz[1] * g[17];
+    g[22] = cpz[0] * g[18] + b00[0] * g[16];
+    g[23] = cpz[1] * g[19] + b00[1] * g[17];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_1002(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_1002(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g.offset(4 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            8 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *cpx.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            9 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *cpx.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (*g.offset(6 as i32 as isize) + *b00.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize)
-            * *c0x.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (*g.offset(7 as i32 as isize) + *b00.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize)
-            * *c0x.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(13 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(14 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(15 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g.offset(16 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(17 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *cpy.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *cpy.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (*g.offset(18 as i32 as isize)
-            + *b00.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize)
-            * *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (*g.offset(19 as i32 as isize)
-            + *b00.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize)
-            * *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(26 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(27 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            32 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(28 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            33 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(29 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(30 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(26 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(28 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(31 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(27 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(29 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = cpx[0] * cpx[0] + b01[0];
+    g[9] = cpx[1] * cpx[1] + b01[1];
+    g[10] = cpx[0] * (g[6] + b00[0]) + b01[0] * c0x[0];
+    g[11] = cpx[1] * (g[7] + b00[1]) + b01[1] * c0x[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = c0y[0];
+    g[15] = c0y[1];
+    g[16] = cpy[0];
+    g[17] = cpy[1];
+    g[18] = cpy[0] * c0y[0] + b00[0];
+    g[19] = cpy[1] * c0y[1] + b00[1];
+    g[20] = cpy[0] * cpy[0] + b01[0];
+    g[21] = cpy[1] * cpy[1] + b01[1];
+    g[22] = cpy[0] * (g[18] + b00[0]) + b01[0] * c0y[0];
+    g[23] = cpy[1] * (g[19] + b00[1]) + b01[1] * c0y[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = c0z[0] * g[24];
+    g[27] = c0z[1] * g[25];
+    g[28] = cpz[0] * g[24];
+    g[29] = cpz[1] * g[25];
+    g[30] = cpz[0] * g[26] + b00[0] * g[24];
+    g[31] = cpz[1] * g[27] + b00[1] * g[25];
+    g[32] = cpz[0] * g[28] + b01[0] * g[24];
+    g[33] = cpz[1] * g[29] + b01[1] * g[25];
+    g[34] = cpz[0] * g[30] + b01[0] * g[26] + b00[0] * g[28];
+    g[35] = cpz[1] * g[31] + b01[1] * g[27] + b00[1] * g[29];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_1010(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_1010(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g.offset(4 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g.offset(8 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(9 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(10 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(11 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(13 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(18 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(19 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(17 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = c0y[0];
+    g[11] = c0y[1];
+    g[12] = cpy[0];
+    g[13] = cpy[1];
+    g[14] = cpy[0] * c0y[0] + b00[0];
+    g[15] = cpy[1] * c0y[1] + b00[1];
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = c0z[0] * g[16];
+    g[19] = c0z[1] * g[17];
+    g[20] = cpz[0] * g[16];
+    g[21] = cpz[1] * g[17];
+    g[22] = cpz[0] * g[18] + b00[0] * g[16];
+    g[23] = cpz[1] * g[19] + b00[1] * g[17];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_1011(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_1011(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    let mut xkxl: f64 = (*envs).rkrl[0 as i32 as usize];
-    let mut ykyl: f64 = (*envs).rkrl[1 as i32 as usize];
-    let mut zkzl: f64 = (*envs).rkrl[2 as i32 as usize];
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g.offset(8 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(9 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            12 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (xkxl + *cpx.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            13 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (xkxl + *cpx.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *g.offset(10 as i32 as isize)
-        * (xkxl + *cpx.offset(0 as i32 as isize))
-        + *cpx.offset(0 as i32 as isize) * *b00.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize)
-            * *c0x.offset(0 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *g.offset(11 as i32 as isize)
-        * (xkxl + *cpx.offset(1 as i32 as isize))
-        + *cpx.offset(1 as i32 as isize) * *b00.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize)
-            * *c0x.offset(1 as i32 as isize);
-    *g.offset(4 as i32 as isize) = xkxl + *cpx.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = xkxl + *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (xkxl + *cpx.offset(0 as i32 as isize))
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (xkxl + *cpx.offset(1 as i32 as isize))
-        + *b00.offset(1 as i32 as isize);
-    *g.offset(24 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(25 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(26 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(27 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g.offset(32 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(33 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            36 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (ykyl + *cpy.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            37 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (ykyl + *cpy.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            38 as i32 as isize,
-        ) = *g.offset(34 as i32 as isize)
-        * (ykyl + *cpy.offset(0 as i32 as isize))
-        + *cpy.offset(0 as i32 as isize) * *b00.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize)
-            * *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            39 as i32 as isize,
-        ) = *g.offset(35 as i32 as isize)
-        * (ykyl + *cpy.offset(1 as i32 as isize))
-        + *cpy.offset(1 as i32 as isize) * *b00.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize)
-            * *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = ykyl + *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = ykyl + *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (ykyl + *cpy.offset(0 as i32 as isize))
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (ykyl + *cpy.offset(1 as i32 as isize))
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            50 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            51 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            56 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            57 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            58 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(50 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            59 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(51 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            60 as i32 as isize,
-        ) = *g.offset(56 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize) * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            61 as i32 as isize,
-        ) = *g.offset(57 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize) * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            62 as i32 as isize,
-        ) = *g.offset(58 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize) * *g.offset(50 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(56 as i32 as isize);
-    *g
-        .offset(
-            63 as i32 as isize,
-        ) = *g.offset(59 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize) * *g.offset(51 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(57 as i32 as isize);
-    *g
-        .offset(
-            52 as i32 as isize,
-        ) = *g.offset(48 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize));
-    *g
-        .offset(
-            53 as i32 as isize,
-        ) = *g.offset(49 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize));
-    *g
-        .offset(
-            54 as i32 as isize,
-        ) = *g.offset(50 as i32 as isize)
-        * (zkzl + *cpz.offset(0 as i32 as isize))
-        + *b00.offset(0 as i32 as isize) * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            55 as i32 as isize,
-        ) = *g.offset(51 as i32 as isize)
-        * (zkzl + *cpz.offset(1 as i32 as isize))
-        + *b00.offset(1 as i32 as isize) * *g.offset(49 as i32 as isize);
+    let mut c0x: [f64; 32] = bc.c00x;
+    let mut c0y: [f64; 32] = bc.c00y;
+    let mut c0z: [f64; 32] = bc.c00z;
+    let mut cpx: [f64; 32] = bc.c0px;
+    let mut cpy: [f64; 32] = bc.c0py;
+    let mut cpz: [f64; 32] = bc.c0pz;
+    let mut b00: [f64; 32] = bc.b00;
+    let mut b01: [f64; 32] = bc.b01;
+    let mut xkxl: f64 = envs.rkrl[0];
+    let mut ykyl: f64 = envs.rkrl[1];
+    let mut zkzl: f64 = envs.rkrl[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[8] = cpx[0];
+    g[9] = cpx[1];
+    g[10] = cpx[0] * c0x[0] + b00[0];
+    g[11] = cpx[1] * c0x[1] + b00[1];
+    g[12] = cpx[0] * (xkxl + cpx[0]) + b01[0];
+    g[13] = cpx[1] * (xkxl + cpx[1]) + b01[1];
+    g[14] = g[10] * (xkxl + cpx[0]) + cpx[0] * b00[0] + b01[0] * c0x[0];
+    g[15] = g[11] * (xkxl + cpx[1]) + cpx[1] * b00[1] + b01[1] * c0x[1];
+    g[4] = xkxl + cpx[0];
+    g[5] = xkxl + cpx[1];
+    g[6] = c0x[0] * (xkxl + cpx[0]) + b00[0];
+    g[7] = c0x[1] * (xkxl + cpx[1]) + b00[1];
+    g[24] = 1.0;
+    g[25] = 1.0;
+    g[26] = c0y[0];
+    g[27] = c0y[1];
+    g[32] = cpy[0];
+    g[33] = cpy[1];
+    g[34] = cpy[0] * c0y[0] + b00[0];
+    g[35] = cpy[1] * c0y[1] + b00[1];
+    g[36] = cpy[0] * (ykyl + cpy[0]) + b01[0];
+    g[37] = cpy[1] * (ykyl + cpy[1]) + b01[1];
+    g[38] = g[34] * (ykyl + cpy[0]) + cpy[0] * b00[0] + b01[0] * c0y[0];
+    g[39] = g[35] * (ykyl + cpy[1]) + cpy[1] * b00[1] + b01[1] * c0y[1];
+    g[28] = ykyl + cpy[0];
+    g[29] = ykyl + cpy[1];
+    g[30] = c0y[0] * (ykyl + cpy[0]) + b00[0];
+    g[31] = c0y[1] * (ykyl + cpy[1]) + b00[1];
+    //g[48] = w[0];
+    //g[49] = w[1];
+    g[50] = c0z[0] * g[48];
+    g[51] = c0z[1] * g[49];
+    g[56] = cpz[0] * g[48];
+    g[57] = cpz[1] * g[49];
+    g[58] = cpz[0] * g[50] + b00[0] * g[48];
+    g[59] = cpz[1] * g[51] + b00[1] * g[49];
+    g[60] = g[56] * (zkzl + cpz[0]) + b01[0] * g[48];
+    g[61] = g[57] * (zkzl + cpz[1]) + b01[1] * g[49];
+    g[62] = g[58] * (zkzl + cpz[0]) + b01[0] * g[50] + b00[0] * g[56];
+    g[63] = g[59] * (zkzl + cpz[1]) + b01[1] * g[51] + b00[1] * g[57];
+    g[52] = g[48] * (zkzl + cpz[0]);
+    g[53] = g[49] * (zkzl + cpz[1]);
+    g[54] = g[50] * (zkzl + cpz[0]) + b00[0] * g[48];
+    g[55] = g[51] * (zkzl + cpz[1]) + b00[1] * g[49];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_1020(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_1020(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    let mut b01: *mut f64 = ((*bc).b01).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g.offset(4 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            8 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *cpx.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            9 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *cpx.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (*g.offset(6 as i32 as isize) + *b00.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize)
-            * *c0x.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (*g.offset(7 as i32 as isize) + *b00.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize)
-            * *c0x.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(13 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(14 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(15 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g.offset(16 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(17 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *cpy.offset(0 as i32 as isize)
-        + *b01.offset(0 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *cpy.offset(1 as i32 as isize)
-        + *b01.offset(1 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (*g.offset(18 as i32 as isize)
-            + *b00.offset(0 as i32 as isize))
-        + *b01.offset(0 as i32 as isize)
-            * *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (*g.offset(19 as i32 as isize)
-            + *b00.offset(1 as i32 as isize))
-        + *b01.offset(1 as i32 as isize)
-            * *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(26 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(27 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            32 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(28 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            33 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(29 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(30 as i32 as isize)
-        + *b01.offset(0 as i32 as isize) * *g.offset(26 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(28 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(31 as i32 as isize)
-        + *b01.offset(1 as i32 as isize) * *g.offset(27 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(29 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = cpx[0] * cpx[0] + b01[0];
+    g[9] = cpx[1] * cpx[1] + b01[1];
+    g[10] = cpx[0] * (g[6] + b00[0]) + b01[0] * c0x[0];
+    g[11] = cpx[1] * (g[7] + b00[1]) + b01[1] * c0x[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = c0y[0];
+    g[15] = c0y[1];
+    g[16] = cpy[0];
+    g[17] = cpy[1];
+    g[18] = cpy[0] * c0y[0] + b00[0];
+    g[19] = cpy[1] * c0y[1] + b00[1];
+    g[20] = cpy[0] * cpy[0] + b01[0];
+    g[21] = cpy[1] * cpy[1] + b01[1];
+    g[22] = cpy[0] * (g[18] + b00[0]) + b01[0] * c0y[0];
+    g[23] = cpy[1] * (g[19] + b00[1]) + b01[1] * c0y[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = c0z[0] * g[24];
+    g[27] = c0z[1] * g[25];
+    g[28] = cpz[0] * g[24];
+    g[29] = cpz[1] * g[25];
+    g[30] = cpz[0] * g[26] + b00[0] * g[24];
+    g[31] = cpz[1] * g[27] + b00[1] * g[25];
+    g[32] = cpz[0] * g[28] + b01[0] * g[24];
+    g[33] = cpz[1] * g[29] + b01[1] * g[25];
+    g[34] = cpz[0] * g[30] + b01[0] * g[26] + b00[0] * g[28];
+    g[35] = cpz[1] * g[31] + b01[1] * g[27] + b00[1] * g[29];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_1100(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_1100(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    let mut xixj: f64 = (*envs).rirj[0 as i32 as usize];
-    let mut yiyj: f64 = (*envs).rirj[1 as i32 as usize];
-    let mut zizj: f64 = (*envs).rirj[2 as i32 as usize];
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(4 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (xixj + *c0x.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (xixj + *c0x.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(2 as i32 as isize) = xixj + *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = xixj + *c0x.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(13 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(16 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(17 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (yiyj + *c0y.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (yiyj + *c0y.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = yiyj + *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = yiyj + *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *g.offset(28 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *g.offset(29 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *g.offset(24 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize));
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *g.offset(25 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize));
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    let xixj: f64 = envs.rirj[0];
+    let yiyj: f64 = envs.rirj[1];
+    let zizj: f64 = envs.rirj[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[4] = c0x[0];
+    g[5] = c0x[1];
+    g[6] = c0x[0] * (xixj + c0x[0]) + b10[0];
+    g[7] = c0x[1] * (xixj + c0x[1]) + b10[1];
+    g[2] = xixj + c0x[0];
+    g[3] = xixj + c0x[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[16] = c0y[0];
+    g[17] = c0y[1];
+    g[18] = c0y[0] * (yiyj + c0y[0]) + b10[0];
+    g[19] = c0y[1] * (yiyj + c0y[1]) + b10[1];
+    g[14] = yiyj + c0y[0];
+    g[15] = yiyj + c0y[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[28] = c0z[0] * g[24];
+    g[29] = c0z[1] * g[25];
+    g[30] = g[28] * (zizj + c0z[0]) + b10[0] * g[24];
+    g[31] = g[29] * (zizj + c0z[1]) + b10[1] * g[25];
+    g[26] = g[24] * (zizj + c0z[0]);
+    g[27] = g[25] * (zizj + c0z[1]);
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_1101(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_1101(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    let mut xixj: f64 = (*envs).rirj[0 as i32 as usize];
-    let mut yiyj: f64 = (*envs).rirj[1 as i32 as usize];
-    let mut zizj: f64 = (*envs).rirj[2 as i32 as usize];
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(8 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(9 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g.offset(4 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            12 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            13 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (xixj + *c0x.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (xixj + *c0x.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(2 as i32 as isize) = xixj + *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = xixj + *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *g.offset(12 as i32 as isize)
-        * (xixj + *c0x.offset(0 as i32 as isize))
-        + *c0x.offset(0 as i32 as isize) * *b00.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize)
-            * *cpx.offset(0 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *g.offset(13 as i32 as isize)
-        * (xixj + *c0x.offset(1 as i32 as isize))
-        + *c0x.offset(1 as i32 as isize) * *b00.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize)
-            * *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (xixj + *c0x.offset(0 as i32 as isize))
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (xixj + *c0x.offset(1 as i32 as isize))
-        + *b00.offset(1 as i32 as isize);
-    *g.offset(24 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(25 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(32 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(33 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g.offset(28 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(29 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            36 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            37 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (yiyj + *c0y.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (yiyj + *c0y.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = yiyj + *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = yiyj + *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            38 as i32 as isize,
-        ) = *g.offset(36 as i32 as isize)
-        * (yiyj + *c0y.offset(0 as i32 as isize))
-        + *c0y.offset(0 as i32 as isize) * *b00.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize)
-            * *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            39 as i32 as isize,
-        ) = *g.offset(37 as i32 as isize)
-        * (yiyj + *c0y.offset(1 as i32 as isize))
-        + *c0y.offset(1 as i32 as isize) * *b00.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize)
-            * *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (yiyj + *c0y.offset(0 as i32 as isize))
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (yiyj + *c0y.offset(1 as i32 as isize))
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            56 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            57 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            52 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            53 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            60 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(56 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            61 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(57 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            58 as i32 as isize,
-        ) = *g.offset(56 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize) * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            59 as i32 as isize,
-        ) = *g.offset(57 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize) * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            50 as i32 as isize,
-        ) = *g.offset(48 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize));
-    *g
-        .offset(
-            51 as i32 as isize,
-        ) = *g.offset(49 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize));
-    *g
-        .offset(
-            62 as i32 as isize,
-        ) = *g.offset(60 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize) * *g.offset(52 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(56 as i32 as isize);
-    *g
-        .offset(
-            63 as i32 as isize,
-        ) = *g.offset(61 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize) * *g.offset(53 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(57 as i32 as isize);
-    *g
-        .offset(
-            54 as i32 as isize,
-        ) = zizj * *g.offset(52 as i32 as isize)
-        + *cpz.offset(0 as i32 as isize) * *g.offset(56 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            55 as i32 as isize,
-        ) = zizj * *g.offset(53 as i32 as isize)
-        + *cpz.offset(1 as i32 as isize) * *g.offset(57 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(49 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b10: [f64; 32] = bc.b10;
+    let xixj: f64 = envs.rirj[0];
+    let yiyj: f64 = envs.rirj[1];
+    let zizj: f64 = envs.rirj[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[8] = c0x[0];
+    g[9] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[12] = cpx[0] * c0x[0] + b00[0];
+    g[13] = cpx[1] * c0x[1] + b00[1];
+    g[10] = c0x[0] * (xixj + c0x[0]) + b10[0];
+    g[11] = c0x[1] * (xixj + c0x[1]) + b10[1];
+    g[2] = xixj + c0x[0];
+    g[3] = xixj + c0x[1];
+    g[14] = g[12] * (xixj + c0x[0]) + c0x[0] * b00[0] + b10[0] * cpx[0];
+    g[15] = g[13] * (xixj + c0x[1]) + c0x[1] * b00[1] + b10[1] * cpx[1];
+    g[6] = cpx[0] * (xixj + c0x[0]) + b00[0];
+    g[7] = cpx[1] * (xixj + c0x[1]) + b00[1];
+    g[24] = 1.0;
+    g[25] = 1.0;
+    g[32] = c0y[0];
+    g[33] = c0y[1];
+    g[28] = cpy[0];
+    g[29] = cpy[1];
+    g[36] = cpy[0] * c0y[0] + b00[0];
+    g[37] = cpy[1] * c0y[1] + b00[1];
+    g[34] = c0y[0] * (yiyj + c0y[0]) + b10[0];
+    g[35] = c0y[1] * (yiyj + c0y[1]) + b10[1];
+    g[26] = yiyj + c0y[0];
+    g[27] = yiyj + c0y[1];
+    g[38] = g[36] * (yiyj + c0y[0]) + c0y[0] * b00[0] + b10[0] * cpy[0];
+    g[39] = g[37] * (yiyj + c0y[1]) + c0y[1] * b00[1] + b10[1] * cpy[1];
+    g[30] = cpy[0] * (yiyj + c0y[0]) + b00[0];
+    g[31] = cpy[1] * (yiyj + c0y[1]) + b00[1];
+    //g[48] = w[0];
+    //g[49] = w[1];
+    g[56] = c0z[0] * g[48];
+    g[57] = c0z[1] * g[49];
+    g[52] = cpz[0] * g[48];
+    g[53] = cpz[1] * g[49];
+    g[60] = cpz[0] * g[56] + b00[0] * g[48];
+    g[61] = cpz[1] * g[57] + b00[1] * g[49];
+    g[58] = g[56] * (zizj + c0z[0]) + b10[0] * g[48];
+    g[59] = g[57] * (zizj + c0z[1]) + b10[1] * g[49];
+    g[50] = g[48] * (zizj + c0z[0]);
+    g[51] = g[49] * (zizj + c0z[1]);
+    g[62] = g[60] * (zizj + c0z[0]) + b10[0] * g[52] + b00[0] * g[56];
+    g[63] = g[61] * (zizj + c0z[1]) + b10[1] * g[53] + b00[1] * g[57];
+    g[54] = zizj * g[52] + cpz[0] * g[56] + b00[0] * g[48];
+    g[55] = zizj * g[53] + cpz[1] * g[57] + b00[1] * g[49];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_1110(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_1110(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    let mut xixj: f64 = (*envs).rirj[0 as i32 as usize];
-    let mut yiyj: f64 = (*envs).rirj[1 as i32 as usize];
-    let mut zizj: f64 = (*envs).rirj[2 as i32 as usize];
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(8 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(9 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g.offset(4 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            12 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            13 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (xixj + *c0x.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (xixj + *c0x.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(2 as i32 as isize) = xixj + *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = xixj + *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *g.offset(12 as i32 as isize)
-        * (xixj + *c0x.offset(0 as i32 as isize))
-        + *c0x.offset(0 as i32 as isize) * *b00.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize)
-            * *cpx.offset(0 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *g.offset(13 as i32 as isize)
-        * (xixj + *c0x.offset(1 as i32 as isize))
-        + *c0x.offset(1 as i32 as isize) * *b00.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize)
-            * *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * (xixj + *c0x.offset(0 as i32 as isize))
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * (xixj + *c0x.offset(1 as i32 as isize))
-        + *b00.offset(1 as i32 as isize);
-    *g.offset(24 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(25 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(32 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(33 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g.offset(28 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(29 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            36 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            37 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (yiyj + *c0y.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (yiyj + *c0y.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = yiyj + *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = yiyj + *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            38 as i32 as isize,
-        ) = *g.offset(36 as i32 as isize)
-        * (yiyj + *c0y.offset(0 as i32 as isize))
-        + *c0y.offset(0 as i32 as isize) * *b00.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize)
-            * *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            39 as i32 as isize,
-        ) = *g.offset(37 as i32 as isize)
-        * (yiyj + *c0y.offset(1 as i32 as isize))
-        + *c0y.offset(1 as i32 as isize) * *b00.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize)
-            * *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * (yiyj + *c0y.offset(0 as i32 as isize))
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * (yiyj + *c0y.offset(1 as i32 as isize))
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            56 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            57 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            52 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            53 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            60 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(56 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            61 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(57 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            58 as i32 as isize,
-        ) = *g.offset(56 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize) * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            59 as i32 as isize,
-        ) = *g.offset(57 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize) * *g.offset(49 as i32 as isize);
-    *g
-        .offset(
-            50 as i32 as isize,
-        ) = *g.offset(48 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize));
-    *g
-        .offset(
-            51 as i32 as isize,
-        ) = *g.offset(49 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize));
-    *g
-        .offset(
-            62 as i32 as isize,
-        ) = *g.offset(60 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize) * *g.offset(52 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(56 as i32 as isize);
-    *g
-        .offset(
-            63 as i32 as isize,
-        ) = *g.offset(61 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize) * *g.offset(53 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(57 as i32 as isize);
-    *g
-        .offset(
-            54 as i32 as isize,
-        ) = zizj * *g.offset(52 as i32 as isize)
-        + *cpz.offset(0 as i32 as isize) * *g.offset(56 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(48 as i32 as isize);
-    *g
-        .offset(
-            55 as i32 as isize,
-        ) = zizj * *g.offset(53 as i32 as isize)
-        + *cpz.offset(1 as i32 as isize) * *g.offset(57 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(49 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b10: [f64; 32] = bc.b10;
+    let xixj: f64 = envs.rirj[0];
+    let yiyj: f64 = envs.rirj[1];
+    let zizj: f64 = envs.rirj[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[8] = c0x[0];
+    g[9] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[12] = cpx[0] * c0x[0] + b00[0];
+    g[13] = cpx[1] * c0x[1] + b00[1];
+    g[10] = c0x[0] * (xixj + c0x[0]) + b10[0];
+    g[11] = c0x[1] * (xixj + c0x[1]) + b10[1];
+    g[2] = xixj + c0x[0];
+    g[3] = xixj + c0x[1];
+    g[14] = g[12] * (xixj + c0x[0]) + c0x[0] * b00[0] + b10[0] * cpx[0];
+    g[15] = g[13] * (xixj + c0x[1]) + c0x[1] * b00[1] + b10[1] * cpx[1];
+    g[6] = cpx[0] * (xixj + c0x[0]) + b00[0];
+    g[7] = cpx[1] * (xixj + c0x[1]) + b00[1];
+    g[24] = 1.0;
+    g[25] = 1.0;
+    g[32] = c0y[0];
+    g[33] = c0y[1];
+    g[28] = cpy[0];
+    g[29] = cpy[1];
+    g[36] = cpy[0] * c0y[0] + b00[0];
+    g[37] = cpy[1] * c0y[1] + b00[1];
+    g[34] = c0y[0] * (yiyj + c0y[0]) + b10[0];
+    g[35] = c0y[1] * (yiyj + c0y[1]) + b10[1];
+    g[26] = yiyj + c0y[0];
+    g[27] = yiyj + c0y[1];
+    g[38] = g[36] * (yiyj + c0y[0]) + c0y[0] * b00[0] + b10[0] * cpy[0];
+    g[39] = g[37] * (yiyj + c0y[1]) + c0y[1] * b00[1] + b10[1] * cpy[1];
+    g[30] = cpy[0] * (yiyj + c0y[0]) + b00[0];
+    g[31] = cpy[1] * (yiyj + c0y[1]) + b00[1];
+    //g[48] = w[0];
+    //g[49] = w[1];
+    g[56] = c0z[0] * g[48];
+    g[57] = c0z[1] * g[49];
+    g[52] = cpz[0] * g[48];
+    g[53] = cpz[1] * g[49];
+    g[60] = cpz[0] * g[56] + b00[0] * g[48];
+    g[61] = cpz[1] * g[57] + b00[1] * g[49];
+    g[58] = g[56] * (zizj + c0z[0]) + b10[0] * g[48];
+    g[59] = g[57] * (zizj + c0z[1]) + b10[1] * g[49];
+    g[50] = g[48] * (zizj + c0z[0]);
+    g[51] = g[49] * (zizj + c0z[1]);
+    g[62] = g[60] * (zizj + c0z[0]) + b10[0] * g[52] + b00[0] * g[56];
+    g[63] = g[61] * (zizj + c0z[1]) + b10[1] * g[53] + b00[1] * g[57];
+    g[54] = zizj * g[52] + cpz[0] * g[56] + b00[0] * g[48];
+    g[55] = zizj * g[53] + cpz[1] * g[57] + b00[1] * g[49];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_1200(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_1200(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    let mut xixj: f64 = (*envs).rirj[0 as i32 as usize];
-    let mut yiyj: f64 = (*envs).rirj[1 as i32 as usize];
-    let mut zizj: f64 = (*envs).rirj[2 as i32 as usize];
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(4 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(5 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            8 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            9 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *g.offset(8 as i32 as isize)
-        * (xixj + *c0x.offset(0 as i32 as isize))
-        + *c0x.offset(0 as i32 as isize) * 2 as i32 as f64
-            * *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *g.offset(9 as i32 as isize)
-        * (xixj + *c0x.offset(1 as i32 as isize))
-        + *c0x.offset(1 as i32 as isize) * 2 as i32 as f64
-            * *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (xixj + *c0x.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (xixj + *c0x.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(2 as i32 as isize) = xixj + *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = xixj + *c0x.offset(1 as i32 as isize);
-    *g.offset(16 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(17 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(20 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(21 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            24 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            25 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *g.offset(24 as i32 as isize)
-        * (yiyj + *c0y.offset(0 as i32 as isize))
-        + *c0y.offset(0 as i32 as isize) * 2 as i32 as f64
-            * *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *g.offset(25 as i32 as isize)
-        * (yiyj + *c0y.offset(1 as i32 as isize))
-        + *c0y.offset(1 as i32 as isize) * 2 as i32 as f64
-            * *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (yiyj + *c0y.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (yiyj + *c0y.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = yiyj + *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = yiyj + *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            36 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(32 as i32 as isize);
-    *g
-        .offset(
-            37 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(33 as i32 as isize);
-    *g
-        .offset(
-            40 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(36 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(32 as i32 as isize);
-    *g
-        .offset(
-            41 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(37 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(33 as i32 as isize);
-    *g
-        .offset(
-            42 as i32 as isize,
-        ) = *g.offset(40 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize))
-        + 2 as i32 as f64 * *b10.offset(0 as i32 as isize)
-            * *g.offset(36 as i32 as isize);
-    *g
-        .offset(
-            43 as i32 as isize,
-        ) = *g.offset(41 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize))
-        + 2 as i32 as f64 * *b10.offset(1 as i32 as isize)
-            * *g.offset(37 as i32 as isize);
-    *g
-        .offset(
-            38 as i32 as isize,
-        ) = *g.offset(36 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize) * *g.offset(32 as i32 as isize);
-    *g
-        .offset(
-            39 as i32 as isize,
-        ) = *g.offset(37 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize) * *g.offset(33 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *g.offset(32 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize));
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *g.offset(33 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize));
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    let xixj: f64 = envs.rirj[0];
+    let yiyj: f64 = envs.rirj[1];
+    let zizj: f64 = envs.rirj[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[4] = c0x[0];
+    g[5] = c0x[1];
+    g[8] = c0x[0] * c0x[0] + b10[0];
+    g[9] = c0x[1] * c0x[1] + b10[1];
+    g[10] = g[8] * (xixj + c0x[0]) + c0x[0] * 2.0 * b10[0];
+    g[11] = g[9] * (xixj + c0x[1]) + c0x[1] * 2.0 * b10[1];
+    g[6] = c0x[0] * (xixj + c0x[0]) + b10[0];
+    g[7] = c0x[1] * (xixj + c0x[1]) + b10[1];
+    g[2] = xixj + c0x[0];
+    g[3] = xixj + c0x[1];
+    g[16] = 1.0;
+    g[17] = 1.0;
+    g[20] = c0y[0];
+    g[21] = c0y[1];
+    g[24] = c0y[0] * c0y[0] + b10[0];
+    g[25] = c0y[1] * c0y[1] + b10[1];
+    g[26] = g[24] * (yiyj + c0y[0]) + c0y[0] * 2.0 * b10[0];
+    g[27] = g[25] * (yiyj + c0y[1]) + c0y[1] * 2.0 * b10[1];
+    g[22] = c0y[0] * (yiyj + c0y[0]) + b10[0];
+    g[23] = c0y[1] * (yiyj + c0y[1]) + b10[1];
+    g[18] = yiyj + c0y[0];
+    g[19] = yiyj + c0y[1];
+    //g[32] = w[0];
+    //g[33] = w[1];
+    g[36] = c0z[0] * g[32];
+    g[37] = c0z[1] * g[33];
+    g[40] = c0z[0] * g[36] + b10[0] * g[32];
+    g[41] = c0z[1] * g[37] + b10[1] * g[33];
+    g[42] = g[40] * (zizj + c0z[0]) + 2.0 * b10[0] * g[36];
+    g[43] = g[41] * (zizj + c0z[1]) + 2.0 * b10[1] * g[37];
+    g[38] = g[36] * (zizj + c0z[0]) + b10[0] * g[32];
+    g[39] = g[37] * (zizj + c0z[1]) + b10[1] * g[33];
+    g[34] = g[32] * (zizj + c0z[0]);
+    g[35] = g[33] * (zizj + c0z[1]);
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_2000(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_2000(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(6 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(7 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(8 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(9 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(12 as i32 as isize);
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(13 as i32 as isize);
-    *g
-        .offset(
-            16 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(14 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(12 as i32 as isize);
-    *g
-        .offset(
-            17 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(15 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(13 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[6] = 1.0;
+    g[7] = 1.0;
+    g[8] = c0y[0];
+    g[9] = c0y[1];
+    g[10] = c0y[0] * c0y[0] + b10[0];
+    g[11] = c0y[1] * c0y[1] + b10[1];
+    //g[12] = w[0];
+    //g[13] = w[1];
+    g[14] = c0z[0] * g[12];
+    g[15] = c0z[1] * g[13];
+    g[16] = c0z[0] * g[14] + b10[0] * g[12];
+    g[17] = c0z[1] * g[15] + b10[1] * g[13];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_2001(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_2001(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(6 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(7 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            8 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            9 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (*g.offset(8 as i32 as isize) + *b00.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize)
-            * *cpx.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (*g.offset(9 as i32 as isize) + *b00.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize)
-            * *cpx.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(13 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(14 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(15 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            16 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            17 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(18 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(19 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (*g.offset(20 as i32 as isize)
-            + *b00.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize)
-            * *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (*g.offset(21 as i32 as isize)
-            + *b00.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize)
-            * *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(26 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(27 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            32 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(26 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            33 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(27 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(32 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(30 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(26 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(33 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(31 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(27 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[6] = cpx[0];
+    g[7] = cpx[1];
+    g[8] = cpx[0] * c0x[0] + b00[0];
+    g[9] = cpx[1] * c0x[1] + b00[1];
+    g[10] = c0x[0] * (g[8] + b00[0]) + b10[0] * cpx[0];
+    g[11] = c0x[1] * (g[9] + b00[1]) + b10[1] * cpx[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = c0y[0];
+    g[15] = c0y[1];
+    g[16] = c0y[0] * c0y[0] + b10[0];
+    g[17] = c0y[1] * c0y[1] + b10[1];
+    g[18] = cpy[0];
+    g[19] = cpy[1];
+    g[20] = cpy[0] * c0y[0] + b00[0];
+    g[21] = cpy[1] * c0y[1] + b00[1];
+    g[22] = c0y[0] * (g[20] + b00[0]) + b10[0] * cpy[0];
+    g[23] = c0y[1] * (g[21] + b00[1]) + b10[1] * cpy[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = c0z[0] * g[24];
+    g[27] = c0z[1] * g[25];
+    g[28] = c0z[0] * g[26] + b10[0] * g[24];
+    g[29] = c0z[1] * g[27] + b10[1] * g[25];
+    g[30] = cpz[0] * g[24];
+    g[31] = cpz[1] * g[25];
+    g[32] = cpz[0] * g[26] + b00[0] * g[24];
+    g[33] = cpz[1] * g[27] + b00[1] * g[25];
+    g[34] = c0z[0] * g[32] + b10[0] * g[30] + b00[0] * g[26];
+    g[35] = c0z[1] * g[33] + b10[1] * g[31] + b00[1] * g[27];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_2010(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_2010(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut cpx: *mut f64 = ((*bc).c0px).as_mut_ptr();
-    let mut cpy: *mut f64 = ((*bc).c0py).as_mut_ptr();
-    let mut cpz: *mut f64 = ((*bc).c0pz).as_mut_ptr();
-    let mut b00: *mut f64 = ((*bc).b00).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(6 as i32 as isize) = *cpx.offset(0 as i32 as isize);
-    *g.offset(7 as i32 as isize) = *cpx.offset(1 as i32 as isize);
-    *g
-        .offset(
-            8 as i32 as isize,
-        ) = *cpx.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            9 as i32 as isize,
-        ) = *cpx.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (*g.offset(8 as i32 as isize) + *b00.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize)
-            * *cpx.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (*g.offset(9 as i32 as isize) + *b00.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize)
-            * *cpx.offset(1 as i32 as isize);
-    *g.offset(12 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(13 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(14 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(15 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            16 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            17 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(18 as i32 as isize) = *cpy.offset(0 as i32 as isize);
-    *g.offset(19 as i32 as isize) = *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *cpy.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b00.offset(0 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *cpy.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b00.offset(1 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (*g.offset(20 as i32 as isize)
-            + *b00.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize)
-            * *cpy.offset(0 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (*g.offset(21 as i32 as isize)
-            + *b00.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize)
-            * *cpy.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(26 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(27 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            30 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            31 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            32 as i32 as isize,
-        ) = *cpz.offset(0 as i32 as isize)
-        * *g.offset(26 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(24 as i32 as isize);
-    *g
-        .offset(
-            33 as i32 as isize,
-        ) = *cpz.offset(1 as i32 as isize)
-        * *g.offset(27 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(25 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(32 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(30 as i32 as isize)
-        + *b00.offset(0 as i32 as isize) * *g.offset(26 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(33 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(31 as i32 as isize)
-        + *b00.offset(1 as i32 as isize) * *g.offset(27 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[6] = cpx[0];
+    g[7] = cpx[1];
+    g[8] = cpx[0] * c0x[0] + b00[0];
+    g[9] = cpx[1] * c0x[1] + b00[1];
+    g[10] = c0x[0] * (g[8] + b00[0]) + b10[0] * cpx[0];
+    g[11] = c0x[1] * (g[9] + b00[1]) + b10[1] * cpx[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = c0y[0];
+    g[15] = c0y[1];
+    g[16] = c0y[0] * c0y[0] + b10[0];
+    g[17] = c0y[1] * c0y[1] + b10[1];
+    g[18] = cpy[0];
+    g[19] = cpy[1];
+    g[20] = cpy[0] * c0y[0] + b00[0];
+    g[21] = cpy[1] * c0y[1] + b00[1];
+    g[22] = c0y[0] * (g[20] + b00[0]) + b10[0] * cpy[0];
+    g[23] = c0y[1] * (g[21] + b00[1]) + b10[1] * cpy[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = c0z[0] * g[24];
+    g[27] = c0z[1] * g[25];
+    g[28] = c0z[0] * g[26] + b10[0] * g[24];
+    g[29] = c0z[1] * g[27] + b10[1] * g[25];
+    g[30] = cpz[0] * g[24];
+    g[31] = cpz[1] * g[25];
+    g[32] = cpz[0] * g[26] + b00[0] * g[24];
+    g[33] = cpz[1] * g[27] + b00[1] * g[25];
+    g[34] = c0z[0] * g[32] + b10[0] * g[30] + b00[0] * g[26];
+    g[35] = c0z[1] * g[33] + b10[1] * g[31] + b00[1] * g[27];
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_2100(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_2100(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    let mut xixj: f64 = (*envs).rirj[0 as i32 as usize];
-    let mut yiyj: f64 = (*envs).rirj[1 as i32 as usize];
-    let mut zizj: f64 = (*envs).rirj[2 as i32 as usize];
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            12 as i32 as isize,
-        ) = *g.offset(4 as i32 as isize)
-        * (xixj + *c0x.offset(0 as i32 as isize))
-        + *c0x.offset(0 as i32 as isize) * 2 as i32 as f64
-            * *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            13 as i32 as isize,
-        ) = *g.offset(5 as i32 as isize)
-        * (xixj + *c0x.offset(1 as i32 as isize))
-        + *c0x.offset(1 as i32 as isize) * 2 as i32 as f64
-            * *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            10 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (xixj + *c0x.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            11 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (xixj + *c0x.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize);
-    *g.offset(8 as i32 as isize) = xixj + *c0x.offset(0 as i32 as isize);
-    *g.offset(9 as i32 as isize) = xixj + *c0x.offset(1 as i32 as isize);
-    *g.offset(16 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(17 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(18 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(19 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            28 as i32 as isize,
-        ) = *g.offset(20 as i32 as isize)
-        * (yiyj + *c0y.offset(0 as i32 as isize))
-        + *c0y.offset(0 as i32 as isize) * 2 as i32 as f64
-            * *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            29 as i32 as isize,
-        ) = *g.offset(21 as i32 as isize)
-        * (yiyj + *c0y.offset(1 as i32 as isize))
-        + *c0y.offset(1 as i32 as isize) * 2 as i32 as f64
-            * *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            26 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (yiyj + *c0y.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            27 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (yiyj + *c0y.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            24 as i32 as isize,
-        ) = yiyj + *c0y.offset(0 as i32 as isize);
-    *g
-        .offset(
-            25 as i32 as isize,
-        ) = yiyj + *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            34 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(32 as i32 as isize);
-    *g
-        .offset(
-            35 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(33 as i32 as isize);
-    *g
-        .offset(
-            36 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(34 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(32 as i32 as isize);
-    *g
-        .offset(
-            37 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(35 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(33 as i32 as isize);
-    *g
-        .offset(
-            44 as i32 as isize,
-        ) = *g.offset(36 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize))
-        + 2 as i32 as f64 * *b10.offset(0 as i32 as isize)
-            * *g.offset(34 as i32 as isize);
-    *g
-        .offset(
-            45 as i32 as isize,
-        ) = *g.offset(37 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize))
-        + 2 as i32 as f64 * *b10.offset(1 as i32 as isize)
-            * *g.offset(35 as i32 as isize);
-    *g
-        .offset(
-            42 as i32 as isize,
-        ) = *g.offset(34 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize))
-        + *b10.offset(0 as i32 as isize) * *g.offset(32 as i32 as isize);
-    *g
-        .offset(
-            43 as i32 as isize,
-        ) = *g.offset(35 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize))
-        + *b10.offset(1 as i32 as isize) * *g.offset(33 as i32 as isize);
-    *g
-        .offset(
-            40 as i32 as isize,
-        ) = *g.offset(32 as i32 as isize)
-        * (zizj + *c0z.offset(0 as i32 as isize));
-    *g
-        .offset(
-            41 as i32 as isize,
-        ) = *g.offset(33 as i32 as isize)
-        * (zizj + *c0z.offset(1 as i32 as isize));
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    let xixj: f64 = (*envs).rirj[0 as i32 as usize];
+    let yiyj: f64 = (*envs).rirj[1 as i32 as usize];
+    let zizj: f64 = (*envs).rirj[2 as i32 as usize];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[12] = g[4] * (xixj + c0x[0]) + c0x[0] * 2.0 * b10[0];
+    g[13] = g[5] * (xixj + c0x[1]) + c0x[1] * 2.0 * b10[1];
+    g[10] = c0x[0] * (xixj + c0x[0]) + b10[0];
+    g[11] = c0x[1] * (xixj + c0x[1]) + b10[1];
+    g[8] = xixj + c0x[0];
+    g[9] = xixj + c0x[1];
+    g[16] = 1.0;
+    g[17] = 1.0;
+    g[18] = c0y[0];
+    g[19] = c0y[1];
+    g[20] = c0y[0] * c0y[0] + b10[0];
+    g[21] = c0y[1] * c0y[1] + b10[1];
+    g[28] = g[20] * (yiyj + c0y[0]) + c0y[0] * 2.0 * b10[0];
+    g[29] = g[21] * (yiyj + c0y[1]) + c0y[1] * 2.0 * b10[1];
+    g[26] = c0y[0] * (yiyj + c0y[0]) + b10[0];
+    g[27] = c0y[1] * (yiyj + c0y[1]) + b10[1];
+    g[24] = yiyj + c0y[0];
+    g[25] = yiyj + c0y[1];
+    //g[32] = w[0];
+    //g[33] = w[1];
+    g[34] = c0z[0] * g[32];
+    g[35] = c0z[1] * g[33];
+    g[36] = c0z[0] * g[34] + b10[0] * g[32];
+    g[37] = c0z[1] * g[35] + b10[1] * g[33];
+    g[44] = g[36] * (zizj + c0z[0]) + 2.0 * b10[0] * g[34];
+    g[45] = g[37] * (zizj + c0z[1]) + 2.0 * b10[1] * g[35];
+    g[42] = g[34] * (zizj + c0z[0]) + b10[0] * g[32];
+    g[43] = g[35] * (zizj + c0z[1]) + b10[1] * g[33];
+    g[40] = g[32] * (zizj + c0z[0]);
+    g[41] = g[33] * (zizj + c0z[1]);
 }
 #[inline]
-unsafe extern "C" fn _g0_2d4d_3000(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+fn _g0_2d4d_3000(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut c0x: *mut f64 = ((*bc).c00x).as_mut_ptr();
-    let mut c0y: *mut f64 = ((*bc).c00y).as_mut_ptr();
-    let mut c0z: *mut f64 = ((*bc).c00z).as_mut_ptr();
-    let mut b10: *mut f64 = ((*bc).b10).as_mut_ptr();
-    *g.offset(0 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(1 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(2 as i32 as isize) = *c0x.offset(0 as i32 as isize);
-    *g.offset(3 as i32 as isize) = *c0x.offset(1 as i32 as isize);
-    *g
-        .offset(
-            4 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * *c0x.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            5 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * *c0x.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            6 as i32 as isize,
-        ) = *c0x.offset(0 as i32 as isize)
-        * (*g.offset(4 as i32 as isize)
-            + 2 as i32 as f64
-                * *b10.offset(0 as i32 as isize));
-    *g
-        .offset(
-            7 as i32 as isize,
-        ) = *c0x.offset(1 as i32 as isize)
-        * (*g.offset(5 as i32 as isize)
-            + 2 as i32 as f64
-                * *b10.offset(1 as i32 as isize));
-    *g.offset(8 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(9 as i32 as isize) = 1 as i32 as f64;
-    *g.offset(10 as i32 as isize) = *c0y.offset(0 as i32 as isize);
-    *g.offset(11 as i32 as isize) = *c0y.offset(1 as i32 as isize);
-    *g
-        .offset(
-            12 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * *c0y.offset(0 as i32 as isize)
-        + *b10.offset(0 as i32 as isize);
-    *g
-        .offset(
-            13 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * *c0y.offset(1 as i32 as isize)
-        + *b10.offset(1 as i32 as isize);
-    *g
-        .offset(
-            14 as i32 as isize,
-        ) = *c0y.offset(0 as i32 as isize)
-        * (*g.offset(12 as i32 as isize)
-            + 2 as i32 as f64
-                * *b10.offset(0 as i32 as isize));
-    *g
-        .offset(
-            15 as i32 as isize,
-        ) = *c0y.offset(1 as i32 as isize)
-        * (*g.offset(13 as i32 as isize)
-            + 2 as i32 as f64
-                * *b10.offset(1 as i32 as isize));
-    *g
-        .offset(
-            18 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            19 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            20 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(18 as i32 as isize)
-        + *b10.offset(0 as i32 as isize) * *g.offset(16 as i32 as isize);
-    *g
-        .offset(
-            21 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(19 as i32 as isize)
-        + *b10.offset(1 as i32 as isize) * *g.offset(17 as i32 as isize);
-    *g
-        .offset(
-            22 as i32 as isize,
-        ) = *c0z.offset(0 as i32 as isize)
-        * *g.offset(20 as i32 as isize)
-        + 2 as i32 as f64 * *b10.offset(0 as i32 as isize)
-            * *g.offset(18 as i32 as isize);
-    *g
-        .offset(
-            23 as i32 as isize,
-        ) = *c0z.offset(1 as i32 as isize)
-        * *g.offset(21 as i32 as isize)
-        + 2 as i32 as f64 * *b10.offset(1 as i32 as isize)
-            * *g.offset(19 as i32 as isize);
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[6] = c0x[0] * (g[4] + 2.0 * b10[0]);
+    g[7] = c0x[1] * (g[5] + 2.0 * b10[1]);
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = c0y[0];
+    g[11] = c0y[1];
+    g[12] = c0y[0] * c0y[0] + b10[0];
+    g[13] = c0y[1] * c0y[1] + b10[1];
+    g[14] = c0y[0] * (g[12] + 2.0 * b10[0]);
+    g[15] = c0y[1] * (g[13] + 2.0 * b10[1]);
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = c0z[0] * g[16];
+    g[19] = c0z[1] * g[17];
+    g[20] = c0z[0] * g[18] + b10[0] * g[16];
+    g[21] = c0z[1] * g[19] + b10[1] * g[17];
+    g[22] = c0z[0] * g[20] + 2.0 * b10[0] * g[18];
+    g[23] = c0z[1] * g[21] + 2.0 * b10[1] * g[19];
 }
 #[no_mangle]
-pub unsafe extern "C" fn CINTg0_2e_2d4d_unrolled(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+pub fn CINTg0_2e_2d4d_unrolled(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
-    let mut type_ijkl: i32 = (*envs).li_ceil << 6 as i32
-        | (*envs).lj_ceil << 4 as i32 | (*envs).lk_ceil << 2 as i32
-        | (*envs).ll_ceil;
+    let mut type_ijkl: i32 = envs.li_ceil << 6 as i32
+        | envs.lj_ceil << 4 as i32 | envs.lk_ceil << 2 as i32
+        | envs.ll_ceil;
     match type_ijkl {
         0 => {
             _g0_2d4d_0000(g, bc, envs);
-            return;
         }
         1 => {
             _g0_2d4d_0001(g, bc, envs);
-            return;
         }
         2 => {
             _g0_2d4d_0002(g, bc, envs);
-            return;
         }
         3 => {
             _g0_2d4d_0003(g, bc, envs);
-            return;
         }
         4 => {
             _g0_2d4d_0010(g, bc, envs);
-            return;
         }
         5 => {
             _g0_2d4d_0011(g, bc, envs);
-            return;
         }
         6 => {
             _g0_2d4d_0012(g, bc, envs);
-            return;
         }
         8 => {
             _g0_2d4d_0020(g, bc, envs);
-            return;
         }
         9 => {
             _g0_2d4d_0021(g, bc, envs);
-            return;
         }
         12 => {
             _g0_2d4d_0030(g, bc, envs);
-            return;
         }
         16 => {
             _g0_2d4d_0100(g, bc, envs);
-            return;
         }
         17 => {
             _g0_2d4d_0101(g, bc, envs);
-            return;
         }
         18 => {
             _g0_2d4d_0102(g, bc, envs);
-            return;
         }
         20 => {
             _g0_2d4d_0110(g, bc, envs);
-            return;
         }
         21 => {
             _g0_2d4d_0111(g, bc, envs);
-            return;
         }
         24 => {
             _g0_2d4d_0120(g, bc, envs);
-            return;
         }
         32 => {
             _g0_2d4d_0200(g, bc, envs);
-            return;
         }
         33 => {
             _g0_2d4d_0201(g, bc, envs);
-            return;
         }
         36 => {
             _g0_2d4d_0210(g, bc, envs);
-            return;
         }
         48 => {
             _g0_2d4d_0300(g, bc, envs);
-            return;
         }
         64 => {
             _g0_2d4d_1000(g, bc, envs);
-            return;
         }
         65 => {
             _g0_2d4d_1001(g, bc, envs);
-            return;
         }
         66 => {
             _g0_2d4d_1002(g, bc, envs);
-            return;
         }
         68 => {
             _g0_2d4d_1010(g, bc, envs);
-            return;
         }
         69 => {
             _g0_2d4d_1011(g, bc, envs);
-            return;
         }
         72 => {
             _g0_2d4d_1020(g, bc, envs);
-            return;
         }
         80 => {
             _g0_2d4d_1100(g, bc, envs);
-            return;
         }
         81 => {
             _g0_2d4d_1101(g, bc, envs);
-            return;
         }
         84 => {
             _g0_2d4d_1110(g, bc, envs);
-            return;
         }
         96 => {
             _g0_2d4d_1200(g, bc, envs);
-            return;
         }
         128 => {
             _g0_2d4d_2000(g, bc, envs);
-            return;
         }
         129 => {
             _g0_2d4d_2001(g, bc, envs);
-            return;
         }
         132 => {
             _g0_2d4d_2010(g, bc, envs);
-            return;
         }
         144 => {
             _g0_2d4d_2100(g, bc, envs);
-            return;
         }
         192 => {
             _g0_2d4d_3000(g, bc, envs);
-            return;
         }
         _ => {}
     }
@@ -13456,13 +10539,13 @@ pub unsafe extern "C" fn CINTg0_2e_kj2d4d(
     CINTg0_kj2d_4d(g, envs);
 }
 #[no_mangle]
-pub unsafe extern "C" fn CINTg0_2e_ik2d4d(
-    mut g: *mut f64,
-    mut bc: *mut Rys2eT,
-    mut envs: *mut CINTEnvVars,
+pub fn CINTg0_2e_ik2d4d(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
 ) {
     CINTg0_2e_2d(g, bc, envs);
-    CINTg0_ik2d_4d(g, envs);
+    CINTg0_ik2d_4d(g, envs); // ?
 }
 #[no_mangle]
 pub unsafe extern "C" fn CINTg0_2e_il2d4d(
@@ -13475,11 +10558,11 @@ pub unsafe extern "C" fn CINTg0_2e_il2d4d(
 }
 #[no_mangle]
 pub unsafe extern "C" fn CINTg0_2e(
-    mut g: *mut f64,
-    mut rij: *mut f64,
-    mut rkl: *mut f64,
-    mut cutoff: f64,
-    mut envs: *mut CINTEnvVars,
+    g: &mut [f64],
+    rij: &mut [f64],
+    rkl: &mut [f64],
+    cutoff: f64,
+    envs: &CINTEnvVars,
 ) -> i32 {
     let mut irys: i32 = 0;
     let mut nroots: i32 = (*envs).nrys_roots;
@@ -13625,13 +10708,16 @@ pub unsafe extern "C" fn CINTg0_2e(
         *w.offset(irys as isize) *= fac1;
         irys += 1;
     }
-    ::core::mem::transmute::<
-        _,
-        fn(_, _, _),
-    >(
-        (Some(((*envs).f_g0_2d4d).expect("non-null function pointer")))
-            .expect("non-null function pointer"),
-    )(g, &mut bc, envs);
+
+    // ::core::mem::transmute::<
+    //     _,
+    //     fn(_, _, _),
+    // >(
+    //     (Some(((*envs).f_g0_2d4d).expect("non-null function pointer")))
+    //         .expect("non-null function pointer"),
+    // )(g, &mut bc, envs);
+
+    envs.f_g0_2d4d.expect("non-null")(g, &mut bc, envs);
     return 1 as i32;
 }
 // #[no_mangle]
