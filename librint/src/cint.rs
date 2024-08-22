@@ -119,6 +119,17 @@ pub struct C2RustUnnamed_1 {
     pub grids_offset: i32,
 }
 
+impl PairData {
+    pub fn new() -> Self {
+    let mut pdata: PairData = PairData {
+        rij: [0.0; 3],
+        eij: 0.0,
+        cceij: 0.0,
+    };
+    pdata
+    }
+}
+
 impl CINTEnvVars {
     pub fn new() -> Self {
     let mut envs: CINTEnvVars = CINTEnvVars {

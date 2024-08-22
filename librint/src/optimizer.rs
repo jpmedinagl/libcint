@@ -717,6 +717,29 @@ extern "C" {
 //         env,
 //     );
 // }
+
+#[no_mangle]
+pub fn CINTOpt_log_max_pgto_coeff_cpy(
+    log_maxc: &mut [f64],
+    coeff: &[f64],
+    nprim: i32,
+    nctr: i32,
+) {
+    let mut maxc: f64 = 0.0;
+    for ip in 0..nprim {
+        maxc = 0.0;
+        for i in 0..nctr {
+            maxc = 
+                if maxc > (coeff[(i * nprim + ip) as usize]).abs() {
+                    maxc
+                } else {
+                    (coeff[(i * nprim + ip) as usize]).abs()
+                }
+        }
+        log_maxc[ip as usize] = maxc.ln();
+    }
+}
+
 #[no_mangle]
 pub unsafe extern "C" fn CINTOpt_log_max_pgto_coeff(
     mut log_maxc: *mut f64,
@@ -798,6 +821,74 @@ pub unsafe extern "C" fn CINTOpt_log_max_pgto_coeff(
 //         i += 1;
 //     }
 // }
+#[no_mangle]
+pub fn CINTset_pairdata_cpy(
+    pairdata: &mut [PairData],
+    ai: &[f64],
+    aj: &[f64],
+    ri: &[f64],
+    rj: &[f64],
+    log_maxci: &[f64],
+    log_maxcj: &[f64],
+    li_ceil: i32,
+    lj_ceil: i32,
+    iprim: usize,
+    jprim: usize,
+    rr_ij: f64,
+    expcutoff: f64,
+    env: &[f64],
+) -> i32 {
+    let mut eij: f64 = 0.;
+    let mut cceij: f64 = 0.;
+    let mut wj: f64 = 0.;
+    
+    let mut aij: f64 = ai[iprim - 1] + aj[jprim - 1];
+
+    let mut log_rr_ij: f64 = 1.7f64 - 1.5f64 * (aij.ln());
+    let lij: i32 = li_ceil + lj_ceil;
+    if lij > 0 {
+        let dist_ij: f64 = rr_ij.sqrt();
+        let omega: f64 = env[8];
+        if omega < 0.0 {
+            let r_guess: f64 = 8.0f64;
+            let omega2: f64 = omega * omega;
+            let theta: f64 = omega2 / (omega2 + aij);
+            log_rr_ij += lij as f64 * (dist_ij + theta * r_guess + 1.0f64).ln();
+        } else {
+            log_rr_ij += lij as f64 * (dist_ij + 1.0f64).ln();
+        }
+    }
+
+    // let mut pdata = vec![PairData::new(); iprim * jprim].into_boxed_slice();
+    let mut offset: usize = 0;
+    let mut empty: i32 = 1;
+
+    for jp in 0..jprim {
+        for ip in 0..iprim {
+            aij = 1.0 / (ai[ip] + aj[jp]);
+            eij = rr_ij * ai[ip] * aj[jp] * aij;
+            cceij = eij - log_rr_ij - log_maxci[ip] - log_maxcj[jp];
+
+            pairdata[offset].cceij = cceij;
+
+            if cceij < expcutoff {
+                empty = 0;
+                wj = aj[jp] * aij;
+                pairdata[offset].rij[0] = ri[0] + wj * (rj[0] - ri[0]);
+                pairdata[offset].rij[1] = ri[1] + wj * (rj[1] - ri[1]);
+                pairdata[offset].rij[2] = ri[2] + wj * (rj[2] - ri[2]);
+                pairdata[offset].eij = (-eij).exp();
+            } else {
+                pairdata[offset].rij[0] = 1e18f64;
+                pairdata[offset].rij[1] = 1e18f64;
+                pairdata[offset].rij[2] = 1e18f64;
+                pairdata[offset].eij = 0.0;
+            }
+            offset += 1;
+        }
+    }
+    return empty;
+}
 #[no_mangle]
 pub unsafe extern "C" fn CINTset_pairdata(
     mut pairdata: *mut PairData,
@@ -1093,6 +1184,50 @@ pub unsafe extern "C" fn CINTset_pairdata(
 //         (*cintopt).pairdata = 0 as *mut *mut PairData;
 //     }
 // }
+
+#[no_mangle]
+pub unsafe extern "C" fn CINTOpt_non0coeff_byshell_cpy(
+    mut sortedidx: *mut i32,
+    mut non0ctr: *mut i32,
+    ci: &[f64],
+    mut iprim: i32,
+    mut ictr: i32,
+) {
+    let mut ip: i32 = 0;
+    let mut j: i32 = 0;
+    let mut k: i32 = 0;
+    let mut kp: i32 = 0;
+    let vla = ictr as usize;
+    let mut zeroidx: Vec::<i32> = ::std::vec::from_elem(0, vla);
+    ip = 0 as i32;
+    while ip < iprim {
+        j = 0 as i32;
+        k = 0 as i32;
+        kp = 0 as i32;
+        while j < ictr {
+            if ci[(iprim * j + ip) as usize]
+                != 0 as i32 as f64
+            {
+                *sortedidx.offset(k as isize) = j;
+                k += 1;
+            } else {
+                *zeroidx.as_mut_ptr().offset(kp as isize) = j;
+                kp += 1;
+            }
+            j += 1;
+        }
+        j = 0 as i32;
+        while j < kp {
+            *sortedidx
+                .offset((k + j) as isize) = *zeroidx.as_mut_ptr().offset(j as isize);
+            j += 1;
+        }
+        *non0ctr.offset(ip as isize) = k;
+        sortedidx = sortedidx.offset(ictr as isize);
+        ip += 1;
+    }
+}
+
 #[no_mangle]
 pub unsafe extern "C" fn CINTOpt_non0coeff_byshell(
     mut sortedidx: *mut i32,
