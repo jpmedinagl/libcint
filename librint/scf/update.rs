@@ -2,16 +2,17 @@
 // #![feature(autodiff)]
 
 use std::io;
+use std::time::Instant;
 
 use librint::utils::read_basis;
 
-// use librint::cint_bas::CINTcgto_cart;
-// use librint::cint1e::cint1e_ovlp_cart;
-// use librint::cint2e::cint2e_cart;
+use librint::cint_bas::CINTcgto_cart;
+use librint::cint1e::cint1e_ovlp_cart;
+use librint::cint2e::cint2e_cart;
 
 // use librint::scf::{density, energyfast};
 // use librint::scf::{nmol, angl};
-use librint::scf::{angl, integral1e, integral2e};
+use librint::scf::{nmol, angl, integral1e, integral2e};
 // use librint::utils::{split, combine};
 use librint::utils::print_arr;
 
@@ -141,39 +142,67 @@ fn main() -> io::Result<()>{
     let path = "/u/jpmedina/libcint/librint/molecules/h2/sto3g.txt";
     read_basis(path, &mut atm, &mut bas, &mut env)?;
 
-    let nshells = angl(&mut bas, 0);
+    let (natm, nbas) = nmol(&atm, &bas);
 
-    let mut S = integral1e(&mut atm, &mut bas, &mut env, 0, 0);
-    println!("ovlp cart");
-    print_arr(nshells, 2, &mut S);
+    let i = 0;
+    let j = 0;
+    let k = 0;
+    let l = 0;
 
-    S = integral1e(&mut atm, &mut bas, &mut env, 1, 0);
-    println!("ovlp sph");
-    print_arr(nshells, 2, &mut S);
+    let di = CINTcgto_cart(i, &bas);
+    let dj = CINTcgto_cart(j, &bas);
+    let dk = CINTcgto_cart(k, &bas);
+    let dl = CINTcgto_cart(l, &bas);
+    
+    let shls: [i32; 4] = [i as i32, j as i32, k as i32, l as i32];
 
-    let mut T = integral1e(&mut atm, &mut bas, &mut env, 0, 1);
-    println!("kin cart");
-    print_arr(nshells, 2, &mut T);
+    let mut buf = vec![0.0; (di * dj) as usize];
+    let dnow = Instant::now();
+    cint1e_ovlp_cart(&mut buf, shls, &mut atm, natm as i32, &mut bas, nbas as i32, &mut env);
+    let delapsed_time = dnow.elapsed();
 
-    let mut T = integral1e(&mut atm, &mut bas, &mut env, 1, 1);
-    println!("kin sph");
-    print_arr(nshells, 2, &mut T);
+    println!("time: {}", delapsed_time.as_micros());
 
-    let mut V = integral1e(&mut atm, &mut bas, &mut env, 0, 2);
-    println!("nuc cart");
-    print_arr(nshells, 2, &mut V);
+    let mut buf = vec![0.0; (di * dj * dk * dl) as usize];
+    let dnow = Instant::now();
+    cint2e_cart(&mut buf, shls, &mut atm, natm as i32, &mut bas, nbas as i32, &mut env);
+    let delapsed_time = dnow.elapsed();
+    println!("time: {}", delapsed_time.as_micros());
 
-    let mut V = integral1e(&mut atm, &mut bas, &mut env, 1, 2);
-    println!("nuc sph");
-    print_arr(nshells, 2, &mut V);
+    // let nshells_cart = angl(&mut bas, 0);
+    // let nshells_sph = angl(&mut bas, 1);
 
-    let mut R = integral2e(&mut atm, &mut bas, &mut env, 0);
-    println!("repulsion cart");
-    print_arr(nshells, 4, &mut R);
+    // println!("ovlp cart");
+    // let mut S = integral1e(&mut atm, &mut bas, &mut env, 0, 0);
+    // print_arr(nshells_cart, 2, &mut S);
 
-    R = integral2e(&mut atm, &mut bas, &mut env, 1);
-    println!("repulsion sph");
-    print_arr(nshells, 4, &mut R);
+    // println!("ovlp sph");
+    // S = integral1e(&mut atm, &mut bas, &mut env, 1, 0);
+    // print_arr(nshells_sph, 2, &mut S);
+
+    // let mut T = integral1e(&mut atm, &mut bas, &mut env, 0, 1);
+    // println!("kin cart");
+    // print_arr(nshells_cart, 2, &mut T);
+
+    // let mut T = integral1e(&mut atm, &mut bas, &mut env, 1, 1);
+    // println!("kin sph");
+    // print_arr(nshells_sph, 2, &mut T);
+
+    // let mut V = integral1e(&mut atm, &mut bas, &mut env, 0, 2);
+    // println!("nuc cart");
+    // print_arr(nshells_cart, 2, &mut V);
+
+    // let mut V = integral1e(&mut atm, &mut bas, &mut env, 1, 2);
+    // println!("nuc sph");
+    // print_arr(nshells_sph, 2, &mut V);
+
+    // println!("repulsion cart");
+    // let mut R = integral2e(&mut atm, &mut bas, &mut env, 0);
+    // print_arr(nshells_cart, 4, &mut R);
+
+    // println!("repulsion sph");
+    // R = integral2e(&mut atm, &mut bas, &mut env, 1);
+    // print_arr(nshells_sph, 4, &mut R);
 
     // let (s1, s2) = split(&mut bas);
 
