@@ -5209,7 +5209,7 @@ pub enum G2E2 {
     g0_2e,
 }
 impl G2E2 {
-    fn foo(self, g: *mut f64, rij: *mut f64, rkl: *mut f64, cutoff: f64, envs: *mut CINTEnvVars) -> i32 {
+    pub fn foo(self, g: *mut f64, rij: *mut f64, rkl: *mut f64, cutoff: f64, envs: *mut CINTEnvVars) -> i32 {
         match self {
             G2E2::g0_2e => {
                 unsafe { CINTg0_2e(g, rij, rkl, cutoff, envs) }

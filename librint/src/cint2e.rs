@@ -380,15 +380,8 @@ pub unsafe extern "C" fn CINT2e_loop_nopt(
                                 fac1i = fac1j * expijkl;
                             }
                             (*envs).fac[0 as i32 as usize] = fac1i;
-                            if ::core::mem::transmute::<
-                                _,
-                                fn(_, _, _, _, _) -> i32,
-                            >(
-                                (Some(
-                                    ((*envs).f_g0_2e).expect("non-null function pointer"),
-                                ))
-                                    .expect("non-null function pointer"),
-                            )(g, rij, rkl.as_mut_ptr(), cutoff, envs) != 0
+                            let g2e2 = ((*envs).f_g0_2e).expect("non-null function pointer");
+                            if g2e2.foo(g, rij, rkl.as_mut_ptr(), cutoff, envs) != 0
                             {
                                 ::core::mem::transmute::<
                                     _,
