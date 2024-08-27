@@ -270,29 +270,7 @@ pub unsafe extern "C" fn CINTinit_int2e_EnvVars(
             .f_g0_2d4d = Some(G2E::g0_2e_lj2d4d);
     }
     (*envs)
-        .f_g0_2e = ::core::mem::transmute::<
-        Option::<
-            unsafe extern "C" fn(
-                *mut f64,
-                *mut f64,
-                *mut f64,
-                f64,
-                *mut CINTEnvVars,
-            ) -> i32,
-        >,
-        Option::<unsafe extern "C" fn() -> i32>,
-    >(
-        Some(
-            CINTg0_2e
-                as unsafe extern "C" fn(
-                    *mut f64,
-                    *mut f64,
-                    *mut f64,
-                    f64,
-                    *mut CINTEnvVars,
-                ) -> i32,
-        ),
-    );
+        .f_g0_2e = Some(G2E2::g0_2e);
 }
 #[no_mangle]
 pub unsafe extern "C" fn CINTg2e_index_xyz(
@@ -5224,6 +5202,20 @@ unsafe extern "C" fn _g0_2d4d_3000(
         * *g.offset(21)
         + 2 as i32 as f64 * *b10.offset(1)
             * *g.offset(19);
+}
+
+#[derive(Copy, Clone)]
+pub enum G2E2 {
+    g0_2e,
+}
+impl G2E2 {
+    fn foo(self, g: *mut f64, rij: *mut f64, rkl: *mut f64, cutoff: f64, envs: *mut CINTEnvVars) -> i32 {
+        match self {
+            G2E2::g0_2e => {
+                unsafe { CINTg0_2e(g, rij, rkl, cutoff, envs) }
+            }
+        }
+    }
 }
 
 #[derive(Copy, Clone)]
