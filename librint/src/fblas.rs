@@ -24,6 +24,45 @@ pub unsafe extern "C" fn CINTdaxpy2v(
     }
 }
 #[no_mangle]
+pub fn CINTdmat_transpose_cpy(
+    a_t: &mut [f64],
+    a: &[f64],
+    m: usize,
+    n: usize,
+) {
+    let mut j = 0;
+    while j < n - 3 {
+        for i in 0..m {
+            a_t[(j + 0) * m + i] = a[i * n + j + 0];
+            a_t[(j + 1) * m + i] = a[i * n + j + 1];
+            a_t[(j + 2) * m + i] = a[i * n + j + 2];
+            a_t[(j + 3) * m + i] = a[i * n + j + 3];
+        }
+        j += 4;
+    }
+    match n - j {
+        1 => {
+            for i in  0..m {
+                a_t[j * m + i] = a[i * n + j];
+            }
+        }
+        2 => {
+            for i in 0..m {
+                a_t[(j + 0) * m + i] = a[i * n + j + 0];
+                a_t[(j + 1) * m + i] = a[i * n + j + 1];
+            }
+        }
+        3 => {
+            for i in 0..m {
+                a_t[(j + 0) * m + i] = a[i * n + j + 0];
+                a_t[(j + 1) * m + i] = a[i * n + j + 1];
+                a_t[(j + 2) * m + i] = a[i * n + j + 2];
+            }
+        }
+        _ => {}
+    };
+}
+#[no_mangle]
 pub unsafe extern "C" fn CINTdmat_transpose(
     mut a_t: *mut f64,
     mut a: *mut f64,

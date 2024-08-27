@@ -12,6 +12,8 @@ use crate::g1e::CINTprim_to_ctr_0;
 use crate::g1e::CINTprim_to_ctr_1;
 use crate::fblas::CINTdmat_transpose;
 
+use crate::fblas::CINTdmat_transpose_cpy;
+
 use crate::g1e::CINTg1e_ovlp_cpy;
 use crate::g1e::CINTg1e_nuc_cpy;
 
@@ -40,247 +42,251 @@ extern "C" {
     fn free(__ptr: *mut libc::c_void);
 }
 
-// #[no_mangle]
-// pub unsafe fn CINT1e_loop_cpy(
-//     gctr: &mut [f64],
-//     envs: &mut CINTEnvVars,
-//     _cache: &mut [f64],
-//     int1e_type: i32,
-// ) -> i32 {
-//     let shls: [i32; 4] = envs.shls;
-//     let bas: &[i32] = &envs.bas;
-//     let env: &[f64] = &envs.env;
-//     let i_sh: usize = shls[0] as usize;
-//     let j_sh: usize = shls[1] as usize;
-//     let i_ctr: usize = envs.x_ctr[0] as usize;
-//     let j_ctr: usize = envs.x_ctr[1] as usize;
-//     let i_prim: usize = bas[8 * i_sh + 2] as usize;
-//     let j_prim: usize = bas[8 * j_sh + 2] as usize;
+#[no_mangle]
+pub unsafe fn CINT1e_loop_cpy(
+    gctr: &mut [f64],
+    envs: &mut CINTEnvVars,
+    _cache: &mut [f64],
+    int1e_type: i32,
+) -> i32 {
+    let shls: [i32; 4] = envs.shls;
+    let bas: &[i32] = &envs.bas;
+    let env: &[f64] = &envs.env;
+    let i_sh: usize = shls[0] as usize;
+    let j_sh: usize = shls[1] as usize;
+    let i_ctr: usize = envs.x_ctr[0] as usize;
+    let j_ctr: usize = envs.x_ctr[1] as usize;
+    let i_prim: usize = bas[8 * i_sh + 2] as usize;
+    let j_prim: usize = bas[8 * j_sh + 2] as usize;
 
-//     let ai: &[f64] = &env[(bas[8 * i_sh + 5] as usize)..(bas[8 * i_sh + 5] as usize + i_prim)];
-//     let aj: &[f64] = &env[(bas[8 * j_sh + 5] as usize)..(bas[8 * j_sh + 5] as usize + j_prim)];
-//     let ci: &[f64] = &env[(bas[8 * i_sh + 6] as usize)..(bas[8 * i_sh + 6] as usize + i_prim * i_ctr)];
-//     let cj: &[f64] = &env[(bas[8 * j_sh + 6] as usize)..(bas[8 * j_sh + 6] as usize + j_prim * j_ctr)];
+    let ai: &[f64] = &env[(bas[8 * i_sh + 5] as usize)..(bas[8 * i_sh + 5] as usize + i_prim)];
+    let aj: &[f64] = &env[(bas[8 * j_sh + 5] as usize)..(bas[8 * j_sh + 5] as usize + j_prim)];
+    let ci: &[f64] = &env[(bas[8 * i_sh + 6] as usize)..(bas[8 * i_sh + 6] as usize + i_prim * i_ctr)];
+    let cj: &[f64] = &env[(bas[8 * j_sh + 6] as usize)..(bas[8 * j_sh + 6] as usize + j_prim * j_ctr)];
     
-//     let n_comp: i32 = envs.ncomp_e1 * envs.ncomp_tensor;
-//     let expcutoff: f64 = envs.expcutoff;
+    let n_comp: i32 = envs.ncomp_e1 * envs.ncomp_tensor;
+    let expcutoff: f64 = envs.expcutoff;
 
-//     let mut log_maxci = vec![0.0; i_prim as usize].into_boxed_slice();
-//     let mut log_maxcj = vec![0.0; j_prim as usize].into_boxed_slice();
+    let mut log_maxci = vec![0.0; i_prim as usize].into_boxed_slice();
+    let mut log_maxcj = vec![0.0; j_prim as usize].into_boxed_slice();
 
-//     CINTOpt_log_max_pgto_coeff_cpy(&mut log_maxci, ci, i_prim as i32, i_ctr as i32);
-//     CINTOpt_log_max_pgto_coeff_cpy(&mut log_maxcj, cj, j_prim as i32, j_ctr as i32);
+    CINTOpt_log_max_pgto_coeff_cpy(&mut log_maxci, ci, i_prim as i32, i_ctr as i32);
+    CINTOpt_log_max_pgto_coeff_cpy(&mut log_maxcj, cj, j_prim as i32, j_ctr as i32);
 
-//     // let mut pdata_base = PairData::new();
+    // let mut pdata_base = PairData::new();
 
-//     let mut pdata_base = vec![PairData::new(); i_prim * j_prim].into_boxed_slice();
+    let mut pdata_base = vec![PairData::new(); i_prim * j_prim].into_boxed_slice();
 
-//     if CINTset_pairdata_cpy(
-//         &mut pdata_base,
-//         ai,
-//         aj,
-//         &envs.ri,
-//         &envs.rj,
-//         &log_maxci,
-//         &log_maxcj,
-//         envs.li_ceil,
-//         envs.lj_ceil,
-//         i_prim,
-//         j_prim,
-//         envs.rirj[0] * envs.rirj[0] + envs.rirj[1] * envs.rirj[1] + envs.rirj[2] * envs.rirj[2],
-//         expcutoff,
-//         env,
-//     ) != 0
-//     {
-//         return 0 as i32;
-//     }
+    if CINTset_pairdata_cpy(
+        &mut pdata_base,
+        ai,
+        aj,
+        &envs.ri,
+        &envs.rj,
+        &log_maxci,
+        &log_maxcj,
+        envs.li_ceil,
+        envs.lj_ceil,
+        i_prim,
+        j_prim,
+        envs.rirj[0] * envs.rirj[0] + envs.rirj[1] * envs.rirj[1] + envs.rirj[2] * envs.rirj[2],
+        expcutoff,
+        env,
+    ) != 0
+    {
+        return 0 as i32;
+    }
 
-//     let mut rij: [f64; 3];
-//     // let mut idx: *mut i32 = 0 as *mut i32;
-//     // idx = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
-//     //     & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
-//     //     as *mut i32;
-//     // cache = idx.offset(((*envs).nf * 3 as i32) as isize) as *mut f64;
+    let mut rij: [f64; 3];
+    // let mut idx: *mut i32 = 0 as *mut i32;
+    // idx = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+    //     & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+    //     as *mut i32;
+    // cache = idx.offset(((*envs).nf * 3 as i32) as isize) as *mut f64;
 
-//     let mut idx: Box<[i32]> = vec![0; envs.nf as usize* 3].into_boxed_slice();
+    let mut idx: Box<[i32]> = vec![0; envs.nf as usize* 3].into_boxed_slice();
 
-//     CINTg1e_index_xyz_cpy(idx.as_mut_ptr(), envs);
+    CINTg1e_index_xyz_cpy(idx.as_mut_ptr(), envs);
 
-//     // let mut non0ctri: *mut i32 = 0 as *mut i32;
-//     // let mut non0ctrj: *mut i32 = 0 as *mut i32;
-//     // let mut non0idxi: *mut i32 = 0 as *mut i32;
-//     // let mut non0idxj: *mut i32 = 0 as *mut i32;
-//     // non0ctri = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
-//     //     & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
-//     //     as *mut i32;
-//     // cache = non0ctri.offset((i_prim + j_prim + i_prim * i_ctr + j_prim * j_ctr) as isize)
-//     //     as *mut f64;
-//     // non0ctrj = non0ctri.offset(i_prim as isize);
-//     // non0idxi = non0ctrj.offset(j_prim as isize);
-//     // non0idxj = non0idxi.offset((i_prim * i_ctr) as isize);
+    // let mut non0ctri: *mut i32 = 0 as *mut i32;
+    // let mut non0ctrj: *mut i32 = 0 as *mut i32;
+    // let mut non0idxi: *mut i32 = 0 as *mut i32;
+    // let mut non0idxj: *mut i32 = 0 as *mut i32;
+    // non0ctri = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+    //     & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+    //     as *mut i32;
+    // cache = non0ctri.offset((i_prim + j_prim + i_prim * i_ctr + j_prim * j_ctr) as isize)
+    //     as *mut f64;
+    // non0ctrj = non0ctri.offset(i_prim as isize);
+    // non0idxi = non0ctrj.offset(j_prim as isize);
+    // non0idxj = non0idxi.offset((i_prim * i_ctr) as isize);
 
-//     let mut non0ctri = vec![0; i_prim].into_boxed_slice();
-//     let mut non0ctrj = vec![0; j_prim].into_boxed_slice();
-//     let mut non0idxi = vec![0; i_prim * i_ctr].into_boxed_slice();
-//     let mut non0idxj = vec![0; j_prim * j_ctr].into_boxed_slice();
+    let mut non0ctri = vec![0; i_prim].into_boxed_slice();
+    let mut non0ctrj = vec![0; j_prim].into_boxed_slice();
+    let mut non0idxi = vec![0; i_prim * i_ctr].into_boxed_slice();
+    let mut non0idxj = vec![0; j_prim * j_ctr].into_boxed_slice();
 
-//     CINTOpt_non0coeff_byshell_cpy(non0idxi.as_mut_ptr(), non0ctri.as_mut_ptr(), ci, i_prim as i32, i_ctr as i32);
-//     CINTOpt_non0coeff_byshell_cpy(non0idxj.as_mut_ptr(), non0ctrj.as_mut_ptr(), cj, j_prim as i32, j_ctr as i32);
+    CINTOpt_non0coeff_byshell_cpy(non0idxi.as_mut_ptr(), non0ctri.as_mut_ptr(), ci, i_prim as i32, i_ctr as i32);
+    CINTOpt_non0coeff_byshell_cpy(non0idxj.as_mut_ptr(), non0ctrj.as_mut_ptr(), cj, j_prim as i32, j_ctr as i32);
 
-//     let nc: i32 = (i_ctr * j_ctr) as i32;
-//     let leng: i32 = envs.g_size * 3 * ((1 << envs.gbits) + 1);
-//     let lenj: i32 = envs.nf * nc * n_comp;
-//     let leni: i32 = envs.nf * i_ctr as i32 * n_comp;
-//     let len0: i32 = envs.nf * n_comp;
-//     let len: i32 = leng + lenj + leni + len0;
+    let nc: i32 = (i_ctr * j_ctr) as i32;
+    let leng: i32 = envs.g_size * 3 * ((1 << envs.gbits) + 1);
+    let lenj: i32 = envs.nf * nc * n_comp;
+    let leni: i32 = envs.nf * i_ctr as i32 * n_comp;
+    let len0: i32 = envs.nf * n_comp;
+    let len: i32 = leng + lenj + leni + len0;
 
-//     // let mut g: *mut f64 = 0 as *mut f64;
-//     // let mut gout: *mut f64 = 0 as *mut f64;
-//     // let mut gctri: *mut f64 = 0 as *mut f64;
-//     // let mut gctrj: *mut f64 = 0 as *mut f64;
-//     // g = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
-//     //     & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
-//     //     as *mut f64;
-//     // cache = g.offset(len as isize);
+    // let mut g: *mut f64 = 0 as *mut f64;
+    // let mut gout: *mut f64 = 0 as *mut f64;
+    // let mut gctri: *mut f64 = 0 as *mut f64;
+    // let mut gctrj: *mut f64 = 0 as *mut f64;
+    // g = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
+    //     & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
+    //     as *mut f64;
+    // cache = g.offset(len as isize);
 
-//     let mut empty: [i32; 4] = [1, 1, 1, 1];
-//     // let (mut gempty, rest) = empty.split_at_mut(1);
-//     // let (mut iempty, jempty) = rest.split_at_mut(1);
-//     let mut gempty_idx = 0;
-//     let mut iempty_idx = 1;
-//     let mut jempty_idx = 2;
+    let mut empty: [i32; 4] = [1, 1, 1, 1];
+    // let (mut gempty, rest) = empty.split_at_mut(1);
+    // let (mut iempty, jempty) = rest.split_at_mut(1);
+    let mut gempty_idx = 0;
+    let mut iempty_idx = 1;
+    let mut jempty_idx = 2;
 
-//     let mut g = vec![0.0; len as usize].into_boxed_slice();
+    let mut g = vec![0.0; len as usize].into_boxed_slice();
 
-//     let mut g1: &mut [f64] = &mut g[leng as usize..];
+    let (g, mut g1) = g.split_at_mut(leng as usize);
 
-//     let gctri: &mut [f64];
-//     let gctrj: &mut [f64];
-//     let gout: &mut [f64];
+    let mut gctri: &mut [f64];
+    let mut gctrj: &mut [f64];
+    let mut gout: &mut [f64];
 
-//     if n_comp == 1 {
-//         gctrj = gctr;
-//     } else {
-//         (gctrj, g1) = g1.split_at_mut(lenj as usize);
-//         // gctrj = g1;
-//         // g1 = g1.offset(lenj as isize);
-//     }
+    if n_comp == 1 {
+        gctrj = gctr;
+    } else {
+        let gctrj_;
+        (gctrj_, g1) = g1.split_at_mut(lenj as usize);
+        gctrj = gctrj_;
+        // gctrj = g1;
+        // g1 = g1.offset(lenj as isize);
+    }
 
-//     if j_ctr == 1 {
-//         gctri = gctrj;
-//         // iempty = jempty;
-//         iempty_idx = jempty_idx;
-//     } else {
-//         (gctri, g1) = g1.split_at_mut(leni as usize);
-//         // gctri = g1;
-//         // g1 = g1.offset(leni as isize);
-//     }
+    if j_ctr == 1 {
+        gctri = gctrj;
+        // iempty = jempty;
+        iempty_idx = jempty_idx;
+    } else {
+        let gctri_;
+        (gctri_, g1) = g1.split_at_mut(leni as usize);
+        gctri = gctri_;
+        // gctri = g1;
+        // g1 = g1.offset(leni as isize);
+    }
 
-//     if i_ctr == 1 {
-//         gout = gctri;
-//         // gempty = iempty;
-//         gempty_idx = iempty_idx;
-//     } else {
-//         gout = g1;
-//     }
+    if i_ctr == 1 {
+        gout = gctri;
+        // gempty = iempty;
+        gempty_idx = iempty_idx;
+    } else {
+        gout = g1;
+    }
 
-//     let common_factor: f64 = envs.common_factor * CINTcommon_fac_sp(envs.i_l) * CINTcommon_fac_sp(envs.j_l);
+    let common_factor: f64 = envs.common_factor * CINTcommon_fac_sp(envs.i_l) * CINTcommon_fac_sp(envs.j_l);
 
-//     let pdata_ij = pdata_base;
+    let pdata_ij = pdata_base;
 
-//     let mut fac1i: f64 = 0.;
-//     let mut fac1j: f64 = 0.;
-//     let mut expij: f64 = 0.;
+    let mut fac1i: f64 = 0.;
+    let mut fac1j: f64 = 0.;
+    let mut expij: f64 = 0.;
 
-//     let offset = 0;
+    let offset = 0;
 
-//     for jp in 0..j_prim {
-//         envs.aj[0] = aj[jp];
-//         if j_ctr == 1 {
-//             fac1j = common_factor * cj[jp];
-//         } else {
-//             fac1j = common_factor;
-//             // iempty[0] = 1;
-//             empty[iempty_idx] = 1;
-//         }
+    for jp in 0..j_prim {
+        envs.aj[0] = aj[jp];
+        if j_ctr == 1 {
+            fac1j = common_factor * cj[jp];
+        } else {
+            fac1j = common_factor;
+            // iempty[0] = 1;
+            empty[iempty_idx] = 1;
+        }
         
-//         for ip in 0..i_prim {
-//             if !(pdata_ij[offset].cceij > expcutoff) {
-//                 envs.ai[0] = ai[ip];
-//                 expij = pdata_ij[offset].eij;
-//                 rij = pdata_ij[offset].rij;
-//                 envs.rij[0] = rij[0];
-//                 envs.rij[1] = rij[1];
-//                 envs.rij[2] = rij[2];
-//                 if i_ctr == 1 {
-//                     fac1i = fac1j * ci[ip] * expij;
-//                 } else {
-//                     fac1i = fac1j * expij;
-//                 }
-//                 envs.fac[0] = fac1i;
-//                 make_g1e_gout_cpy(gout.as_mut_ptr(), g.as_mut_ptr(), idx.as_mut_ptr(), envs, empty[gempty_idx], int1e_type);
-//                 if i_ctr > 1 {
-//                     if empty[iempty_idx] != 0 {
-//                         CINTprim_to_ctr_0_cpy(
-//                             gctri,
-//                             gout,
-//                             &ci[ip..],
-//                             (envs.nf * n_comp) as size_t,
-//                             i_prim as i32,
-//                             i_ctr as i32,
-//                             non0ctri[ip],
-//                             &non0idxi[(ip * i_ctr)..],
-//                         );
-//                     } else {
-//                         CINTprim_to_ctr_1_cpy(
-//                             gctri,
-//                             gout,
-//                             &ci[ip..],
-//                             (envs.nf * n_comp) as u64,
-//                             i_prim as i32,
-//                             i_ctr as i32,
-//                             non0ctri[ip],
-//                             &non0idxi[(ip * i_ctr)..],
-//                         );
-//                     }
-//                 }
-//                 empty[iempty_idx] = 0;
-//             }
-//         }
-//         if empty[iempty_idx] == 0 {
-//             if j_ctr > 1 {
-//                 if empty[jempty_idx] != 0 {
-//                     CINTprim_to_ctr_0_cpy(
-//                         gctrj,
-//                         gctri,
-//                         &cj[jp..],
-//                         (envs.nf * i_ctr as i32 * n_comp) as size_t,
-//                         j_prim as i32,
-//                         j_ctr as i32,
-//                         non0ctrj[jp],
-//                         &non0idxj[(jp * j_ctr)..],
-//                     );
-//                 } else {
-//                     CINTprim_to_ctr_1_cpy(
-//                         gctrj,
-//                         gctri,
-//                         &cj[jp..],
-//                         (envs.nf * i_ctr as i32 * n_comp) as size_t,
-//                         j_prim as i32,
-//                         j_ctr as i32,
-//                         non0ctrj[jp],
-//                         &non0idxj[(jp * j_ctr)..],
-//                     );
-//                 }
-//             }
-//             empty[jempty_idx] = 0;
-//         }
-//     }
-//     if n_comp > 1 && empty[jempty_idx] == 0 {
-//         CINTdmat_transpose(gctr.as_mut_ptr(), gctrj.as_mut_ptr(), envs.nf * nc, n_comp);
-//     }
-//     return (empty[jempty_idx] == 0) as i32;
-// }
+        for ip in 0..i_prim {
+            if !(pdata_ij[offset].cceij > expcutoff) {
+                envs.ai[0] = ai[ip];
+                expij = pdata_ij[offset].eij;
+                rij = pdata_ij[offset].rij;
+                envs.rij[0] = rij[0];
+                envs.rij[1] = rij[1];
+                envs.rij[2] = rij[2];
+                if i_ctr == 1 {
+                    fac1i = fac1j * ci[ip] * expij;
+                } else {
+                    fac1i = fac1j * expij;
+                }
+                envs.fac[0] = fac1i;
+                make_g1e_gout_cpy(&mut gout, g, &idx, envs, empty[gempty_idx], int1e_type);
+                if i_ctr > 1 {
+                    if empty[iempty_idx] != 0 {
+                        CINTprim_to_ctr_0_cpy(
+                            &mut gctri,
+                            gout,
+                            &ci[ip..],
+                            (envs.nf * n_comp) as size_t,
+                            i_prim as i32,
+                            i_ctr as i32,
+                            non0ctri[ip],
+                            &non0idxi[(ip * i_ctr)..],
+                        );
+                    } else {
+                        CINTprim_to_ctr_1_cpy(
+                            &mut gctri,
+                            gout,
+                            &ci[ip..],
+                            (envs.nf * n_comp) as u64,
+                            i_prim as i32,
+                            i_ctr as i32,
+                            non0ctri[ip],
+                            &non0idxi[(ip * i_ctr)..],
+                        );
+                    }
+                }
+                empty[iempty_idx] = 0;
+            }
+        }
+        if empty[iempty_idx] == 0 {
+            if j_ctr > 1 {
+                if empty[jempty_idx] != 0 {
+                    CINTprim_to_ctr_0_cpy(
+                        &mut gctrj,
+                        gctri,
+                        &cj[jp..],
+                        (envs.nf * i_ctr as i32 * n_comp) as size_t,
+                        j_prim as i32,
+                        j_ctr as i32,
+                        non0ctrj[jp],
+                        &non0idxj[(jp * j_ctr)..],
+                    );
+                } else {
+                    CINTprim_to_ctr_1_cpy(
+                        &mut gctrj,
+                        gctri,
+                        &cj[jp..],
+                        (envs.nf * i_ctr as i32 * n_comp) as size_t,
+                        j_prim as i32,
+                        j_ctr as i32,
+                        non0ctrj[jp],
+                        &non0idxj[(jp * j_ctr)..],
+                    );
+                }
+            }
+            empty[jempty_idx] = 0;
+        }
+    }
+    if n_comp > 1 && empty[jempty_idx] == 0 {
+        // CINTdmat_transpose_cpy(gctr, gctrj, (envs.nf * nc) as usize, n_comp as usize);
+    }
+    return (empty[jempty_idx] == 0) as i32;
+}
 
 #[no_mangle]
 pub unsafe extern "C" fn CINT1e_loop(
@@ -587,14 +593,16 @@ pub fn CINT1e_drv(
     // cache = stack;
     // }
     let mut cache_full = vec![0.0; cache_size as usize];
-    let (gctr, cache) = cache_full.split_at_mut((nc * n_comp) as usize);
+    let (_gctr, cache) = cache_full.split_at_mut((nc * n_comp) as usize);
+
+    let mut gctr = vec![0.0; (nc * n_comp) as usize];
     // let mut gctr: *mut f64 = 0 as *mut f64;
     // gctr = ((cache as uintptr_t).wrapping_add(7 as i32 as libc::c_ulong)
     //     & (8 as i32 as uintptr_t).wrapping_neg()) as *mut libc::c_void
     //     as *mut f64;
     // cache = gctr.offset((nc * n_comp) as isize);
     let has_value: i32;
-    unsafe { 
+    unsafe {
         has_value = CINT1e_loop(gctr.as_mut_ptr(), envs as *mut CINTEnvVars, cache.as_mut_ptr(), int1e_type);
     }
     let mut counts: [i32; 4] = [0; 4];
@@ -700,13 +708,13 @@ pub fn CINT1e_drv(
     // }
     return has_value;
 }
-unsafe extern "C" fn make_g1e_gout_cpy(
-    mut gout: *mut f64,
-    mut g: *mut f64,
-    mut idx: *mut i32,
+unsafe fn make_g1e_gout_cpy(
+    mut gout: &mut [f64],
+    mut g: &mut [f64],
+    idx: &[i32],
     envs: &CINTEnvVars,
-    mut empty: i32,
-    mut int1e_type: i32,
+    empty: i32,
+    int1e_type: i32,
 ) {
     let mut ia: i32 = 0;
     match int1e_type {
@@ -733,7 +741,7 @@ unsafe extern "C" fn make_g1e_gout_cpy(
         2 => {
             ia = 0 as i32;
             while ia < (*envs).natm {
-                CINTg1e_nuc_cpy(g, envs, ia);
+                CINTg1e_nuc_cpy(&mut g, envs, ia);
                 ::core::mem::transmute::<
                     _,
                     fn(_, _, _, _, _),
@@ -741,8 +749,8 @@ unsafe extern "C" fn make_g1e_gout_cpy(
                     (Some(((*envs).f_gout).expect("non-null function pointer")))
                         .expect("non-null function pointer"),
                 )(
-                    gout,
-                    g,
+                    &mut gout,
+                    &mut g,
                     idx,
                     envs,
                     (empty != 0 && ia == 0 as i32) as i32,
@@ -806,6 +814,78 @@ unsafe extern "C" fn make_g1e_gout(
         _ => {}
     };
 }
+
+
+
+#[no_mangle]
+pub fn CINTgout1e_cpy(
+    gout: &mut [f64],
+    g: &[f64],
+    idx: &[i32],
+    envs: &CINTEnvVars,
+    empty: i32,
+) {
+    let mut nf: usize = envs.nf as usize;
+    let mut ix: usize = 0;
+    let mut iy: usize = 0;
+    let mut iz: usize = 0;
+    if empty != 0 {
+        for n in 0..nf {
+            ix = idx[n * 3 + 0] as usize;
+            iy = idx[n * 3 + 1] as usize;
+            iz = idx[n * 3 + 2] as usize;
+            gout[n] = g[ix] * g[iy] * g[iz];
+        }
+    } else {
+        for n in 0..nf {
+            ix = idx[n * 3 + 0] as usize;
+            iy = idx[n * 3 + 1] as usize;
+            iz = idx[n * 3 + 2] as usize;
+            gout[n] += g[ix] * g[iy] * g[iz];
+        }
+    };
+}
+#[no_mangle]
+pub fn CINTgout1e_nuc_cpy(
+    gout: &mut [f64],
+    g: &[f64],
+    idx: &[i32],
+    envs: &CINTEnvVars,
+    empty: i32,
+) {
+    let nf: usize = envs.nf as usize;
+    let nrys_roots: usize = envs.nrys_roots as usize;
+    let mut gx: &[f64]; // = 0 as *mut f64;
+    let mut gy: &[f64]; // = 0 as *mut f64;
+    let mut gz: &[f64]; // = 0 as *mut f64;
+    let mut s: f64 = 0.;
+    if empty != 0 {
+        for n in 0..nf {
+            gx = &g[idx[n * 3 + 0] as usize..(idx[n * 3 + 0] as usize) + nrys_roots];
+            gy = &g[idx[n * 3 + 1] as usize..(idx[n * 3 + 1] as usize) + nrys_roots];
+            gz = &g[idx[n * 3 + 2] as usize..(idx[n * 3 + 2] as usize) + nrys_roots];
+
+            s = 0.0;
+            for i in 0.. nrys_roots {
+                s += gx[i] * gy[i] * gz[i];
+            }
+            gout[n] = s;
+        }
+    } else {
+        for n in 0..nf {
+            gx = &g[idx[n * 3 + 0] as usize..(idx[n * 3 + 0] as usize) + nrys_roots];
+            gy = &g[idx[n * 3 + 1] as usize..(idx[n * 3 + 1] as usize) + nrys_roots];
+            gz = &g[idx[n * 3 + 2] as usize..(idx[n * 3 + 2] as usize) + nrys_roots];
+
+            s = 0.0;
+            for i in 0.. nrys_roots {
+                s += gx[i] * gy[i] * gz[i];
+            }
+            gout[n] += s;
+        }
+    };
+}
+
 #[no_mangle]
 pub unsafe extern "C" fn CINTgout1e(
     mut gout: *mut f64,
