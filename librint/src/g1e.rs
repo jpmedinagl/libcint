@@ -439,169 +439,169 @@ pub fn CINTg1e_nuc_cpy(
     envs: &CINTEnvVars,
     nuc_id: i32,
 ) -> i32 {
-    let nrys_roots: usize = envs.nrys_roots as usize;
-    let atm: &[i32] = &envs.atm;
-    let env: &[f64] = &envs.env;
-    let rij: [f64; 3] = envs.rij;
+    // let nrys_roots: usize = envs.nrys_roots as usize;
+    // let atm: &[i32] = &envs.atm;
+    // let env: &[f64] = &envs.env;
+    // let rij: [f64; 3] = envs.rij;
     
-    let (gx, rest) = g.split_at_mut(envs.g_size as usize);
-    let (gy, gz) = rest.split_at_mut(envs.g_size as usize);
+    // let (gx, rest) = g.split_at_mut(envs.g_size as usize);
+    // let (gy, gz) = rest.split_at_mut(envs.g_size as usize);
     
-    let u: [f64; 32] = [0.; 32];
-    let w: &mut [f64] = &mut gz;
+    // let u: [f64; 32] = [0.; 32];
+    // let w: &mut [f64] = &mut gz;
 
-    let mut cr: &[f64]; // = 0 as *mut f64;
-    let mut i: i32 = 0;
-    let mut j: i32 = 0;
-    let mut n: i32 = 0;
+    // let mut cr: &[f64]; // = 0 as *mut f64;
+    // let mut i: i32 = 0;
+    // let mut j: i32 = 0;
+    // let mut n: i32 = 0;
     
-    let crij: [f64; 3] = [0.; 3];
-    let x: f64 = 0.;
-    let fac1: f64 = 0.;
-    let aij: f64 = envs.ai[0] + envs.aj[0];
-    let tau: f64 = CINTnuc_mod_cpy(aij, nuc_id, atm, env);
+    // let crij: [f64; 3] = [0.; 3];
+    // let x: f64 = 0.;
+    // let fac1: f64 = 0.;
+    // let aij: f64 = envs.ai[0] + envs.aj[0];
+    // let tau: f64 = CINTnuc_mod_cpy(aij, nuc_id, atm, env);
 
-    if nuc_id < 0 {
-        fac1 = 2.0 * 3.14159265358979323846f64 * envs.fac[0] * tau / aij;
-        cr = &env[4..4 + 3];
-    } else if atm[6 * nuc_id as usize + 2] == 3 {
-        fac1 = 2.0 * 3.14159265358979323846f64 * -env[atm[4 + nuc_id as usize * 6] as usize]  * envs.fac[0] * tau / aij;
-        cr = &env[atm[6 * nuc_id as usize+ 1] as usize..atm[6 * nuc_id as usize+ 1] as usize + 3];
-    } else {
-        fac1 = 2.0 * 3.14159265358979323846f64 * -(atm[0 + nuc_id as usize* 6].abs()) as f64 * envs.fac[0] * tau / aij;
-        cr = &env[atm[6 * nuc_id as usize + 1] as usize..atm[6 * nuc_id as usize + 1] as usize + 3];
-    }
-    crij[0] = cr[0] - rij[0];
-    crij[1] = cr[1] - rij[1];
-    crij[2] = cr[2] - rij[2];
-    x = aij * tau * tau * SQUARE_3D(&crij);
-    unsafe {
-        CINTrys_roots(nrys_roots as i32, x, u.as_mut_ptr(), w.as_mut_ptr());
-    }
+    // if nuc_id < 0 {
+    //     fac1 = 2.0 * 3.14159265358979323846f64 * envs.fac[0] * tau / aij;
+    //     cr = &env[4..4 + 3];
+    // } else if atm[6 * nuc_id as usize + 2] == 3 {
+    //     fac1 = 2.0 * 3.14159265358979323846f64 * -env[atm[4 + nuc_id as usize * 6] as usize]  * envs.fac[0] * tau / aij;
+    //     cr = &env[atm[6 * nuc_id as usize+ 1] as usize..atm[6 * nuc_id as usize+ 1] as usize + 3];
+    // } else {
+    //     fac1 = 2.0 * 3.14159265358979323846f64 * -(atm[0 + nuc_id as usize* 6].abs()) as f64 * envs.fac[0] * tau / aij;
+    //     cr = &env[atm[6 * nuc_id as usize + 1] as usize..atm[6 * nuc_id as usize + 1] as usize + 3];
+    // }
+    // crij[0] = cr[0] - rij[0];
+    // crij[1] = cr[1] - rij[1];
+    // crij[2] = cr[2] - rij[2];
+    // x = aij * tau * tau * SQUARE_3D(&crij);
+    // unsafe {
+    //     CINTrys_roots(nrys_roots as i32, x, u.as_mut_ptr(), w.as_mut_ptr());
+    // }
 
-    for i in 0..nrys_roots {
-        gx[i] = 1.0;
-        gy[i] = 1.0;
-        gz[i] *= fac1;
-    }
-    let mut nmax: i32 = envs.li_ceil + envs.lj_ceil;
-    if nmax == 0 {
-        return 1;
-    }
-    // let mut p0x: *mut f64 = 0 as *mut f64;
-    // let mut p0y: *mut f64 = 0 as *mut f64;
-    // let mut p0z: *mut f64 = 0 as *mut f64;
-    // let mut p1x: *mut f64 = 0 as *mut f64;
-    // let mut p1y: *mut f64 = 0 as *mut f64;
-    // let mut p1z: *mut f64 = 0 as *mut f64;
-    // let mut p2x: *mut f64 = 0 as *mut f64;
-    // let mut p2y: *mut f64 = 0 as *mut f64;
-    // let mut p2z: *mut f64 = 0 as *mut f64;
+    // for i in 0..nrys_roots {
+    //     gx[i] = 1.0;
+    //     gy[i] = 1.0;
+    //     gz[i] *= fac1;
+    // }
+    // let mut nmax: i32 = envs.li_ceil + envs.lj_ceil;
+    // if nmax == 0 {
+    //     return 1;
+    // }
+    // // let mut p0x: *mut f64 = 0 as *mut f64;
+    // // let mut p0y: *mut f64 = 0 as *mut f64;
+    // // let mut p0z: *mut f64 = 0 as *mut f64;
+    // // let mut p1x: *mut f64 = 0 as *mut f64;
+    // // let mut p1y: *mut f64 = 0 as *mut f64;
+    // // let mut p1z: *mut f64 = 0 as *mut f64;
+    // // let mut p2x: *mut f64 = 0 as *mut f64;
+    // // let mut p2y: *mut f64 = 0 as *mut f64;
+    // // let mut p2z: *mut f64 = 0 as *mut f64;
 
-    let mut lj: i32 = 0;
-    let mut di: usize = 0;
-    let mut dj: i32 = 0;
-    let mut rx: &[f64];
-    if envs.li_ceil > envs.lj_ceil {
-        lj = envs.lj_ceil;
-        di = envs.g_stride_i as usize;
-        dj = envs.g_stride_j;
-        rx = &envs.ri;
-    } else {
-        lj = envs.li_ceil;
-        di = envs.g_stride_j as usize;
-        dj = envs.g_stride_i;
-        rx = &envs.rj;
-    }
+    // let mut lj: i32 = 0;
+    // let mut di: usize = 0;
+    // let mut dj: i32 = 0;
+    // let mut rx: &[f64];
+    // if envs.li_ceil > envs.lj_ceil {
+    //     lj = envs.lj_ceil;
+    //     di = envs.g_stride_i as usize;
+    //     dj = envs.g_stride_j;
+    //     rx = &envs.ri;
+    // } else {
+    //     lj = envs.li_ceil;
+    //     di = envs.g_stride_j as usize;
+    //     dj = envs.g_stride_i;
+    //     rx = &envs.rj;
+    // }
 
-    let mut rijrx: f64 = rij[0] - rx[0];
-    let mut rijry: f64 = rij[1] - rx[1];
-    let mut rijrz: f64 = rij[2] - rx[2];
-    let mut aij2: f64 = 0.5f64 / aij;
-    let mut ru: f64 = 0.;
-    let mut rt: f64 = 0.;
-    let mut r0: f64 = 0.;
-    let mut r1: f64 = 0.;
-    let mut r2: f64 = 0.;
+    // let mut rijrx: f64 = rij[0] - rx[0];
+    // let mut rijry: f64 = rij[1] - rx[1];
+    // let mut rijrz: f64 = rij[2] - rx[2];
+    // let mut aij2: f64 = 0.5f64 / aij;
+    // let mut ru: f64 = 0.;
+    // let mut rt: f64 = 0.;
+    // let mut r0: f64 = 0.;
+    // let mut r1: f64 = 0.;
+    // let mut r2: f64 = 0.;
     
-    let mut p0x = &mut gx[di..];
-    let mut p0y = &mut gy[di];
-    let mut p0z = &mut gz[di..];
-    let mut p1x = &mut gx[-di..];
-    let mut p1y = &mut gy[-di..];
-    let mut p1z = &mut gz[-di..];
+    // let mut p0x = &mut gx[di..];
+    // let mut p0y = &mut gy[di];
+    // let mut p0z = &mut gz[di..];
+    // let mut p1x = &mut gx[-di..];
+    // let mut p1y = &mut gy[-di..];
+    // let mut p1z = &mut gz[-di..];
 
-    n = 0 as i32;
-    while n < nrys_roots {
-        ru = tau * tau * u[n as usize]
-            / (1 as i32 as f64 + u[n as usize]);
-        rt = aij2 - aij2 * ru;
-        r0 = rijrx + ru * crij[0 as i32 as usize];
-        r1 = rijry + ru * crij[1 as i32 as usize];
-        r2 = rijrz + ru * crij[2 as i32 as usize];
-        *p0x.offset(n as isize) = r0 * *gx.offset(n as isize);
-        *p0y.offset(n as isize) = r1 * *gy.offset(n as isize);
-        *p0z.offset(n as isize) = r2 * *gz.offset(n as isize);
-        i = 1 as i32;
-        while i < nmax {
-            *p0x
-                .offset(
-                    (n + i * di) as isize,
-                ) = i as f64 * rt * *p1x.offset((n + i * di) as isize)
-                + r0 * *gx.offset((n + i * di) as isize);
-            *p0y
-                .offset(
-                    (n + i * di) as isize,
-                ) = i as f64 * rt * *p1y.offset((n + i * di) as isize)
-                + r1 * *gy.offset((n + i * di) as isize);
-            *p0z
-                .offset(
-                    (n + i * di) as isize,
-                ) = i as f64 * rt * *p1z.offset((n + i * di) as isize)
-                + r2 * *gz.offset((n + i * di) as isize);
-            i += 1;
-        }
-        n += 1;
-    }
-    let mut rirjx: f64 = (*envs).rirj[0 as i32 as usize];
-    let mut rirjy: f64 = (*envs).rirj[1 as i32 as usize];
-    let mut rirjz: f64 = (*envs).rirj[2 as i32 as usize];
-    j = 1 as i32;
-    while j <= lj {
-        p0x = gx.offset((j * dj) as isize);
-        p0y = gy.offset((j * dj) as isize);
-        p0z = gz.offset((j * dj) as isize);
-        p1x = p0x.offset(-(dj as isize));
-        p1y = p0y.offset(-(dj as isize));
-        p1z = p0z.offset(-(dj as isize));
-        p2x = p1x.offset(di as isize);
-        p2y = p1y.offset(di as isize);
-        p2z = p1z.offset(di as isize);
-        i = 0 as i32;
-        while i <= nmax - j {
-            n = 0 as i32;
-            while n < nrys_roots {
-                *p0x
-                    .offset(
-                        (n + i * di) as isize,
-                    ) = *p2x.offset((n + i * di) as isize)
-                    + rirjx * *p1x.offset((n + i * di) as isize);
-                *p0y
-                    .offset(
-                        (n + i * di) as isize,
-                    ) = *p2y.offset((n + i * di) as isize)
-                    + rirjy * *p1y.offset((n + i * di) as isize);
-                *p0z
-                    .offset(
-                        (n + i * di) as isize,
-                    ) = *p2z.offset((n + i * di) as isize)
-                    + rirjz * *p1z.offset((n + i * di) as isize);
-                n += 1;
-            }
-            i += 1;
-        }
-        j += 1;
-    }
+    // n = 0 as i32;
+    // while n < nrys_roots {
+    //     ru = tau * tau * u[n as usize]
+    //         / (1 as i32 as f64 + u[n as usize]);
+    //     rt = aij2 - aij2 * ru;
+    //     r0 = rijrx + ru * crij[0 as i32 as usize];
+    //     r1 = rijry + ru * crij[1 as i32 as usize];
+    //     r2 = rijrz + ru * crij[2 as i32 as usize];
+    //     *p0x.offset(n as isize) = r0 * *gx.offset(n as isize);
+    //     *p0y.offset(n as isize) = r1 * *gy.offset(n as isize);
+    //     *p0z.offset(n as isize) = r2 * *gz.offset(n as isize);
+    //     i = 1 as i32;
+    //     while i < nmax {
+    //         *p0x
+    //             .offset(
+    //                 (n + i * di) as isize,
+    //             ) = i as f64 * rt * *p1x.offset((n + i * di) as isize)
+    //             + r0 * *gx.offset((n + i * di) as isize);
+    //         *p0y
+    //             .offset(
+    //                 (n + i * di) as isize,
+    //             ) = i as f64 * rt * *p1y.offset((n + i * di) as isize)
+    //             + r1 * *gy.offset((n + i * di) as isize);
+    //         *p0z
+    //             .offset(
+    //                 (n + i * di) as isize,
+    //             ) = i as f64 * rt * *p1z.offset((n + i * di) as isize)
+    //             + r2 * *gz.offset((n + i * di) as isize);
+    //         i += 1;
+    //     }
+    //     n += 1;
+    // }
+    // let mut rirjx: f64 = (*envs).rirj[0 as i32 as usize];
+    // let mut rirjy: f64 = (*envs).rirj[1 as i32 as usize];
+    // let mut rirjz: f64 = (*envs).rirj[2 as i32 as usize];
+    // j = 1 as i32;
+    // while j <= lj {
+    //     p0x = gx.offset((j * dj) as isize);
+    //     p0y = gy.offset((j * dj) as isize);
+    //     p0z = gz.offset((j * dj) as isize);
+    //     p1x = p0x.offset(-(dj as isize));
+    //     p1y = p0y.offset(-(dj as isize));
+    //     p1z = p0z.offset(-(dj as isize));
+    //     p2x = p1x.offset(di as isize);
+    //     p2y = p1y.offset(di as isize);
+    //     p2z = p1z.offset(di as isize);
+    //     i = 0 as i32;
+    //     while i <= nmax - j {
+    //         n = 0 as i32;
+    //         while n < nrys_roots {
+    //             *p0x
+    //                 .offset(
+    //                     (n + i * di) as isize,
+    //                 ) = *p2x.offset((n + i * di) as isize)
+    //                 + rirjx * *p1x.offset((n + i * di) as isize);
+    //             *p0y
+    //                 .offset(
+    //                     (n + i * di) as isize,
+    //                 ) = *p2y.offset((n + i * di) as isize)
+    //                 + rirjy * *p1y.offset((n + i * di) as isize);
+    //             *p0z
+    //                 .offset(
+    //                     (n + i * di) as isize,
+    //                 ) = *p2z.offset((n + i * di) as isize)
+    //                 + rirjz * *p1z.offset((n + i * di) as isize);
+    //             n += 1;
+    //         }
+    //         i += 1;
+    //     }
+    //     j += 1;
+    // }
     return 1 as i32;
 }
 #[no_mangle]
