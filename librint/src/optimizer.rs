@@ -717,7 +717,6 @@ extern "C" {
 //         env,
 //     );
 // }
-
 #[no_mangle]
 pub fn CINTOpt_log_max_pgto_coeff_cpy(
     log_maxc: &mut [f64],
@@ -739,7 +738,6 @@ pub fn CINTOpt_log_max_pgto_coeff_cpy(
         log_maxc[ip as usize] = maxc.ln();
     }
 }
-
 #[no_mangle]
 pub unsafe extern "C" fn CINTOpt_log_max_pgto_coeff(
     mut log_maxc: *mut f64,
@@ -1184,7 +1182,6 @@ pub unsafe extern "C" fn CINTset_pairdata(
 //         (*cintopt).pairdata = 0 as *mut *mut PairData;
 //     }
 // }
-
 #[no_mangle]
 pub unsafe extern "C" fn CINTOpt_non0coeff_byshell_cpy(
     mut sortedidx: *mut i32,
@@ -1227,7 +1224,6 @@ pub unsafe extern "C" fn CINTOpt_non0coeff_byshell_cpy(
         ip += 1;
     }
 }
-
 #[no_mangle]
 pub unsafe extern "C" fn CINTOpt_non0coeff_byshell(
     mut sortedidx: *mut i32,

@@ -1560,18 +1560,18 @@ pub fn cint1e_nuc_sph(
 // ) -> i32 {
 //     let mut opt: *mut *mut CINTOpt = optptr_as_integer8 as *mut *mut CINTOpt;
 //     todo!();
-//     // return int1e_ovlp_sph(
-//     //     out,
-//     //     0 as *mut i32,
-//     //     shls,
-//     //     atm,
-//     //     *natm,
-//     //     bas,
-//     //     *nbas,
-//     //     env,
-//     //     *opt,
-//     //     0 as *mut f64,
-//     // );
+    // return int1e_ovlp_sph(
+    //     out,
+    //     0 as *mut i32,
+    //     shls,
+    //     atm,
+    //     *natm,
+    //     bas,
+    //     *nbas,
+    //     env,
+    //     *opt,
+    //     0 as *mut f64,
+    // );
 // }
 // #[no_mangle]
 // pub unsafe extern "C" fn cint1e_ovlp_sph_optimizer_(
@@ -1647,18 +1647,18 @@ pub fn cint1e_nuc_sph(
 // ) -> i32 {
 //     let mut opt: *mut *mut CINTOpt = optptr_as_integer8 as *mut *mut CINTOpt;
 //     todo!();
-//     // return int1e_nuc_sph(
-//     //     out,
-//     //     0 as *mut i32,
-//     //     shls,
-//     //     atm,
-//     //     *natm,
-//     //     bas,
-//     //     *nbas,
-//     //     env,
-//     //     *opt,
-//     //     0 as *mut f64,
-//     // );
+    // return int1e_nuc_sph(
+    //     out,
+    //     0 as *mut i32,
+    //     shls,
+    //     atm,
+    //     *natm,
+    //     bas,
+    //     *nbas,
+    //     env,
+    //     *opt,
+    //     0 as *mut f64,
+    // );
 // }
 // #[no_mangle]
 // pub unsafe extern "C" fn cint1e_nuc_sph_optimizer_(
@@ -1685,18 +1685,18 @@ pub fn cint1e_nuc_sph(
 // ) -> i32 {
 //     let mut opt: *mut *mut CINTOpt = optptr_as_integer8 as *mut *mut CINTOpt;
 //     todo!();
-//     // return int1e_nuc_cart(
-//     //     out,
-//     //     0 as *mut i32,
-//     //     shls,
-//     //     atm,
-//     //     *natm,
-//     //     bas,
-//     //     *nbas,
-//     //     env,
-//     //     *opt,
-//     //     0 as *mut f64,
-//     // );
+    // return int1e_nuc_cart(
+    //     out,
+    //     0 as *mut i32,
+    //     shls,
+    //     atm,
+    //     *natm,
+    //     bas,
+    //     *nbas,
+    //     env,
+    //     *opt,
+    //     0 as *mut f64,
+    // );
 // }
 // #[no_mangle]
 // pub unsafe extern "C" fn cint1e_nuc_cart_optimizer_(

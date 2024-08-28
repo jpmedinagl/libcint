@@ -100,12 +100,12 @@ path = "scf/update.rs"
 
 [[bin]]
 name = "reverse"
-path = "ad/reverse.rs"
+path = "autodiff/reverse.rs"
 
 [[bin]]
 name = "forward"
-path = "ad/forward.rs"
+path = "autodiff/forward.rs"
 
 [[bin]]
 name = "backward"
-path = "ad/backward.rs"
+path = "autodiff/backward.rs"

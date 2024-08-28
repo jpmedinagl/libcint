@@ -1,5 +1,7 @@
 #![allow(dead_code, mutable_transmutes, non_camel_case_types, non_snake_case, non_upper_case_globals, unused_assignments, unused_mut)]
 
+use crate::g2e::{G2E, G2E2};
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct PairData {
@@ -84,8 +86,8 @@ pub struct CINTEnvVars {
     pub rj: [f64; 3],
     pub rk: [f64; 3],
     pub c2rust_unnamed_1: C2RustUnnamed,
-    pub f_g0_2e: Option::<unsafe extern "C" fn() -> i32>,
-    pub f_g0_2d4d: Option::<unsafe extern "C" fn() -> ()>,
+    pub f_g0_2e: Option::<G2E2>,
+    pub f_g0_2d4d: Option::<G2E>,
     pub f_gout: Option::<unsafe extern "C" fn() -> ()>,
     // pub opt: &'a CINTOpt,
     pub idx: Vec<i32>,

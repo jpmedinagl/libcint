@@ -91651,8 +91651,6 @@ pub fn c2s_cart_1e_cpy(
         }
     }
 }
-
-
 #[no_mangle]
 pub unsafe extern "C" fn c2s_cart_1e(
     mut opij: *mut f64,

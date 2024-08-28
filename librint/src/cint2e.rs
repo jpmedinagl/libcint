@@ -883,15 +883,8 @@ pub unsafe extern "C" fn CINT2e_loop_nopt(
                                 fac1i = fac1j * expijkl;
                             }
                             (*envs).fac[0 as i32 as usize] = fac1i;
-                            if ::core::mem::transmute::<
-                                _,
-                                fn(_, _, _, _, _) -> i32,
-                            >(
-                                (Some(
-                                    ((*envs).f_g0_2e).expect("non-null function pointer"),
-                                ))
-                                    .expect("non-null function pointer"),
-                            )(g, rij, rkl.as_mut_ptr(), cutoff, envs) != 0
+                            let g2e2 = ((*envs).f_g0_2e).expect("non-null function pointer");
+                            if g2e2.foo(g, rij, rkl.as_mut_ptr(), cutoff, envs) != 0
                             {
                                 ::core::mem::transmute::<
                                     _,
@@ -4353,6 +4346,18 @@ pub fn cint2e_sph(
             cache,
         );
     }
+    // return int2e_sph(
+    //     out,
+    //     0 as *mut i32,
+    //     shls,
+    //     atm,
+    //     natm,
+    //     bas,
+    //     nbas,
+    //     env,
+    //     opt,
+    //     0 as *mut f64,
+    // );
 }
 // #[no_mangle]
 // pub unsafe extern "C" fn cint2e_optimizer(
@@ -4426,18 +4431,18 @@ pub fn cint2e_cart(
 // ) -> i32 {
 //     let mut opt: *mut *mut CINTOpt = optptr_as_integer8 as *mut *mut CINTOpt;
 //     todo!();
-//     // return int2e_sph(
-//     //     out,
-//     //     0 as *mut i32,
-//     //     shls,
-//     //     atm,
-//     //     *natm,
-//     //     bas,
-//     //     *nbas,
-//     //     env,
-//     //     *opt,
-//     //     0 as *mut f64,
-//     // );
+    // return int2e_sph(
+    //     out,
+    //     0 as *mut i32,
+    //     shls,
+    //     atm,
+    //     *natm,
+    //     bas,
+    //     *nbas,
+    //     env,
+    //     *opt,
+    //     0 as *mut f64,
+    // );
 // }
 // #[no_mangle]
 // pub unsafe extern "C" fn cint2e_sph_optimizer_(
@@ -4464,18 +4469,18 @@ pub fn cint2e_cart(
 // ) -> i32 {
 //     let mut opt: *mut *mut CINTOpt = optptr_as_integer8 as *mut *mut CINTOpt;
 //     todo!()
-//     // return int2e_cart(
-//     //     out,
-//     //     0 as *mut i32,
-//     //     shls,
-//     //     atm,
-//     //     *natm,
-//     //     bas,
-//     //     *nbas,
-//     //     env,
-//     //     *opt,
-//     //     0 as *mut f64,
-//     // );
+    // return int2e_cart(
+    //     out,
+    //     0 as *mut i32,
+    //     shls,
+    //     atm,
+    //     *natm,
+    //     bas,
+    //     *nbas,
+    //     env,
+    //     *opt,
+    //     0 as *mut f64,
+    // );
 // }
 // #[no_mangle]
 // pub unsafe extern "C" fn cint2e_cart_optimizer_(

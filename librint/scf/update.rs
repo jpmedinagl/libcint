@@ -142,33 +142,6 @@ fn main() -> io::Result<()>{
     let path = "/u/jpmedina/libcint/librint/molecules/h2o/def2svp.txt";
     read_basis(path, &mut atm, &mut bas, &mut env)?;
 
-    let (natm, nbas) = nmol(&atm, &bas);
-
-    // let i = 0;
-    // let j = 0;
-    // let k = 0;
-    // let l = 0;
-
-    // let di = CINTcgto_cart(i, &bas);
-    // let dj = CINTcgto_cart(j, &bas);
-    // let dk = CINTcgto_cart(k, &bas);
-    // let dl = CINTcgto_cart(l, &bas);
-    
-    // let shls: [i32; 4] = [i as i32, j as i32, k as i32, l as i32];
-
-    // let mut buf = vec![0.0; (di * dj) as usize];
-    // let dnow = Instant::now();
-    // cint1e_ovlp_cart(&mut buf, shls, &mut atm, natm as i32, &mut bas, nbas as i32, &mut env);
-    // let delapsed_time = dnow.elapsed();
-
-    // println!("time: {}", delapsed_time.as_micros());
-
-    // let mut buf = vec![0.0; (di * dj * dk * dl) as usize];
-    // let dnow = Instant::now();
-    // cint2e_cart(&mut buf, shls, &mut atm, natm as i32, &mut bas, nbas as i32, &mut env);
-    // let delapsed_time = dnow.elapsed();
-    // println!("time: {}", delapsed_time.as_micros());
-
     let nshells_cart = angl(&mut bas, 0);
     let nshells_sph = angl(&mut bas, 1);
 
