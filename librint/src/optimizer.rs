@@ -1,4 +1,12 @@
-#![allow(dead_code, mutable_transmutes, non_camel_case_types, non_snake_case, non_upper_case_globals, unused_assignments, unused_mut)]
+#![allow(
+    dead_code,
+    mutable_transmutes,
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    unused_assignments,
+    unused_mut
+)]
 
 // use crate::g1e::CINTg1e_index_xyz;
 // use crate::g1e::CINTinit_int1e_EnvVars;
@@ -718,22 +726,16 @@ extern "C" {
 //     );
 // }
 #[no_mangle]
-pub fn CINTOpt_log_max_pgto_coeff_cpy(
-    log_maxc: &mut [f64],
-    coeff: &[f64],
-    nprim: i32,
-    nctr: i32,
-) {
+pub fn CINTOpt_log_max_pgto_coeff_cpy(log_maxc: &mut [f64], coeff: &[f64], nprim: i32, nctr: i32) {
     let mut maxc: f64 = 0.0;
     for ip in 0..nprim {
         maxc = 0.0;
         for i in 0..nctr {
-            maxc = 
-                if maxc > (coeff[(i * nprim + ip) as usize]).abs() {
-                    maxc
-                } else {
-                    (coeff[(i * nprim + ip) as usize]).abs()
-                }
+            maxc = if maxc > (coeff[(i * nprim + ip) as usize]).abs() {
+                maxc
+            } else {
+                (coeff[(i * nprim + ip) as usize]).abs()
+            }
         }
         log_maxc[ip as usize] = maxc.ln();
     }
@@ -839,7 +841,7 @@ pub fn CINTset_pairdata_cpy(
     let mut eij: f64 = 0.;
     let mut cceij: f64 = 0.;
     let mut wj: f64 = 0.;
-    
+
     let mut aij: f64 = ai[iprim - 1] + aj[jprim - 1];
 
     let mut log_rr_ij: f64 = 1.7f64 - 1.5f64 * (aij.ln());
@@ -911,8 +913,7 @@ pub unsafe extern "C" fn CINTset_pairdata(
     let mut eij: f64 = 0.;
     let mut cceij: f64 = 0.;
     let mut wj: f64 = 0.;
-    aij = *ai.offset((iprim - 1 as i32) as isize)
-        + *aj.offset((jprim - 1 as i32) as isize);
+    aij = *ai.offset((iprim - 1 as i32) as isize) + *aj.offset((jprim - 1 as i32) as isize);
     let mut log_rr_ij: f64 = 1.7f64 - 1.5f64 * log(aij);
     let mut lij: i32 = li_ceil + lj_ceil;
     if lij > 0 as i32 {
@@ -934,34 +935,21 @@ pub unsafe extern "C" fn CINTset_pairdata(
     while jp < jprim {
         ip = 0 as i32;
         while ip < iprim {
-            aij = 1 as i32 as f64
-                / (*ai.offset(ip as isize) + *aj.offset(jp as isize));
+            aij = 1 as i32 as f64 / (*ai.offset(ip as isize) + *aj.offset(jp as isize));
             eij = rr_ij * *ai.offset(ip as isize) * *aj.offset(jp as isize) * aij;
-            cceij = eij - log_rr_ij - *log_maxci.offset(ip as isize)
-                - *log_maxcj.offset(jp as isize);
+            cceij =
+                eij - log_rr_ij - *log_maxci.offset(ip as isize) - *log_maxcj.offset(jp as isize);
             pdata = pairdata.offset(n as isize);
             (*pdata).cceij = cceij;
             if cceij < expcutoff {
                 empty = 0 as i32;
                 wj = *aj.offset(jp as isize) * aij;
-                (*pdata)
-                    .rij[0 as i32
-                    as usize] = *ri.offset(0 as i32 as isize)
-                    + wj
-                        * (*rj.offset(0 as i32 as isize)
-                            - *ri.offset(0 as i32 as isize));
-                (*pdata)
-                    .rij[1 as i32
-                    as usize] = *ri.offset(1 as i32 as isize)
-                    + wj
-                        * (*rj.offset(1 as i32 as isize)
-                            - *ri.offset(1 as i32 as isize));
-                (*pdata)
-                    .rij[2 as i32
-                    as usize] = *ri.offset(2 as i32 as isize)
-                    + wj
-                        * (*rj.offset(2 as i32 as isize)
-                            - *ri.offset(2 as i32 as isize));
+                (*pdata).rij[0 as i32 as usize] = *ri.offset(0 as i32 as isize)
+                    + wj * (*rj.offset(0 as i32 as isize) - *ri.offset(0 as i32 as isize));
+                (*pdata).rij[1 as i32 as usize] = *ri.offset(1 as i32 as isize)
+                    + wj * (*rj.offset(1 as i32 as isize) - *ri.offset(1 as i32 as isize));
+                (*pdata).rij[2 as i32 as usize] = *ri.offset(2 as i32 as isize)
+                    + wj * (*rj.offset(2 as i32 as isize) - *ri.offset(2 as i32 as isize));
                 (*pdata).eij = exp(-eij);
             } else {
                 (*pdata).rij[0 as i32 as usize] = 1e18f64;
@@ -1195,16 +1183,14 @@ pub unsafe extern "C" fn CINTOpt_non0coeff_byshell_cpy(
     let mut k: i32 = 0;
     let mut kp: i32 = 0;
     let vla = ictr as usize;
-    let mut zeroidx: Vec::<i32> = ::std::vec::from_elem(0, vla);
+    let mut zeroidx: Vec<i32> = ::std::vec::from_elem(0, vla);
     ip = 0 as i32;
     while ip < iprim {
         j = 0 as i32;
         k = 0 as i32;
         kp = 0 as i32;
         while j < ictr {
-            if ci[(iprim * j + ip) as usize]
-                != 0 as i32 as f64
-            {
+            if ci[(iprim * j + ip) as usize] != 0 as i32 as f64 {
                 *sortedidx.offset(k as isize) = j;
                 k += 1;
             } else {
@@ -1215,8 +1201,7 @@ pub unsafe extern "C" fn CINTOpt_non0coeff_byshell_cpy(
         }
         j = 0 as i32;
         while j < kp {
-            *sortedidx
-                .offset((k + j) as isize) = *zeroidx.as_mut_ptr().offset(j as isize);
+            *sortedidx.offset((k + j) as isize) = *zeroidx.as_mut_ptr().offset(j as isize);
             j += 1;
         }
         *non0ctr.offset(ip as isize) = k;
@@ -1237,16 +1222,14 @@ pub unsafe extern "C" fn CINTOpt_non0coeff_byshell(
     let mut k: i32 = 0;
     let mut kp: i32 = 0;
     let vla = ictr as usize;
-    let mut zeroidx: Vec::<i32> = ::std::vec::from_elem(0, vla);
+    let mut zeroidx: Vec<i32> = ::std::vec::from_elem(0, vla);
     ip = 0 as i32;
     while ip < iprim {
         j = 0 as i32;
         k = 0 as i32;
         kp = 0 as i32;
         while j < ictr {
-            if *ci.offset((iprim * j + ip) as isize)
-                != 0 as i32 as f64
-            {
+            if *ci.offset((iprim * j + ip) as isize) != 0 as i32 as f64 {
                 *sortedidx.offset(k as isize) = j;
                 k += 1;
             } else {
@@ -1257,8 +1240,7 @@ pub unsafe extern "C" fn CINTOpt_non0coeff_byshell(
         }
         j = 0 as i32;
         while j < kp {
-            *sortedidx
-                .offset((k + j) as isize) = *zeroidx.as_mut_ptr().offset(j as isize);
+            *sortedidx.offset((k + j) as isize) = *zeroidx.as_mut_ptr().offset(j as isize);
             j += 1;
         }
         *non0ctr.offset(ip as isize) = k;

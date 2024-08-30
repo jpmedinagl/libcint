@@ -1,8 +1,8 @@
-use std::io;
 use std::fs::File;
+use std::io;
+use std::io::prelude::*;
 use std::io::BufReader;
 use std::io::BufWriter;
-use std::io::prelude::*;
 
 pub const ATM_SLOTS: usize = 6;
 pub const BAS_SLOTS: usize = 8;
@@ -16,9 +16,9 @@ enum Token {
 
 pub fn read_basis(
     path: &str,
-    atm: &mut Vec<i32>, 
-    bas: &mut Vec<i32>, 
-    env: &mut Vec<f64>
+    atm: &mut Vec<i32>,
+    bas: &mut Vec<i32>,
+    env: &mut Vec<f64>,
 ) -> io::Result<()> {
     let file = File::open(path)?;
     let mut reader = BufReader::new(file);
@@ -79,10 +79,7 @@ pub fn read_basis(
     Ok(())
 }
 
-pub fn save_arr(
-    path: &str,
-    a: &mut [f64],
-) -> io::Result<()> {
+pub fn save_arr(path: &str, a: &mut [f64]) -> io::Result<()> {
     let file = File::create(path)?;
     let mut writer = BufWriter::new(file);
 
@@ -95,11 +92,7 @@ pub fn save_arr(
     Ok(())
 }
 
-pub fn print_arr(
-    n: usize,
-    size: usize,
-    a: &mut [f64],
-) {
+pub fn print_arr(n: usize, size: usize, a: &mut [f64]) {
     for i in 0..(n.pow(size as u32)) {
         if a[i] < 0.0 {
             print!("{:.6} ", a[i]);
@@ -115,10 +108,7 @@ pub fn print_arr(
 }
 
 #[no_mangle]
-pub fn combine(
-    env1: &Vec<f64>,
-    env2: &Vec<f64>
-) -> Vec<f64> {
+pub fn combine(env1: &Vec<f64>, env2: &Vec<f64>) -> Vec<f64> {
     let mut env: Vec<f64> = vec![0.0; env1.len() + env2.len()];
 
     let mut c = 0;
@@ -135,9 +125,7 @@ pub fn combine(
 }
 
 #[no_mangle]
-pub fn split(
-    bas: &mut Vec<i32>,
-) -> (usize, usize) {
+pub fn split(bas: &mut Vec<i32>) -> (usize, usize) {
     let mut min = -1;
     let mut max = -1;
 

@@ -4,8 +4,8 @@
 use std::io;
 use std::time::Instant;
 
-use librint::utils::read_basis;
 use librint::utils::print_arr;
+use librint::utils::read_basis;
 
 use librint::scf::{angl, density, energy, energycont};
 use librint::utils::split;
@@ -33,7 +33,6 @@ use librint::utils::split;
 
 //     return energy(atm, bas, &mut env, P);
 // }
-
 
 fn main() -> io::Result<()> {
     let mut atm = Vec::new();

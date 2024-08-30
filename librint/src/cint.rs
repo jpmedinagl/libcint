@@ -1,4 +1,12 @@
-#![allow(dead_code, mutable_transmutes, non_camel_case_types, non_snake_case, non_upper_case_globals, unused_assignments, unused_mut)]
+#![allow(
+    dead_code,
+    mutable_transmutes,
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    unused_assignments,
+    unused_mut
+)]
 
 use crate::g2e::{G2E, G2E2};
 
@@ -86,9 +94,9 @@ pub struct CINTEnvVars {
     pub rj: [f64; 3],
     pub rk: [f64; 3],
     pub c2rust_unnamed_1: C2RustUnnamed,
-    pub f_g0_2e: Option::<G2E2>,
-    pub f_g0_2d4d: Option::<G2E>,
-    pub f_gout: Option::<unsafe extern "C" fn() -> ()>,
+    pub f_g0_2e: Option<G2E2>,
+    pub f_g0_2d4d: Option<G2E>,
+    pub f_gout: Option<unsafe extern "C" fn() -> ()>,
     // pub opt: &'a CINTOpt,
     pub idx: Vec<i32>,
     pub ai: [f64; 1],
@@ -123,77 +131,80 @@ pub struct C2RustUnnamed_1 {
 
 impl PairData {
     pub fn new() -> Self {
-    let mut pdata: PairData = PairData {
-        rij: [0.0; 3],
-        eij: 0.0,
-        cceij: 0.0,
-    };
-    pdata
+        let mut pdata: PairData = PairData {
+            rij: [0.0; 3],
+            eij: 0.0,
+            cceij: 0.0,
+        };
+        pdata
     }
 }
 
 impl CINTEnvVars {
     pub fn new() -> Self {
-    let mut envs: CINTEnvVars = CINTEnvVars {
-        atm: Vec::new(),
-        bas: Vec::new(),
-        env: Vec::new(),
-        shls: [0; 4],
-        natm: 0,
-        nbas: 0,
-        i_l: 0,
-        j_l: 0,
-        k_l: 0,
-        l_l: 0,
-        nfi: 0,
-        nfj: 0,
-        c2rust_unnamed: C2RustUnnamed_1 { nfk: 0, grids_offset: 0 },
-        c2rust_unnamed_0: C2RustUnnamed_0 { nfl: 0, ngrids: 0 },
-        nf: 0,
-        rys_order: 0,
-        x_ctr: [0; 4],
-        gbits: 0,
-        ncomp_e1: 0,
-        ncomp_e2: 0,
-        ncomp_tensor: 0,
-        li_ceil: 0,
-        lj_ceil: 0,
-        lk_ceil: 0,
-        ll_ceil: 0,
-        g_stride_i: 0,
-        g_stride_k: 0,
-        g_stride_l: 0,
-        g_stride_j: 0,
-        nrys_roots: 0,
-        g_size: 0,
-        g2d_ijmax: 0,
-        g2d_klmax: 0,
-        common_factor: 0.,
-        expcutoff: 0.,
-        rirj: [0.; 3],
-        rkrl: [0.; 3],
-        rx_in_rijrx: [0.0; 3],
-        rx_in_rklrx: [0.0; 3],
-        ri: [0.0; 3],
-        rj: [0.0; 3],
-        rk: [0.0; 3],
-        c2rust_unnamed_1: C2RustUnnamed {
-            rl: [0.0; 3],
-            grids: Vec::new(),
-        },
-        f_g0_2e: None,
-        f_g0_2d4d: None,
-        f_gout: None,
-        // opt: 0 as *mut CINTOpt,
-        idx: Vec::new(),
-        ai: [0.; 1],
-        aj: [0.; 1],
-        ak: [0.; 1],
-        al: [0.; 1],
-        fac: [0.; 1],
-        rij: [0.; 3],
-        rkl: [0.; 3],
-    };
-    envs
+        let mut envs: CINTEnvVars = CINTEnvVars {
+            atm: Vec::new(),
+            bas: Vec::new(),
+            env: Vec::new(),
+            shls: [0; 4],
+            natm: 0,
+            nbas: 0,
+            i_l: 0,
+            j_l: 0,
+            k_l: 0,
+            l_l: 0,
+            nfi: 0,
+            nfj: 0,
+            c2rust_unnamed: C2RustUnnamed_1 {
+                nfk: 0,
+                grids_offset: 0,
+            },
+            c2rust_unnamed_0: C2RustUnnamed_0 { nfl: 0, ngrids: 0 },
+            nf: 0,
+            rys_order: 0,
+            x_ctr: [0; 4],
+            gbits: 0,
+            ncomp_e1: 0,
+            ncomp_e2: 0,
+            ncomp_tensor: 0,
+            li_ceil: 0,
+            lj_ceil: 0,
+            lk_ceil: 0,
+            ll_ceil: 0,
+            g_stride_i: 0,
+            g_stride_k: 0,
+            g_stride_l: 0,
+            g_stride_j: 0,
+            nrys_roots: 0,
+            g_size: 0,
+            g2d_ijmax: 0,
+            g2d_klmax: 0,
+            common_factor: 0.,
+            expcutoff: 0.,
+            rirj: [0.; 3],
+            rkrl: [0.; 3],
+            rx_in_rijrx: [0.0; 3],
+            rx_in_rklrx: [0.0; 3],
+            ri: [0.0; 3],
+            rj: [0.0; 3],
+            rk: [0.0; 3],
+            c2rust_unnamed_1: C2RustUnnamed {
+                rl: [0.0; 3],
+                grids: Vec::new(),
+            },
+            f_g0_2e: None,
+            f_g0_2d4d: None,
+            f_gout: None,
+            // opt: 0 as *mut CINTOpt,
+            idx: Vec::new(),
+            ai: [0.; 1],
+            aj: [0.; 1],
+            ak: [0.; 1],
+            al: [0.; 1],
+            fac: [0.; 1],
+            rij: [0.; 3],
+            rkl: [0.; 3],
+        };
+        envs
     }
 }
