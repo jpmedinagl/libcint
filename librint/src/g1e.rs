@@ -9,6 +9,7 @@
 )]
 
 use crate::cint_bas::CINTcart_comp;
+use crate::cint_bas::CINTcart_comp_cpy;
 use crate::rys_roots::CINTrys_roots;
 
 use crate::cint::CINTEnvVars;
@@ -61,15 +62,15 @@ pub fn CINTinit_int1e_EnvVars(
     envs.x_ctr[1] = bas[8 * j_sh + 3];
     envs.nfi = (envs.i_l + 1) * (envs.i_l + 2) / 2 as i32;
     envs.nfj = (envs.j_l + 1) * (envs.j_l + 2) / 2 as i32;
-    envs.nf = (*envs).nfi * (*envs).nfj;
+    envs.nf = envs.nfi * envs.nfj;
     envs.common_factor = 1 as i32 as f64;
     if env[0] == 0.0 {
         envs.expcutoff = 60.0;
     } else {
         envs.expcutoff = MAX(40 as f64, env[0]) as f64;
     }
-    envs.li_ceil = (*envs).i_l + ng[0];
-    envs.lj_ceil = (*envs).j_l + ng[1];
+    envs.li_ceil = envs.i_l + ng[0];
+    envs.lj_ceil = envs.j_l + ng[1];
     envs.ri = env[atm[6 * bas[8 * i_sh + 0] as usize + 1] as usize
         ..(atm[6 * bas[8 * i_sh + 0] as usize + 1] as usize + 3)]
         .try_into()
@@ -110,48 +111,43 @@ pub fn CINTinit_int1e_EnvVars(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn CINTg1e_index_xyz_cpy(mut idx: *mut i32, envs: &CINTEnvVars) {
-    let i_l: i32 = (*envs).i_l;
-    let j_l: i32 = (*envs).j_l;
-    let nfi: i32 = (*envs).nfi;
-    let nfj: i32 = (*envs).nfj;
-    let di: i32 = (*envs).g_stride_i;
-    let dj: i32 = (*envs).g_stride_j;
-    let mut i: i32 = 0;
-    let mut j: i32 = 0;
-    let mut n: i32 = 0;
-    let mut ofx: i32 = 0;
-    let mut ofjx: i32 = 0;
-    let mut ofy: i32 = 0;
-    let mut ofjy: i32 = 0;
-    let mut ofz: i32 = 0;
-    let mut ofjz: i32 = 0;
+pub fn CINTg1e_index_xyz_cpy(
+    idx: &mut [i32], 
+    envs: &CINTEnvVars,
+) {
+    let i_l: i32 = envs.i_l;
+    let j_l: i32 = envs.j_l;
+    let nfi: usize = envs.nfi as usize;
+    let nfj: usize = envs.nfj as usize;
+    let di: i32 = envs.g_stride_i;
+    let dj: i32 = envs.g_stride_j;
     let mut i_nx: [i32; 136] = [0; 136];
     let mut i_ny: [i32; 136] = [0; 136];
     let mut i_nz: [i32; 136] = [0; 136];
     let mut j_nx: [i32; 136] = [0; 136];
     let mut j_ny: [i32; 136] = [0; 136];
     let mut j_nz: [i32; 136] = [0; 136];
-    CINTcart_comp(i_nx.as_mut_ptr(), i_ny.as_mut_ptr(), i_nz.as_mut_ptr(), i_l);
-    CINTcart_comp(j_nx.as_mut_ptr(), j_ny.as_mut_ptr(), j_nz.as_mut_ptr(), j_l);
-    ofx = 0 as i32;
-    ofy = (*envs).g_size;
-    ofz = (*envs).g_size * 2 as i32;
-    n = 0 as i32;
-    j = 0 as i32;
-    while j < nfj {
-        ofjx = ofx + dj * j_nx[j as usize];
-        ofjy = ofy + dj * j_ny[j as usize];
-        ofjz = ofz + dj * j_nz[j as usize];
-        i = 0 as i32;
-        while i < nfi {
-            *idx.offset((n + 0 as i32) as isize) = ofjx + di * i_nx[i as usize];
-            *idx.offset((n + 1 as i32) as isize) = ofjy + di * i_ny[i as usize];
-            *idx.offset((n + 2 as i32) as isize) = ofjz + di * i_nz[i as usize];
-            n += 3 as i32;
-            i += 1;
+    CINTcart_comp_cpy(&mut i_nx, &mut i_ny, &mut i_nz, i_l);
+    CINTcart_comp_cpy(&mut j_nx, &mut j_ny, &mut j_nz, j_l);
+
+    let ofx: i32 = 0 as i32;
+    let ofy: i32 = envs.g_size;
+    let ofz: i32 = envs.g_size * 2 as i32;
+    let mut ofjx: i32 = 0;
+    let mut ofjy: i32 = 0;
+    let mut ofjz: i32 = 0;
+
+    let mut n = 0;
+    for j in 0..nfj {
+        ofjx = ofx + dj * j_nx[j];
+        ofjy = ofy + dj * j_ny[j];
+        ofjz = ofz + dj * j_nz[j];
+        for i in 0..nfi {
+            idx[n + 0] = ofjx + di * i_nx[i as usize];
+            idx[n + 1] = ofjy + di * i_ny[i as usize];
+            idx[n + 2] = ofjz + di * i_nz[i as usize];
+            n += 3;
         }
-        j += 1;
     }
 }
 
@@ -202,7 +198,7 @@ pub unsafe extern "C" fn CINTg1e_index_xyz(mut idx: *mut i32, mut envs: *mut CIN
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn CINTg1e_ovlp_cpy(g: &mut [f64], envs: &CINTEnvVars) -> i32 {
+pub fn CINTg1e_ovlp_cpy(g: &mut [f64], envs: &CINTEnvVars) -> i32 {
     let (gx, rest) = g.split_at_mut(envs.g_size as usize);
     let (gy, gz) = rest.split_at_mut(envs.g_size as usize);
     // let mut gx: *mut f64 = g;
@@ -212,8 +208,7 @@ pub unsafe extern "C" fn CINTg1e_ovlp_cpy(g: &mut [f64], envs: &CINTEnvVars) -> 
     let aij: f64 = envs.ai[0] + envs.aj[0];
     gx[0] = 1.0;
     gy[0] = 1.0;
-    gz[0] = envs.fac[0] * 1.7724538509055160272981674833411451f64 * 3.14159265358979323846f64
-        / (aij * aij.sqrt());
+    gz[0] = envs.fac[0] * 1.7724538509055160272981674833411451f64 * 3.14159265358979323846f64 / (aij * aij.sqrt());
     let mut nmax: usize = (envs.li_ceil + envs.lj_ceil) as usize;
     if nmax == 0 {
         return 1;
@@ -223,8 +218,7 @@ pub unsafe extern "C" fn CINTg1e_ovlp_cpy(g: &mut [f64], envs: &CINTEnvVars) -> 
     let mut lj: usize = 0;
     let mut di: usize = 0;
     let mut dj: usize = 0;
-    let mut i: i32 = 0;
-    let mut j: i32 = 0;
+
     let mut n: usize = 0;
     let mut ptr: usize = 0;
     let mut rx: [f64; 3];
@@ -1177,10 +1171,10 @@ pub unsafe extern "C" fn CINTprim_to_ctr_1(
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn CINTcommon_fac_sp(mut l: i32) -> f64 {
+pub fn CINTcommon_fac_sp(l: i32) -> f64 {
     match l {
         0 => return 0.282094791773878143f64,
         1 => return 0.488602511902919921f64,
-        _ => return 1 as i32 as f64,
+        _ => return 1.0,
     };
 }

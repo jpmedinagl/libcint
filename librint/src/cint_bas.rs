@@ -212,6 +212,34 @@ pub unsafe extern "C" fn CINTshells_spinor_offset(
         nbas,
     );
 }
+
+#[no_mangle]
+pub fn CINTcart_comp_cpy(
+    nx: &mut [i32],
+    ny: &mut [i32],
+    nz: &mut [i32],
+    lmax: i32,
+) {
+    let mut inc: usize = 0;
+    let mut lx: i32 = 0;
+    let mut ly: i32 = 0;
+    let mut lz: i32 = 0;
+    lx = lmax;
+    while lx >= 0 as i32 {
+        ly = lmax - lx;
+        while ly >= 0 as i32 {
+            lz = lmax - lx - ly;
+            nx[inc] = lx;
+            ny[inc] = ly;
+            nz[inc] = lz;
+            inc += 1;
+            ly -= 1;
+        }
+        lx -= 1;
+    }
+}
+
+
 #[no_mangle]
 pub unsafe extern "C" fn CINTcart_comp(
     mut nx: *mut i32,

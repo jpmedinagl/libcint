@@ -1171,42 +1171,36 @@ pub unsafe extern "C" fn CINTset_pairdata(
 //     }
 // }
 #[no_mangle]
-pub unsafe extern "C" fn CINTOpt_non0coeff_byshell_cpy(
-    mut sortedidx: *mut i32,
-    mut non0ctr: *mut i32,
+pub fn CINTOpt_non0coeff_byshell_cpy(
+    mut sortedidx: &mut [i32],
+    non0ctr: &mut [i32],
     ci: &[f64],
-    mut iprim: i32,
-    mut ictr: i32,
+    iprim: usize,
+    ictr: usize,
 ) {
-    let mut ip: i32 = 0;
-    let mut j: i32 = 0;
-    let mut k: i32 = 0;
-    let mut kp: i32 = 0;
-    let vla = ictr as usize;
-    let mut zeroidx: Vec<i32> = ::std::vec::from_elem(0, vla);
-    ip = 0 as i32;
-    while ip < iprim {
-        j = 0 as i32;
-        k = 0 as i32;
-        kp = 0 as i32;
-        while j < ictr {
-            if ci[(iprim * j + ip) as usize] != 0 as i32 as f64 {
-                *sortedidx.offset(k as isize) = j;
+    let mut k: usize = 0;
+    let mut kp: usize = 0;
+
+    let mut zeroidx: Vec<i32> = vec![0; ictr];
+
+    for ip in 0..iprim {
+        for j in 0..ictr {
+            k = 0;
+            kp = 0;
+            if ci[iprim * j + ip] != 0.0 {
+                sortedidx[k] = j as i32;
                 k += 1;
             } else {
-                *zeroidx.as_mut_ptr().offset(kp as isize) = j;
+                zeroidx[kp] = j as i32;
                 kp += 1;
             }
-            j += 1;
         }
-        j = 0 as i32;
-        while j < kp {
-            *sortedidx.offset((k + j) as isize) = *zeroidx.as_mut_ptr().offset(j as isize);
-            j += 1;
+
+        for j in 0..kp {
+            sortedidx[k + j] = zeroidx[j];
         }
-        *non0ctr.offset(ip as isize) = k;
-        sortedidx = sortedidx.offset(ictr as isize);
-        ip += 1;
+        non0ctr[ip] = k as i32;
+        sortedidx = &mut sortedidx[ictr as usize..];
     }
 }
 #[no_mangle]

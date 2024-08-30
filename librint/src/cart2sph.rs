@@ -89732,6 +89732,21 @@ pub static mut c2s_ket_sph1: [Option<
 //         i += 1;
 //     }
 // }
+fn dcopy_ij_cpy(
+    out: &mut [f64],
+    gctr: &[f64],
+    ni: usize,
+    _nj: usize,
+    mi: usize,
+    mj: usize,
+) {
+    for j in 0..mj {
+        for i in 0..mi {
+            out[j * ni + i] = gctr[j * mi + i];
+        }
+    }
+}
+
 unsafe extern "C" fn dcopy_ij(
     mut out: *mut f64,
     mut gctr: *mut f64,
@@ -90876,34 +90891,25 @@ pub fn c2s_cart_1e_cpy(
     envs: &CINTEnvVars,
     _cache: &mut [f64],
 ) {
-    let mut i_ctr: i32 = envs.x_ctr[0];
-    let mut j_ctr: i32 = envs.x_ctr[1];
-    let mut nfi: i32 = envs.nfi;
-    let mut nfj: i32 = envs.nfj;
-    let mut nf: i32 = envs.nf;
-    let mut ni: i32 = dims[0];
-    let mut nj: i32 = dims[1];
-    let mut ofj: i32 = ni * nfj;
+    let i_ctr: usize = envs.x_ctr[0] as usize;
+    let j_ctr: usize = envs.x_ctr[1] as usize;
+    let nfi: usize = envs.nfi as usize;
+    let nfj: usize = envs.nfj as usize;
+    let nf: usize = envs.nf as usize;
+    let ni: usize = dims[0] as usize;
+    let nj: usize = dims[1] as usize;
+    let ofj: usize = ni * nfj;
 
     let mut gctr_offset = 0;
 
     for jc in 0..j_ctr {
         for ic in 0..i_ctr {
-            let opij_offset = (ofj * jc + nfi * ic) as usize;
+            let opij_offset = ofj * jc + nfi * ic;
             let popij = &mut opij[opij_offset..];
 
-            unsafe {
-                dcopy_ij(
-                    popij.as_mut_ptr(),
-                    (&mut gctr[gctr_offset..]).as_mut_ptr(),
-                    ni,
-                    nj,
-                    nfi,
-                    nfj,
-                );
-            }
+            dcopy_ij_cpy(popij,&mut gctr[gctr_offset..], ni, nj, nfi, nfj);
 
-            gctr_offset += nf as usize;
+            gctr_offset += nf;
         }
     }
 }
