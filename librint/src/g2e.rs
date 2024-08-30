@@ -153,22 +153,22 @@ pub unsafe fn CINTinit_int2e_EnvVars(
         envs.rirj[2] = envs.rj[2] - envs.ri[2];
     }
     if rys_order <= 2 as i32 {
-        (*envs).f_g0_2d4d = Some(G2E::g0_2e_2d4d_unrolled);
+        envs.f_g0_2d4d = Some(CINTg0_2e_2d4d_unrolled_cpy);
         if rys_order != nrys_roots {
-            (*envs).f_g0_2d4d = Some(G2E::srg0_2e_2d4d_unrolled);
+            // envs.f_g0_2d4d = Some(CINTsrg0_2e_2d4d_unrolled_cpy);
         }
     } else if kbase != 0 {
         if ibase != 0 {
-            (*envs).f_g0_2d4d = Some(G2E::g0_2e_ik2d4d);
+            // envs.f_g0_2d4d = Some(CINTg0_2e_ik2d4d_cpy);
         } else {
-            (*envs).f_g0_2d4d = Some(G2E::g0_2e_kj2d4d);
+            // envs.f_g0_2d4d = Some(CINTg0_2e_kj2d4d_cpy);
         }
     } else if ibase != 0 {
-        (*envs).f_g0_2d4d = Some(G2E::g0_2e_il2d4d);
+        // envs.f_g0_2d4d = Some(CINTg0_2e_il2d4d_cpy);
     } else {
-        (*envs).f_g0_2d4d = Some(G2E::g0_2e_lj2d4d);
+        // envs.f_g0_2d4d = Some(CINTg0_2e_lj2d4d_cpy);
     }
-    (*envs).f_g0_2e = Some(G2E2::g0_2e);
+    envs.f_g0_2e = Some(CINTg0_2e_cpy);
 }
 
 #[no_mangle]
@@ -2482,20 +2482,20 @@ unsafe extern "C" fn _g0_2d4d_3000(
 pub enum G2E2 {
     g0_2e,
 }
-impl G2E2 {
-    pub fn foo(
-        self,
-        g: *mut f64,
-        rij: *mut f64,
-        rkl: *mut f64,
-        cutoff: f64,
-        envs: *mut CINTEnvVars,
-    ) -> i32 {
-        match self {
-            G2E2::g0_2e => unsafe { CINTg0_2e(g, rij, rkl, cutoff, envs) },
-        }
-    }
-}
+// impl G2E2 {
+//     pub fn foo(
+//         self,
+//         g: *mut f64,
+//         rij: *mut f64,
+//         rkl: *mut f64,
+//         cutoff: f64,
+//         envs: *mut CINTEnvVars,
+//     ) -> i32 {
+//         match self {
+//             G2E2::g0_2e => unsafe { CINTg0_2e(g, rij, rkl, cutoff, envs) },
+//         }
+//     }
+// }
 
 #[derive(Copy, Clone)]
 pub enum G2E {
@@ -2689,6 +2689,1554 @@ pub unsafe extern "C" fn CINTg0_2e_2d4d_unrolled(
     //     (*envs).lj_ceil,
     // );
 }
+#[inline]
+fn _g0_2d4d_0000_cpy(
+    g: &mut [f64],
+    _bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    g[0] = 1.0;
+    g[1] = 1.0;
+}
+#[inline]
+fn _g0_2d4d_0001_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    g[0] = 1.0;
+    g[1] = cpx[0];
+    g[2] = 1.0;
+    g[3] = cpy[0];
+    g[5] = cpz[0] * g[4];
+}
+#[inline]
+fn _g0_2d4d_0002_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[6] = 1.0;
+    g[7] = 1.0;
+    g[8] = cpy[0];
+    g[9] = cpy[1];
+    g[10] = cpy[0] * cpy[0] + b01[0];
+    g[11] = cpy[1] * cpy[1] + b01[1];
+    g[14] = cpz[0] * g[12];
+    g[15] = cpz[1] * g[13];
+    g[16] = cpz[0] * g[14] + b01[0] * g[12];
+    g[17] = cpz[1] * g[15] + b01[1] * g[13];
+}
+#[inline]
+fn _g0_2d4d_0003_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[6] = cpx[0] * (g[4] + 2.0 * b01[0]);
+    g[7] = cpx[1] * (g[5] + 2.0 * b01[1]);
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = cpy[0];
+    g[11] = cpy[1];
+    g[12] = cpy[0] * cpy[0] + b01[0];
+    g[13] = cpy[1] * cpy[1] + b01[1];
+    g[14] = cpy[0] * (g[12] + 2.0 * b01[0]);
+    g[15] = cpy[1] * (g[13] + 2.0 * b01[1]);
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = cpz[0] * g[16];
+    g[19] = cpz[1] * g[17];
+    g[20] = cpz[0] * g[18] + b01[0] * g[16];
+    g[21] = cpz[1] * g[19] + b01[1] * g[17];
+    g[22] = cpz[0] * g[20] + 2.0 * b01[0] * g[18];
+    g[23] = cpz[1] * g[21] + 2.0 * b01[1] * g[19];
+}
+#[inline]
+fn _g0_2d4d_0010_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    g[0] = 1.0;
+    g[1] = cpx[0];
+    g[2] = 1.0;
+    g[3] = cpy[0];
+    //g[4] = w[0];
+    g[5] = cpz[0] * g[4];
+}
+#[inline]
+fn _g0_2d4d_0011_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    let xkxl: f64 = envs.rkrl[0];
+    let ykyl: f64 = envs.rkrl[1];
+    let zkzl: f64 = envs.rkrl[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[6] = cpx[0] * (xkxl + cpx[0]) + b01[0];
+    g[7] = cpx[1] * (xkxl + cpx[1]) + b01[1];
+    g[2] = xkxl + cpx[0];
+    g[3] = xkxl + cpx[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[16] = cpy[0];
+    g[17] = cpy[1];
+    g[18] = cpy[0] * (ykyl + cpy[0]) + b01[0];
+    g[19] = cpy[1] * (ykyl + cpy[1]) + b01[1];
+    g[14] = ykyl + cpy[0];
+    g[15] = ykyl + cpy[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[28] = cpz[0] * g[24];
+    g[29] = cpz[1] * g[25];
+    g[30] = g[28] * (zkzl + cpz[0]) + b01[0] * g[24];
+    g[31] = g[29] * (zkzl + cpz[1]) + b01[1] * g[25];
+    g[26] = g[24] * (zkzl + cpz[0]);
+    g[27] = g[25] * (zkzl + cpz[1]);
+}
+#[inline]
+fn _g0_2d4d_0012_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    let xkxl: f64 = envs.rkrl[0];
+    let ykyl: f64 = envs.rkrl[1];
+    let zkzl: f64 = envs.rkrl[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[8] = cpx[0] * cpx[0] + b01[0];
+    g[9] = cpx[1] * cpx[1] + b01[1];
+    g[10] = g[8] * (xkxl + cpx[0]) + cpx[0] * 2.0 * b01[0];
+    g[11] = g[9] * (xkxl + cpx[1]) + cpx[1] * 2.0 * b01[1];
+    g[6] = cpx[0] * (xkxl + cpx[0]) + b01[0];
+    g[7] = cpx[1] * (xkxl + cpx[1]) + b01[1];
+    g[2] = xkxl + cpx[0];
+    g[3] = xkxl + cpx[1];
+    g[16] = 1.0;
+    g[17] = 1.0;
+    g[20] = cpy[0];
+    g[21] = cpy[1];
+    g[24] = cpy[0] * cpy[0] + b01[0];
+    g[25] = cpy[1] * cpy[1] + b01[1];
+    g[26] = g[24] * (ykyl + cpy[0]) + cpy[0] * 2.0 * b01[0];
+    g[27] = g[25] * (ykyl + cpy[1]) + cpy[1] * 2.0 * b01[1];
+    g[22] = cpy[0] * (ykyl + cpy[0]) + b01[0];
+    g[23] = cpy[1] * (ykyl + cpy[1]) + b01[1];
+    g[18] = ykyl + cpy[0];
+    g[19] = ykyl + cpy[1];
+    //g[32] = w[0];
+    //g[33] = w[1];
+    g[36] = cpz[0] * g[32];
+    g[37] = cpz[1] * g[33];
+    g[40] = cpz[0] * g[36] + b01[0] * g[32];
+    g[41] = cpz[1] * g[37] + b01[1] * g[33];
+    g[42] = g[40] * (zkzl + cpz[0]) + 2.0 * b01[0] * g[36];
+    g[43] = g[41] * (zkzl + cpz[1]) + 2.0 * b01[1] * g[37];
+    g[38] = g[36] * (zkzl + cpz[0]) + b01[0] * g[32];
+    g[39] = g[37] * (zkzl + cpz[1]) + b01[1] * g[33];
+    g[34] = g[32] * (zkzl + cpz[0]);
+    g[35] = g[33] * (zkzl + cpz[1]);
+}
+#[inline]
+fn _g0_2d4d_0020_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[6] = 1.0;
+    g[7] = 1.0;
+    g[8] = cpy[0];
+    g[9] = cpy[1];
+    g[10] = cpy[0] * cpy[0] + b01[0];
+    g[11] = cpy[1] * cpy[1] + b01[1];
+    //g[12] = w[0];
+    //g[13] = w[1];
+    g[14] = cpz[0] * g[12];
+    g[15] = cpz[1] * g[13];
+    g[16] = cpz[0] * g[14] + b01[0] * g[12];
+    g[17] = cpz[1] * g[15] + b01[1] * g[13];
+}
+#[inline]
+fn _g0_2d4d_0021_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    let xkxl: f64 = envs.rkrl[0];
+    let ykyl: f64 = envs.rkrl[1];
+    let zkzl: f64 = envs.rkrl[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[8] = xkxl + cpx[0];
+    g[9] = xkxl + cpx[1];
+    g[10] = cpx[0] * (xkxl + cpx[0]) + b01[0];
+    g[11] = cpx[1] * (xkxl + cpx[1]) + b01[1];
+    g[12] = g[4] * (xkxl + cpx[0]) + cpx[0] * 2.0 * b01[0];
+    g[13] = g[5] * (xkxl + cpx[1]) + cpx[1] * 2.0 * b01[1];
+    g[16] = 1.0;
+    g[17] = 1.0;
+    g[18] = cpy[0];
+    g[19] = cpy[1];
+    g[20] = cpy[0] * cpy[0] + b01[0];
+    g[21] = cpy[1] * cpy[1] + b01[1];
+    g[24] = ykyl + cpy[0];
+    g[25] = ykyl + cpy[1];
+    g[26] = cpy[0] * (ykyl + cpy[0]) + b01[0];
+    g[27] = cpy[1] * (ykyl + cpy[1]) + b01[1];
+    g[28] = g[20] * (ykyl + cpy[0]) + cpy[0] * 2.0 * b01[0];
+    g[29] = g[21] * (ykyl + cpy[1]) + cpy[1] * 2.0 * b01[1];
+    //g[32] = w[0];
+    //g[33] = w[1];
+    g[34] = cpz[0] * g[32];
+    g[35] = cpz[1] * g[33];
+    g[36] = cpz[0] * g[34] + b01[0] * g[32];
+    g[37] = cpz[1] * g[35] + b01[1] * g[33];
+    g[40] = g[32] * (zkzl + cpz[0]);
+    g[41] = g[33] * (zkzl + cpz[1]);
+    g[42] = g[34] * (zkzl + cpz[0]) + b01[0] * g[32];
+    g[43] = g[35] * (zkzl + cpz[1]) + b01[1] * g[33];
+    g[44] = g[36] * (zkzl + cpz[0]) + 2.0 * b01[0] * g[34];
+    g[45] = g[37] * (zkzl + cpz[1]) + 2.0 * b01[1] * g[35];
+}
+#[inline]
+fn _g0_2d4d_0030_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[6] = cpx[0] * (g[4] + 2.0 * b01[0]);
+    g[7] = cpx[1] * (g[5] + 2.0 * b01[1]);
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = cpy[0];
+    g[11] = cpy[1];
+    g[12] = cpy[0] * cpy[0] + b01[0];
+    g[13] = cpy[1] * cpy[1] + b01[1];
+    g[14] = cpy[0] * (g[12] + 2.0 * b01[0]);
+    g[15] = cpy[1] * (g[13] + 2.0 * b01[1]);
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = cpz[0] * g[16];
+    g[19] = cpz[1] * g[17];
+    g[20] = cpz[0] * g[18] + b01[0] * g[16];
+    g[21] = cpz[1] * g[19] + b01[1] * g[17];
+    g[22] = cpz[0] * g[20] + 2.0 * b01[0] * g[18];
+    g[23] = cpz[1] * g[21] + 2.0 * b01[1] * g[19];
+}
+#[inline]
+fn _g0_2d4d_0100_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    g[0] = 1.0;
+    g[1] = c0x[0];
+    g[2] = 1.0;
+    g[3] = c0y[0];
+    //g[4] = w[0];
+    g[5] = c0z[0] * g[4];
+}
+#[inline]
+fn _g0_2d4d_0101_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = c0x[0];
+    g[5] = c0x[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = cpy[0];
+    g[11] = cpy[1];
+    g[12] = c0y[0];
+    g[13] = c0y[1];
+    g[14] = cpy[0] * c0y[0] + b00[0];
+    g[15] = cpy[1] * c0y[1] + b00[1];
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = cpz[0] * g[16];
+    g[19] = cpz[1] * g[17];
+    g[20] = c0z[0] * g[16];
+    g[21] = c0z[1] * g[17];
+    g[22] = cpz[0] * g[20] + b00[0] * g[16];
+    g[23] = cpz[1] * g[21] + b00[1] * g[17];
+}
+#[inline]
+fn _g0_2d4d_0102_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[6] = c0x[0];
+    g[7] = c0x[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[8] = cpx[0] * c0x[0] + b00[0];
+    g[9] = cpx[1] * c0x[1] + b00[1];
+    g[10] = cpx[0] * (g[8] + b00[0]) + b01[0] * c0x[0];
+    g[11] = cpx[1] * (g[9] + b00[1]) + b01[1] * c0x[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = cpy[0];
+    g[15] = cpy[1];
+    g[18] = c0y[0];
+    g[19] = c0y[1];
+    g[16] = cpy[0] * cpy[0] + b01[0];
+    g[17] = cpy[1] * cpy[1] + b01[1];
+    g[20] = cpy[0] * c0y[0] + b00[0];
+    g[21] = cpy[1] * c0y[1] + b00[1];
+    g[22] = cpy[0] * (g[20] + b00[0]) + b01[0] * c0y[0];
+    g[23] = cpy[1] * (g[21] + b00[1]) + b01[1] * c0y[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = cpz[0] * g[24];
+    g[27] = cpz[1] * g[25];
+    g[30] = c0z[0] * g[24];
+    g[31] = c0z[1] * g[25];
+    g[28] = cpz[0] * g[26] + b01[0] * g[24];
+    g[29] = cpz[1] * g[27] + b01[1] * g[25];
+    g[32] = cpz[0] * g[30] + b00[0] * g[24];
+    g[33] = cpz[1] * g[31] + b00[1] * g[25];
+    g[34] = cpz[0] * g[32] + b01[0] * g[30] + b00[0] * g[26];
+    g[35] = cpz[1] * g[33] + b01[1] * g[31] + b00[1] * g[27];
+}
+#[inline]
+fn _g0_2d4d_0110_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = c0x[0];
+    g[5] = c0x[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = cpy[0];
+    g[11] = cpy[1];
+    g[12] = c0y[0];
+    g[13] = c0y[1];
+    g[14] = cpy[0] * c0y[0] + b00[0];
+    g[15] = cpy[1] * c0y[1] + b00[1];
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = cpz[0] * g[16];
+    g[19] = cpz[1] * g[17];
+    g[20] = c0z[0] * g[16];
+    g[21] = c0z[1] * g[17];
+    g[22] = cpz[0] * g[20] + b00[0] * g[16];
+    g[23] = cpz[1] * g[21] + b00[1] * g[17];
+}
+#[inline]
+fn _g0_2d4d_0111_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b01: [f64; 32] = bc.b01;
+    let mut xkxl: f64 = envs.rkrl[0];
+    let mut ykyl: f64 = envs.rkrl[1];
+    let mut zkzl: f64 = envs.rkrl[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[12] = c0x[0];
+    g[13] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[16] = cpx[0] * c0x[0] + b00[0];
+    g[17] = cpx[1] * c0x[1] + b00[1];
+    g[6] = cpx[0] * (xkxl + cpx[0]) + b01[0];
+    g[7] = cpx[1] * (xkxl + cpx[1]) + b01[1];
+    g[18] = g[16] * (xkxl + cpx[0]) + cpx[0] * b00[0] + b01[0] * c0x[0];
+    g[19] = g[17] * (xkxl + cpx[1]) + cpx[1] * b00[1] + b01[1] * c0x[1];
+    g[2] = xkxl + cpx[0];
+    g[3] = xkxl + cpx[1];
+    g[14] = c0x[0] * (xkxl + cpx[0]) + b00[0];
+    g[15] = c0x[1] * (xkxl + cpx[1]) + b00[1];
+    g[24] = 1.0;
+    g[25] = 1.0;
+    g[36] = c0y[0];
+    g[37] = c0y[1];
+    g[28] = cpy[0];
+    g[29] = cpy[1];
+    g[40] = cpy[0] * c0y[0] + b00[0];
+    g[41] = cpy[1] * c0y[1] + b00[1];
+    g[30] = cpy[0] * (ykyl + cpy[0]) + b01[0];
+    g[31] = cpy[1] * (ykyl + cpy[1]) + b01[1];
+    g[42] = g[40] * (ykyl + cpy[0]) + cpy[0] * b00[0] + b01[0] * c0y[0];
+    g[43] = g[41] * (ykyl + cpy[1]) + cpy[1] * b00[1] + b01[1] * c0y[1];
+    g[26] = ykyl + cpy[0];
+    g[27] = ykyl + cpy[1];
+    g[38] = c0y[0] * (ykyl + cpy[0]) + b00[0];
+    g[39] = c0y[1] * (ykyl + cpy[1]) + b00[1];
+    //g[48] = w[0];
+    //g[49] = w[1];
+    g[60] = c0z[0] * g[48];
+    g[61] = c0z[1] * g[49];
+    g[52] = cpz[0] * g[48];
+    g[53] = cpz[1] * g[49];
+    g[64] = cpz[0] * g[60] + b00[0] * g[48];
+    g[65] = cpz[1] * g[61] + b00[1] * g[49];
+    g[54] = g[52] * (zkzl + cpz[0]) + b01[0] * g[48];
+    g[55] = g[53] * (zkzl + cpz[1]) + b01[1] * g[49];
+    g[66] = g[64] * (zkzl + cpz[0]) + b01[0] * g[60] + b00[0] * g[52];
+    g[67] = g[65] * (zkzl + cpz[1]) + b01[1] * g[61] + b00[1] * g[53];
+    g[50] = g[48] * (zkzl + cpz[0]);
+    g[51] = g[49] * (zkzl + cpz[1]);
+    g[62] = g[60] * (zkzl + cpz[0]) + b00[0] * g[48];
+    g[63] = g[61] * (zkzl + cpz[1]) + b00[1] * g[49];
+}
+#[inline]
+fn _g0_2d4d_0120_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[6] = c0x[0];
+    g[7] = c0x[1];
+    g[4] = cpx[0] * cpx[0] + b01[0];
+    g[5] = cpx[1] * cpx[1] + b01[1];
+    g[8] = cpx[0] * c0x[0] + b00[0];
+    g[9] = cpx[1] * c0x[1] + b00[1];
+    g[10] = cpx[0] * (g[8] + b00[0]) + b01[0] * c0x[0];
+    g[11] = cpx[1] * (g[9] + b00[1]) + b01[1] * c0x[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = cpy[0];
+    g[15] = cpy[1];
+    g[18] = c0y[0];
+    g[19] = c0y[1];
+    g[16] = cpy[0] * cpy[0] + b01[0];
+    g[17] = cpy[1] * cpy[1] + b01[1];
+    g[20] = cpy[0] * c0y[0] + b00[0];
+    g[21] = cpy[1] * c0y[1] + b00[1];
+    g[22] = cpy[0] * (g[20] + b00[0]) + b01[0] * c0y[0];
+    g[23] = cpy[1] * (g[21] + b00[1]) + b01[1] * c0y[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = cpz[0] * g[24];
+    g[27] = cpz[1] * g[25];
+    g[30] = c0z[0] * g[24];
+    g[31] = c0z[1] * g[25];
+    g[28] = cpz[0] * g[26] + b01[0] * g[24];
+    g[29] = cpz[1] * g[27] + b01[1] * g[25];
+    g[32] = cpz[0] * g[30] + b00[0] * g[24];
+    g[33] = cpz[1] * g[31] + b00[1] * g[25];
+    g[34] = cpz[0] * g[32] + b01[0] * g[30] + b00[0] * g[26];
+    g[35] = cpz[1] * g[33] + b01[1] * g[31] + b00[1] * g[27];
+}
+#[inline]
+fn _g0_2d4d_0200_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[6] = 1.0;
+    g[7] = 1.0;
+    g[8] = c0y[0];
+    g[9] = c0y[1];
+    g[10] = c0y[0] * c0y[0] + b10[0];
+    g[11] = c0y[1] * c0y[1] + b10[1];
+    //g[12] = w[0];
+    //g[13] = w[1];
+    g[14] = c0z[0] * g[12];
+    g[15] = c0z[1] * g[13];
+    g[16] = c0z[0] * g[14] + b10[0] * g[12];
+    g[17] = c0z[1] * g[15] + b10[1] * g[13];
+}
+#[inline]
+fn _g0_2d4d_0201_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[4] = c0x[0];
+    g[5] = c0x[1];
+    g[8] = c0x[0] * c0x[0] + b10[0];
+    g[9] = c0x[1] * c0x[1] + b10[1];
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[10] = c0x[0] * (g[6] + b00[0]) + b10[0] * cpx[0];
+    g[11] = c0x[1] * (g[7] + b00[1]) + b10[1] * cpx[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[16] = c0y[0];
+    g[17] = c0y[1];
+    g[20] = c0y[0] * c0y[0] + b10[0];
+    g[21] = c0y[1] * c0y[1] + b10[1];
+    g[14] = cpy[0];
+    g[15] = cpy[1];
+    g[18] = cpy[0] * c0y[0] + b00[0];
+    g[19] = cpy[1] * c0y[1] + b00[1];
+    g[22] = c0y[0] * (g[18] + b00[0]) + b10[0] * cpy[0];
+    g[23] = c0y[1] * (g[19] + b00[1]) + b10[1] * cpy[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[28] = c0z[0] * g[24];
+    g[29] = c0z[1] * g[25];
+    g[32] = c0z[0] * g[28] + b10[0] * g[24];
+    g[33] = c0z[1] * g[29] + b10[1] * g[25];
+    g[26] = cpz[0] * g[24];
+    g[27] = cpz[1] * g[25];
+    g[30] = cpz[0] * g[28] + b00[0] * g[24];
+    g[31] = cpz[1] * g[29] + b00[1] * g[25];
+    g[34] = c0z[0] * g[30] + b10[0] * g[26] + b00[0] * g[28];
+    g[35] = c0z[1] * g[31] + b10[1] * g[27] + b00[1] * g[29];
+}
+#[inline]
+fn _g0_2d4d_0210_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = cpx[0];
+    g[3] = cpx[1];
+    g[4] = c0x[0];
+    g[5] = c0x[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = c0x[0] * c0x[0] + b10[0];
+    g[9] = c0x[1] * c0x[1] + b10[1];
+    g[10] = c0x[0] * (g[6] + b00[0]) + b10[0] * cpx[0];
+    g[11] = c0x[1] * (g[7] + b00[1]) + b10[1] * cpx[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = cpy[0];
+    g[15] = cpy[1];
+    g[16] = c0y[0];
+    g[17] = c0y[1];
+    g[18] = cpy[0] * c0y[0] + b00[0];
+    g[19] = cpy[1] * c0y[1] + b00[1];
+    g[20] = c0y[0] * c0y[0] + b10[0];
+    g[21] = c0y[1] * c0y[1] + b10[1];
+    g[22] = c0y[0] * (g[18] + b00[0]) + b10[0] * cpy[0];
+    g[23] = c0y[1] * (g[19] + b00[1]) + b10[1] * cpy[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = cpz[0] * g[24];
+    g[27] = cpz[1] * g[25];
+    g[28] = c0z[0] * g[24];
+    g[29] = c0z[1] * g[25];
+    g[30] = cpz[0] * g[28] + b00[0] * g[24];
+    g[31] = cpz[1] * g[29] + b00[1] * g[25];
+    g[32] = c0z[0] * g[28] + b10[0] * g[24];
+    g[33] = c0z[1] * g[29] + b10[1] * g[25];
+    g[34] = c0z[0] * g[30] + b10[0] * g[26] + b00[0] * g[28];
+    g[35] = c0z[1] * g[31] + b10[1] * g[27] + b00[1] * g[29];
+}
+#[inline]
+fn _g0_2d4d_0300_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[6] = c0x[0] * (g[4] + 2.0 * b10[0]);
+    g[7] = c0x[1] * (g[5] + 2.0 * b10[1]);
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = c0y[0];
+    g[11] = c0y[1];
+    g[12] = c0y[0] * c0y[0] + b10[0];
+    g[13] = c0y[1] * c0y[1] + b10[1];
+    g[14] = c0y[0] * (g[12] + 2.0 * b10[0]);
+    g[15] = c0y[1] * (g[13] + 2.0 * b10[1]);
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = c0z[0] * g[16];
+    g[19] = c0z[1] * g[17];
+    g[20] = c0z[0] * g[18] + b10[0] * g[16];
+    g[21] = c0z[1] * g[19] + b10[1] * g[17];
+    g[22] = c0z[0] * g[20] + 2.0 * b10[0] * g[18];
+    g[23] = c0z[1] * g[21] + 2.0 * b10[1] * g[19];
+}
+#[inline]
+fn _g0_2d4d_1000_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    g[0] = 1.0;
+    g[1] = c0x[0];
+    g[2] = 1.0;
+    g[3] = c0y[0];
+    //g[4] = w[0];
+    g[5] = c0z[0] * g[4];
+}
+#[inline]
+fn _g0_2d4d_1001_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = c0y[0];
+    g[11] = c0y[1];
+    g[12] = cpy[0];
+    g[13] = cpy[1];
+    g[14] = cpy[0] * c0y[0] + b00[0];
+    g[15] = cpy[1] * c0y[1] + b00[1];
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = c0z[0] * g[16];
+    g[19] = c0z[1] * g[17];
+    g[20] = cpz[0] * g[16];
+    g[21] = cpz[1] * g[17];
+    g[22] = cpz[0] * g[18] + b00[0] * g[16];
+    g[23] = cpz[1] * g[19] + b00[1] * g[17];
+}
+#[inline]
+fn _g0_2d4d_1002_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = cpx[0] * cpx[0] + b01[0];
+    g[9] = cpx[1] * cpx[1] + b01[1];
+    g[10] = cpx[0] * (g[6] + b00[0]) + b01[0] * c0x[0];
+    g[11] = cpx[1] * (g[7] + b00[1]) + b01[1] * c0x[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = c0y[0];
+    g[15] = c0y[1];
+    g[16] = cpy[0];
+    g[17] = cpy[1];
+    g[18] = cpy[0] * c0y[0] + b00[0];
+    g[19] = cpy[1] * c0y[1] + b00[1];
+    g[20] = cpy[0] * cpy[0] + b01[0];
+    g[21] = cpy[1] * cpy[1] + b01[1];
+    g[22] = cpy[0] * (g[18] + b00[0]) + b01[0] * c0y[0];
+    g[23] = cpy[1] * (g[19] + b00[1]) + b01[1] * c0y[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = c0z[0] * g[24];
+    g[27] = c0z[1] * g[25];
+    g[28] = cpz[0] * g[24];
+    g[29] = cpz[1] * g[25];
+    g[30] = cpz[0] * g[26] + b00[0] * g[24];
+    g[31] = cpz[1] * g[27] + b00[1] * g[25];
+    g[32] = cpz[0] * g[28] + b01[0] * g[24];
+    g[33] = cpz[1] * g[29] + b01[1] * g[25];
+    g[34] = cpz[0] * g[30] + b01[0] * g[26] + b00[0] * g[28];
+    g[35] = cpz[1] * g[31] + b01[1] * g[27] + b00[1] * g[29];
+}
+#[inline]
+fn _g0_2d4d_1010_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    _envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = c0y[0];
+    g[11] = c0y[1];
+    g[12] = cpy[0];
+    g[13] = cpy[1];
+    g[14] = cpy[0] * c0y[0] + b00[0];
+    g[15] = cpy[1] * c0y[1] + b00[1];
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = c0z[0] * g[16];
+    g[19] = c0z[1] * g[17];
+    g[20] = cpz[0] * g[16];
+    g[21] = cpz[1] * g[17];
+    g[22] = cpz[0] * g[18] + b00[0] * g[16];
+    g[23] = cpz[1] * g[19] + b00[1] * g[17];
+}
+#[inline]
+fn _g0_2d4d_1011_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let mut c0x: [f64; 32] = bc.c00x;
+    let mut c0y: [f64; 32] = bc.c00y;
+    let mut c0z: [f64; 32] = bc.c00z;
+    let mut cpx: [f64; 32] = bc.c0px;
+    let mut cpy: [f64; 32] = bc.c0py;
+    let mut cpz: [f64; 32] = bc.c0pz;
+    let mut b00: [f64; 32] = bc.b00;
+    let mut b01: [f64; 32] = bc.b01;
+    let mut xkxl: f64 = envs.rkrl[0];
+    let mut ykyl: f64 = envs.rkrl[1];
+    let mut zkzl: f64 = envs.rkrl[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[8] = cpx[0];
+    g[9] = cpx[1];
+    g[10] = cpx[0] * c0x[0] + b00[0];
+    g[11] = cpx[1] * c0x[1] + b00[1];
+    g[12] = cpx[0] * (xkxl + cpx[0]) + b01[0];
+    g[13] = cpx[1] * (xkxl + cpx[1]) + b01[1];
+    g[14] = g[10] * (xkxl + cpx[0]) + cpx[0] * b00[0] + b01[0] * c0x[0];
+    g[15] = g[11] * (xkxl + cpx[1]) + cpx[1] * b00[1] + b01[1] * c0x[1];
+    g[4] = xkxl + cpx[0];
+    g[5] = xkxl + cpx[1];
+    g[6] = c0x[0] * (xkxl + cpx[0]) + b00[0];
+    g[7] = c0x[1] * (xkxl + cpx[1]) + b00[1];
+    g[24] = 1.0;
+    g[25] = 1.0;
+    g[26] = c0y[0];
+    g[27] = c0y[1];
+    g[32] = cpy[0];
+    g[33] = cpy[1];
+    g[34] = cpy[0] * c0y[0] + b00[0];
+    g[35] = cpy[1] * c0y[1] + b00[1];
+    g[36] = cpy[0] * (ykyl + cpy[0]) + b01[0];
+    g[37] = cpy[1] * (ykyl + cpy[1]) + b01[1];
+    g[38] = g[34] * (ykyl + cpy[0]) + cpy[0] * b00[0] + b01[0] * c0y[0];
+    g[39] = g[35] * (ykyl + cpy[1]) + cpy[1] * b00[1] + b01[1] * c0y[1];
+    g[28] = ykyl + cpy[0];
+    g[29] = ykyl + cpy[1];
+    g[30] = c0y[0] * (ykyl + cpy[0]) + b00[0];
+    g[31] = c0y[1] * (ykyl + cpy[1]) + b00[1];
+    //g[48] = w[0];
+    //g[49] = w[1];
+    g[50] = c0z[0] * g[48];
+    g[51] = c0z[1] * g[49];
+    g[56] = cpz[0] * g[48];
+    g[57] = cpz[1] * g[49];
+    g[58] = cpz[0] * g[50] + b00[0] * g[48];
+    g[59] = cpz[1] * g[51] + b00[1] * g[49];
+    g[60] = g[56] * (zkzl + cpz[0]) + b01[0] * g[48];
+    g[61] = g[57] * (zkzl + cpz[1]) + b01[1] * g[49];
+    g[62] = g[58] * (zkzl + cpz[0]) + b01[0] * g[50] + b00[0] * g[56];
+    g[63] = g[59] * (zkzl + cpz[1]) + b01[1] * g[51] + b00[1] * g[57];
+    g[52] = g[48] * (zkzl + cpz[0]);
+    g[53] = g[49] * (zkzl + cpz[1]);
+    g[54] = g[50] * (zkzl + cpz[0]) + b00[0] * g[48];
+    g[55] = g[51] * (zkzl + cpz[1]) + b00[1] * g[49];
+}
+#[inline]
+fn _g0_2d4d_1020_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b01: [f64; 32] = bc.b01;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[6] = cpx[0] * c0x[0] + b00[0];
+    g[7] = cpx[1] * c0x[1] + b00[1];
+    g[8] = cpx[0] * cpx[0] + b01[0];
+    g[9] = cpx[1] * cpx[1] + b01[1];
+    g[10] = cpx[0] * (g[6] + b00[0]) + b01[0] * c0x[0];
+    g[11] = cpx[1] * (g[7] + b00[1]) + b01[1] * c0x[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = c0y[0];
+    g[15] = c0y[1];
+    g[16] = cpy[0];
+    g[17] = cpy[1];
+    g[18] = cpy[0] * c0y[0] + b00[0];
+    g[19] = cpy[1] * c0y[1] + b00[1];
+    g[20] = cpy[0] * cpy[0] + b01[0];
+    g[21] = cpy[1] * cpy[1] + b01[1];
+    g[22] = cpy[0] * (g[18] + b00[0]) + b01[0] * c0y[0];
+    g[23] = cpy[1] * (g[19] + b00[1]) + b01[1] * c0y[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = c0z[0] * g[24];
+    g[27] = c0z[1] * g[25];
+    g[28] = cpz[0] * g[24];
+    g[29] = cpz[1] * g[25];
+    g[30] = cpz[0] * g[26] + b00[0] * g[24];
+    g[31] = cpz[1] * g[27] + b00[1] * g[25];
+    g[32] = cpz[0] * g[28] + b01[0] * g[24];
+    g[33] = cpz[1] * g[29] + b01[1] * g[25];
+    g[34] = cpz[0] * g[30] + b01[0] * g[26] + b00[0] * g[28];
+    g[35] = cpz[1] * g[31] + b01[1] * g[27] + b00[1] * g[29];
+}
+#[inline]
+fn _g0_2d4d_1100_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    let xixj: f64 = envs.rirj[0];
+    let yiyj: f64 = envs.rirj[1];
+    let zizj: f64 = envs.rirj[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[4] = c0x[0];
+    g[5] = c0x[1];
+    g[6] = c0x[0] * (xixj + c0x[0]) + b10[0];
+    g[7] = c0x[1] * (xixj + c0x[1]) + b10[1];
+    g[2] = xixj + c0x[0];
+    g[3] = xixj + c0x[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[16] = c0y[0];
+    g[17] = c0y[1];
+    g[18] = c0y[0] * (yiyj + c0y[0]) + b10[0];
+    g[19] = c0y[1] * (yiyj + c0y[1]) + b10[1];
+    g[14] = yiyj + c0y[0];
+    g[15] = yiyj + c0y[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[28] = c0z[0] * g[24];
+    g[29] = c0z[1] * g[25];
+    g[30] = g[28] * (zizj + c0z[0]) + b10[0] * g[24];
+    g[31] = g[29] * (zizj + c0z[1]) + b10[1] * g[25];
+    g[26] = g[24] * (zizj + c0z[0]);
+    g[27] = g[25] * (zizj + c0z[1]);
+}
+#[inline]
+fn _g0_2d4d_1101_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b10: [f64; 32] = bc.b10;
+    let xixj: f64 = envs.rirj[0];
+    let yiyj: f64 = envs.rirj[1];
+    let zizj: f64 = envs.rirj[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[8] = c0x[0];
+    g[9] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[12] = cpx[0] * c0x[0] + b00[0];
+    g[13] = cpx[1] * c0x[1] + b00[1];
+    g[10] = c0x[0] * (xixj + c0x[0]) + b10[0];
+    g[11] = c0x[1] * (xixj + c0x[1]) + b10[1];
+    g[2] = xixj + c0x[0];
+    g[3] = xixj + c0x[1];
+    g[14] = g[12] * (xixj + c0x[0]) + c0x[0] * b00[0] + b10[0] * cpx[0];
+    g[15] = g[13] * (xixj + c0x[1]) + c0x[1] * b00[1] + b10[1] * cpx[1];
+    g[6] = cpx[0] * (xixj + c0x[0]) + b00[0];
+    g[7] = cpx[1] * (xixj + c0x[1]) + b00[1];
+    g[24] = 1.0;
+    g[25] = 1.0;
+    g[32] = c0y[0];
+    g[33] = c0y[1];
+    g[28] = cpy[0];
+    g[29] = cpy[1];
+    g[36] = cpy[0] * c0y[0] + b00[0];
+    g[37] = cpy[1] * c0y[1] + b00[1];
+    g[34] = c0y[0] * (yiyj + c0y[0]) + b10[0];
+    g[35] = c0y[1] * (yiyj + c0y[1]) + b10[1];
+    g[26] = yiyj + c0y[0];
+    g[27] = yiyj + c0y[1];
+    g[38] = g[36] * (yiyj + c0y[0]) + c0y[0] * b00[0] + b10[0] * cpy[0];
+    g[39] = g[37] * (yiyj + c0y[1]) + c0y[1] * b00[1] + b10[1] * cpy[1];
+    g[30] = cpy[0] * (yiyj + c0y[0]) + b00[0];
+    g[31] = cpy[1] * (yiyj + c0y[1]) + b00[1];
+    //g[48] = w[0];
+    //g[49] = w[1];
+    g[56] = c0z[0] * g[48];
+    g[57] = c0z[1] * g[49];
+    g[52] = cpz[0] * g[48];
+    g[53] = cpz[1] * g[49];
+    g[60] = cpz[0] * g[56] + b00[0] * g[48];
+    g[61] = cpz[1] * g[57] + b00[1] * g[49];
+    g[58] = g[56] * (zizj + c0z[0]) + b10[0] * g[48];
+    g[59] = g[57] * (zizj + c0z[1]) + b10[1] * g[49];
+    g[50] = g[48] * (zizj + c0z[0]);
+    g[51] = g[49] * (zizj + c0z[1]);
+    g[62] = g[60] * (zizj + c0z[0]) + b10[0] * g[52] + b00[0] * g[56];
+    g[63] = g[61] * (zizj + c0z[1]) + b10[1] * g[53] + b00[1] * g[57];
+    g[54] = zizj * g[52] + cpz[0] * g[56] + b00[0] * g[48];
+    g[55] = zizj * g[53] + cpz[1] * g[57] + b00[1] * g[49];
+}
+#[inline]
+fn _g0_2d4d_1110_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b10: [f64; 32] = bc.b10;
+    let xixj: f64 = envs.rirj[0];
+    let yiyj: f64 = envs.rirj[1];
+    let zizj: f64 = envs.rirj[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[8] = c0x[0];
+    g[9] = c0x[1];
+    g[4] = cpx[0];
+    g[5] = cpx[1];
+    g[12] = cpx[0] * c0x[0] + b00[0];
+    g[13] = cpx[1] * c0x[1] + b00[1];
+    g[10] = c0x[0] * (xixj + c0x[0]) + b10[0];
+    g[11] = c0x[1] * (xixj + c0x[1]) + b10[1];
+    g[2] = xixj + c0x[0];
+    g[3] = xixj + c0x[1];
+    g[14] = g[12] * (xixj + c0x[0]) + c0x[0] * b00[0] + b10[0] * cpx[0];
+    g[15] = g[13] * (xixj + c0x[1]) + c0x[1] * b00[1] + b10[1] * cpx[1];
+    g[6] = cpx[0] * (xixj + c0x[0]) + b00[0];
+    g[7] = cpx[1] * (xixj + c0x[1]) + b00[1];
+    g[24] = 1.0;
+    g[25] = 1.0;
+    g[32] = c0y[0];
+    g[33] = c0y[1];
+    g[28] = cpy[0];
+    g[29] = cpy[1];
+    g[36] = cpy[0] * c0y[0] + b00[0];
+    g[37] = cpy[1] * c0y[1] + b00[1];
+    g[34] = c0y[0] * (yiyj + c0y[0]) + b10[0];
+    g[35] = c0y[1] * (yiyj + c0y[1]) + b10[1];
+    g[26] = yiyj + c0y[0];
+    g[27] = yiyj + c0y[1];
+    g[38] = g[36] * (yiyj + c0y[0]) + c0y[0] * b00[0] + b10[0] * cpy[0];
+    g[39] = g[37] * (yiyj + c0y[1]) + c0y[1] * b00[1] + b10[1] * cpy[1];
+    g[30] = cpy[0] * (yiyj + c0y[0]) + b00[0];
+    g[31] = cpy[1] * (yiyj + c0y[1]) + b00[1];
+    //g[48] = w[0];
+    //g[49] = w[1];
+    g[56] = c0z[0] * g[48];
+    g[57] = c0z[1] * g[49];
+    g[52] = cpz[0] * g[48];
+    g[53] = cpz[1] * g[49];
+    g[60] = cpz[0] * g[56] + b00[0] * g[48];
+    g[61] = cpz[1] * g[57] + b00[1] * g[49];
+    g[58] = g[56] * (zizj + c0z[0]) + b10[0] * g[48];
+    g[59] = g[57] * (zizj + c0z[1]) + b10[1] * g[49];
+    g[50] = g[48] * (zizj + c0z[0]);
+    g[51] = g[49] * (zizj + c0z[1]);
+    g[62] = g[60] * (zizj + c0z[0]) + b10[0] * g[52] + b00[0] * g[56];
+    g[63] = g[61] * (zizj + c0z[1]) + b10[1] * g[53] + b00[1] * g[57];
+    g[54] = zizj * g[52] + cpz[0] * g[56] + b00[0] * g[48];
+    g[55] = zizj * g[53] + cpz[1] * g[57] + b00[1] * g[49];
+}
+#[inline]
+fn _g0_2d4d_1200_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    let xixj: f64 = envs.rirj[0];
+    let yiyj: f64 = envs.rirj[1];
+    let zizj: f64 = envs.rirj[2];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[4] = c0x[0];
+    g[5] = c0x[1];
+    g[8] = c0x[0] * c0x[0] + b10[0];
+    g[9] = c0x[1] * c0x[1] + b10[1];
+    g[10] = g[8] * (xixj + c0x[0]) + c0x[0] * 2.0 * b10[0];
+    g[11] = g[9] * (xixj + c0x[1]) + c0x[1] * 2.0 * b10[1];
+    g[6] = c0x[0] * (xixj + c0x[0]) + b10[0];
+    g[7] = c0x[1] * (xixj + c0x[1]) + b10[1];
+    g[2] = xixj + c0x[0];
+    g[3] = xixj + c0x[1];
+    g[16] = 1.0;
+    g[17] = 1.0;
+    g[20] = c0y[0];
+    g[21] = c0y[1];
+    g[24] = c0y[0] * c0y[0] + b10[0];
+    g[25] = c0y[1] * c0y[1] + b10[1];
+    g[26] = g[24] * (yiyj + c0y[0]) + c0y[0] * 2.0 * b10[0];
+    g[27] = g[25] * (yiyj + c0y[1]) + c0y[1] * 2.0 * b10[1];
+    g[22] = c0y[0] * (yiyj + c0y[0]) + b10[0];
+    g[23] = c0y[1] * (yiyj + c0y[1]) + b10[1];
+    g[18] = yiyj + c0y[0];
+    g[19] = yiyj + c0y[1];
+    //g[32] = w[0];
+    //g[33] = w[1];
+    g[36] = c0z[0] * g[32];
+    g[37] = c0z[1] * g[33];
+    g[40] = c0z[0] * g[36] + b10[0] * g[32];
+    g[41] = c0z[1] * g[37] + b10[1] * g[33];
+    g[42] = g[40] * (zizj + c0z[0]) + 2.0 * b10[0] * g[36];
+    g[43] = g[41] * (zizj + c0z[1]) + 2.0 * b10[1] * g[37];
+    g[38] = g[36] * (zizj + c0z[0]) + b10[0] * g[32];
+    g[39] = g[37] * (zizj + c0z[1]) + b10[1] * g[33];
+    g[34] = g[32] * (zizj + c0z[0]);
+    g[35] = g[33] * (zizj + c0z[1]);
+}
+#[inline]
+fn _g0_2d4d_2000_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[6] = 1.0;
+    g[7] = 1.0;
+    g[8] = c0y[0];
+    g[9] = c0y[1];
+    g[10] = c0y[0] * c0y[0] + b10[0];
+    g[11] = c0y[1] * c0y[1] + b10[1];
+    //g[12] = w[0];
+    //g[13] = w[1];
+    g[14] = c0z[0] * g[12];
+    g[15] = c0z[1] * g[13];
+    g[16] = c0z[0] * g[14] + b10[0] * g[12];
+    g[17] = c0z[1] * g[15] + b10[1] * g[13];
+}
+#[inline]
+fn _g0_2d4d_2001_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[6] = cpx[0];
+    g[7] = cpx[1];
+    g[8] = cpx[0] * c0x[0] + b00[0];
+    g[9] = cpx[1] * c0x[1] + b00[1];
+    g[10] = c0x[0] * (g[8] + b00[0]) + b10[0] * cpx[0];
+    g[11] = c0x[1] * (g[9] + b00[1]) + b10[1] * cpx[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = c0y[0];
+    g[15] = c0y[1];
+    g[16] = c0y[0] * c0y[0] + b10[0];
+    g[17] = c0y[1] * c0y[1] + b10[1];
+    g[18] = cpy[0];
+    g[19] = cpy[1];
+    g[20] = cpy[0] * c0y[0] + b00[0];
+    g[21] = cpy[1] * c0y[1] + b00[1];
+    g[22] = c0y[0] * (g[20] + b00[0]) + b10[0] * cpy[0];
+    g[23] = c0y[1] * (g[21] + b00[1]) + b10[1] * cpy[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = c0z[0] * g[24];
+    g[27] = c0z[1] * g[25];
+    g[28] = c0z[0] * g[26] + b10[0] * g[24];
+    g[29] = c0z[1] * g[27] + b10[1] * g[25];
+    g[30] = cpz[0] * g[24];
+    g[31] = cpz[1] * g[25];
+    g[32] = cpz[0] * g[26] + b00[0] * g[24];
+    g[33] = cpz[1] * g[27] + b00[1] * g[25];
+    g[34] = c0z[0] * g[32] + b10[0] * g[30] + b00[0] * g[26];
+    g[35] = c0z[1] * g[33] + b10[1] * g[31] + b00[1] * g[27];
+}
+#[inline]
+fn _g0_2d4d_2010_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let cpx: [f64; 32] = bc.c0px;
+    let cpy: [f64; 32] = bc.c0py;
+    let cpz: [f64; 32] = bc.c0pz;
+    let b00: [f64; 32] = bc.b00;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[6] = cpx[0];
+    g[7] = cpx[1];
+    g[8] = cpx[0] * c0x[0] + b00[0];
+    g[9] = cpx[1] * c0x[1] + b00[1];
+    g[10] = c0x[0] * (g[8] + b00[0]) + b10[0] * cpx[0];
+    g[11] = c0x[1] * (g[9] + b00[1]) + b10[1] * cpx[1];
+    g[12] = 1.0;
+    g[13] = 1.0;
+    g[14] = c0y[0];
+    g[15] = c0y[1];
+    g[16] = c0y[0] * c0y[0] + b10[0];
+    g[17] = c0y[1] * c0y[1] + b10[1];
+    g[18] = cpy[0];
+    g[19] = cpy[1];
+    g[20] = cpy[0] * c0y[0] + b00[0];
+    g[21] = cpy[1] * c0y[1] + b00[1];
+    g[22] = c0y[0] * (g[20] + b00[0]) + b10[0] * cpy[0];
+    g[23] = c0y[1] * (g[21] + b00[1]) + b10[1] * cpy[1];
+    //g[24] = w[0];
+    //g[25] = w[1];
+    g[26] = c0z[0] * g[24];
+    g[27] = c0z[1] * g[25];
+    g[28] = c0z[0] * g[26] + b10[0] * g[24];
+    g[29] = c0z[1] * g[27] + b10[1] * g[25];
+    g[30] = cpz[0] * g[24];
+    g[31] = cpz[1] * g[25];
+    g[32] = cpz[0] * g[26] + b00[0] * g[24];
+    g[33] = cpz[1] * g[27] + b00[1] * g[25];
+    g[34] = c0z[0] * g[32] + b10[0] * g[30] + b00[0] * g[26];
+    g[35] = c0z[1] * g[33] + b10[1] * g[31] + b00[1] * g[27];
+}
+#[inline]
+fn _g0_2d4d_2100_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    let xixj: f64 = (*envs).rirj[0 as i32 as usize];
+    let yiyj: f64 = (*envs).rirj[1 as i32 as usize];
+    let zizj: f64 = (*envs).rirj[2 as i32 as usize];
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[12] = g[4] * (xixj + c0x[0]) + c0x[0] * 2.0 * b10[0];
+    g[13] = g[5] * (xixj + c0x[1]) + c0x[1] * 2.0 * b10[1];
+    g[10] = c0x[0] * (xixj + c0x[0]) + b10[0];
+    g[11] = c0x[1] * (xixj + c0x[1]) + b10[1];
+    g[8] = xixj + c0x[0];
+    g[9] = xixj + c0x[1];
+    g[16] = 1.0;
+    g[17] = 1.0;
+    g[18] = c0y[0];
+    g[19] = c0y[1];
+    g[20] = c0y[0] * c0y[0] + b10[0];
+    g[21] = c0y[1] * c0y[1] + b10[1];
+    g[28] = g[20] * (yiyj + c0y[0]) + c0y[0] * 2.0 * b10[0];
+    g[29] = g[21] * (yiyj + c0y[1]) + c0y[1] * 2.0 * b10[1];
+    g[26] = c0y[0] * (yiyj + c0y[0]) + b10[0];
+    g[27] = c0y[1] * (yiyj + c0y[1]) + b10[1];
+    g[24] = yiyj + c0y[0];
+    g[25] = yiyj + c0y[1];
+    //g[32] = w[0];
+    //g[33] = w[1];
+    g[34] = c0z[0] * g[32];
+    g[35] = c0z[1] * g[33];
+    g[36] = c0z[0] * g[34] + b10[0] * g[32];
+    g[37] = c0z[1] * g[35] + b10[1] * g[33];
+    g[44] = g[36] * (zizj + c0z[0]) + 2.0 * b10[0] * g[34];
+    g[45] = g[37] * (zizj + c0z[1]) + 2.0 * b10[1] * g[35];
+    g[42] = g[34] * (zizj + c0z[0]) + b10[0] * g[32];
+    g[43] = g[35] * (zizj + c0z[1]) + b10[1] * g[33];
+    g[40] = g[32] * (zizj + c0z[0]);
+    g[41] = g[33] * (zizj + c0z[1]);
+}
+#[inline]
+fn _g0_2d4d_3000_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let c0x: [f64; 32] = bc.c00x;
+    let c0y: [f64; 32] = bc.c00y;
+    let c0z: [f64; 32] = bc.c00z;
+    let b10: [f64; 32] = bc.b10;
+    g[0] = 1.0;
+    g[1] = 1.0;
+    g[2] = c0x[0];
+    g[3] = c0x[1];
+    g[4] = c0x[0] * c0x[0] + b10[0];
+    g[5] = c0x[1] * c0x[1] + b10[1];
+    g[6] = c0x[0] * (g[4] + 2.0 * b10[0]);
+    g[7] = c0x[1] * (g[5] + 2.0 * b10[1]);
+    g[8] = 1.0;
+    g[9] = 1.0;
+    g[10] = c0y[0];
+    g[11] = c0y[1];
+    g[12] = c0y[0] * c0y[0] + b10[0];
+    g[13] = c0y[1] * c0y[1] + b10[1];
+    g[14] = c0y[0] * (g[12] + 2.0 * b10[0]);
+    g[15] = c0y[1] * (g[13] + 2.0 * b10[1]);
+    //g[16] = w[0];
+    //g[17] = w[1];
+    g[18] = c0z[0] * g[16];
+    g[19] = c0z[1] * g[17];
+    g[20] = c0z[0] * g[18] + b10[0] * g[16];
+    g[21] = c0z[1] * g[19] + b10[1] * g[17];
+    g[22] = c0z[0] * g[20] + 2.0 * b10[0] * g[18];
+    g[23] = c0z[1] * g[21] + 2.0 * b10[1] * g[19];
+}
+
+#[no_mangle]
+pub fn CINTg0_2e_2d4d_unrolled_cpy(
+    g: &mut [f64],
+    bc: &Rys2eT,
+    envs: &CINTEnvVars,
+) {
+    let mut type_ijkl: i32 = envs.li_ceil << 6 as i32
+        | envs.lj_ceil << 4 as i32 | envs.lk_ceil << 2 as i32
+        | envs.ll_ceil;
+    match type_ijkl {
+        0 => {
+            _g0_2d4d_0000_cpy(g, bc, envs);
+        }
+        1 => {
+            _g0_2d4d_0001_cpy(g, bc, envs);
+        }
+        2 => {
+            _g0_2d4d_0002_cpy(g, bc, envs);
+        }
+        3 => {
+            _g0_2d4d_0003_cpy(g, bc, envs);
+        }
+        4 => {
+            _g0_2d4d_0010_cpy(g, bc, envs);
+        }
+        5 => {
+            _g0_2d4d_0011_cpy(g, bc, envs);
+        }
+        6 => {
+            _g0_2d4d_0012_cpy(g, bc, envs);
+        }
+        8 => {
+            _g0_2d4d_0020_cpy(g, bc, envs);
+        }
+        9 => {
+            _g0_2d4d_0021_cpy(g, bc, envs);
+        }
+        12 => {
+            _g0_2d4d_0030_cpy(g, bc, envs);
+        }
+        16 => {
+            _g0_2d4d_0100_cpy(g, bc, envs);
+        }
+        17 => {
+            _g0_2d4d_0101_cpy(g, bc, envs);
+        }
+        18 => {
+            _g0_2d4d_0102_cpy(g, bc, envs);
+        }
+        20 => {
+            _g0_2d4d_0110_cpy(g, bc, envs);
+        }
+        21 => {
+            _g0_2d4d_0111_cpy(g, bc, envs);
+        }
+        24 => {
+            _g0_2d4d_0120_cpy(g, bc, envs);
+        }
+        32 => {
+            _g0_2d4d_0200_cpy(g, bc, envs);
+        }
+        33 => {
+            _g0_2d4d_0201_cpy(g, bc, envs);
+        }
+        36 => {
+            _g0_2d4d_0210_cpy(g, bc, envs);
+        }
+        48 => {
+            _g0_2d4d_0300_cpy(g, bc, envs);
+        }
+        64 => {
+            _g0_2d4d_1000_cpy(g, bc, envs);
+        }
+        65 => {
+            _g0_2d4d_1001_cpy(g, bc, envs);
+        }
+        66 => {
+            _g0_2d4d_1002_cpy(g, bc, envs);
+        }
+        68 => {
+            _g0_2d4d_1010_cpy(g, bc, envs);
+        }
+        69 => {
+            _g0_2d4d_1011_cpy(g, bc, envs);
+        }
+        72 => {
+            _g0_2d4d_1020_cpy(g, bc, envs);
+        }
+        80 => {
+            _g0_2d4d_1100_cpy(g, bc, envs);
+        }
+        81 => {
+            _g0_2d4d_1101_cpy(g, bc, envs);
+        }
+        84 => {
+            _g0_2d4d_1110_cpy(g, bc, envs);
+        }
+        96 => {
+            _g0_2d4d_1200_cpy(g, bc, envs);
+        }
+        128 => {
+            _g0_2d4d_2000_cpy(g, bc, envs);
+        }
+        129 => {
+            _g0_2d4d_2001_cpy(g, bc, envs);
+        }
+        132 => {
+            _g0_2d4d_2010_cpy(g, bc, envs);
+        }
+        144 => {
+            _g0_2d4d_2100_cpy(g, bc, envs);
+        }
+        192 => {
+            _g0_2d4d_3000_cpy(g, bc, envs);
+        }
+        _ => {}
+    }
+    println!("Dimension error for CINTg0_2e_lj2d4d: iklj = {} {} {} {}", (*envs).li_ceil, (*envs).lk_ceil, (*envs).ll_ceil, (*envs).lj_ceil);
+}
+
+
 #[inline]
 unsafe extern "C" fn _srg0_2d4d_0000(
     mut g: *mut f64,
@@ -5454,67 +7002,74 @@ pub unsafe extern "C" fn CINTg0_2e_il2d4d(
     CINTg0_2e_2d(g, bc, envs);
     CINTg0_il2d_4d(g, envs);
 }
+
 #[no_mangle]
-pub unsafe extern "C" fn CINTg0_2e(
-    mut g: *mut f64,
-    mut rij: *mut f64,
-    mut rkl: *mut f64,
-    mut cutoff: f64,
-    mut envs: *mut CINTEnvVars,
+pub fn CINTg0_2e_cpy(
+    g: &mut [f64],
+    rij: &[f64],
+    rkl: &[f64],
+    cutoff: f64,
+    envs: &CINTEnvVars,
 ) -> i32 {
-    let mut irys: i32 = 0;
-    let mut nroots: i32 = (*envs).nrys_roots;
-    let mut aij: f64 = (*envs).ai[0 as i32 as usize] + (*envs).aj[0 as i32 as usize];
-    let mut akl: f64 = (*envs).ak[0 as i32 as usize] + (*envs).al[0 as i32 as usize];
+    let mut irys: usize = 0;
+    let mut nroots: usize = envs.nrys_roots as usize;
+    let mut aij: f64 = envs.ai[0] + envs.aj[0];
+    let mut akl: f64 = envs.ak[0] + envs.al[0];
     let mut a0: f64 = 0.;
     let mut a1: f64 = 0.;
     let mut fac1: f64 = 0.;
     let mut x: f64 = 0.;
     let mut u: [f64; 32] = [0.; 32];
-    let mut w: *mut f64 = g.offset(((*envs).g_size * 2 as i32) as isize);
-    let mut xij_kl: f64 = *rij.offset(0) - *rkl.offset(0);
-    let mut yij_kl: f64 = *rij.offset(1) - *rkl.offset(1);
-    let mut zij_kl: f64 = *rij.offset(2) - *rkl.offset(2);
+    let mut w: &mut [f64] = &mut g[(envs.g_size * 2) as usize..];
+    let mut xij_kl: f64 = rij[0] - rkl[0];
+    let mut yij_kl: f64 = rij[1] - rkl[1];
+    let mut zij_kl: f64 = rij[2] - rkl[2];
     let mut rr: f64 = xij_kl * xij_kl + yij_kl * yij_kl + zij_kl * zij_kl;
     a1 = aij * akl;
     a0 = a1 / (aij + akl);
-    fac1 = (a0 / (a1 * a1 * a1)).sqrt() * (*envs).fac[0 as i32 as usize];
+    fac1 = (a0 / (a1 * a1 * a1)).sqrt() * envs.fac[0];
     x = a0 * rr;
     let omega: f64 = (*envs).env[8];
     let mut theta: f64 = 0 as i32 as f64;
     if omega == 0.0f64 {
-        CINTrys_roots(nroots, x, u.as_mut_ptr(), w);
+        unsafe {
+            CINTrys_roots(nroots as i32, x, u.as_mut_ptr(), w.as_mut_ptr());
+        }
     } else if omega < 0.0f64 {
         theta = omega * omega / (omega * omega + a0);
         if theta * x > cutoff || theta * x > 40 as i32 as f64 {
             return 0 as i32;
         }
         let mut rorder: i32 = (*envs).rys_order;
-        if rorder == nroots {
-            CINTsr_rys_roots(nroots, x, (theta).sqrt(), u.as_mut_ptr(), w);
+        if rorder == nroots as i32 {
+            unsafe {
+                CINTsr_rys_roots(nroots as i32, x, (theta).sqrt(), u.as_mut_ptr(), w.as_mut_ptr());
+            }
         } else {
             let mut sqrt_theta: f64 = -(theta.sqrt());
-            CINTrys_roots(rorder, x, u.as_mut_ptr(), w);
-            CINTrys_roots(
-                rorder,
-                theta * x,
-                u.as_mut_ptr().offset(rorder as isize),
-                w.offset(rorder as isize),
-            );
-            if (*envs).g_size == 2 as i32 {
-                *g.offset(0) = 1 as i32 as f64;
-                *g.offset(1) = 1 as i32 as f64;
-                *g.offset(2) = 1 as i32 as f64;
-                *g.offset(3) = 1 as i32 as f64;
-                *g.offset(4) *= fac1;
-                *g.offset(5) *= fac1 * sqrt_theta;
-                return 1 as i32;
+            unsafe {
+                CINTrys_roots(rorder, x, u.as_mut_ptr(), w.as_mut_ptr());
+                CINTrys_roots(
+                    rorder,
+                    theta * x,
+                    u.as_mut_ptr().offset(rorder as isize),
+                    w.as_mut_ptr().offset(rorder as isize),
+                );
             }
-            irys = rorder;
+            if envs.g_size == 2 {
+                g[0] = 1.0;
+                g[1] = 1.0;
+                g[2] = 1.0;
+                g[3 ] = 1.0;
+                g[4] *= fac1;
+                g[5] *= fac1 * sqrt_theta;
+                return 1;
+            }
+            irys = rorder as usize;
             while irys < nroots {
                 let mut ut: f64 = u[irys as usize] * theta;
-                u[irys as usize] = ut / (u[irys as usize] + 1.0f64 - ut);
-                *w.offset(irys as isize) *= sqrt_theta;
+                u[irys] = ut / (u[irys as usize] + 1.0f64 - ut);
+                w[irys] *= sqrt_theta;
                 irys += 1;
             }
         }
@@ -5522,19 +7077,21 @@ pub unsafe extern "C" fn CINTg0_2e(
         theta = omega * omega / (omega * omega + a0);
         x *= theta;
         fac1 *= theta.sqrt();
-        CINTrys_roots(nroots, x, u.as_mut_ptr(), w);
-        irys = 0 as i32;
+        unsafe {
+            CINTrys_roots(nroots as i32, x, u.as_mut_ptr(), w.as_mut_ptr());
+        }
+        irys = 0;
         while irys < nroots {
-            let mut ut_0: f64 = u[irys as usize] * theta;
-            u[irys as usize] = ut_0 / (u[irys as usize] + 1.0f64 - ut_0);
+            let mut ut_0: f64 = u[irys] * theta;
+            u[irys] = ut_0 / (u[irys] + 1.0f64 - ut_0);
             irys += 1;
         }
     }
-    if (*envs).g_size == 1 as i32 {
-        *g.offset(0) = 1 as i32 as f64;
-        *g.offset(1) = 1 as i32 as f64;
-        *g.offset(2) *= fac1;
-        return 1 as i32;
+    if envs.g_size == 1 {
+        g[0] = 1.0;
+        g[1] = 1.0;
+        g[2] *= fac1;
+        return 1;
     }
     let mut u2: f64 = 0.;
     let mut tmp1: f64 = 0.;
@@ -5542,33 +7099,23 @@ pub unsafe extern "C" fn CINTg0_2e(
     let mut tmp3: f64 = 0.;
     let mut tmp4: f64 = 0.;
     let mut tmp5: f64 = 0.;
-    let mut rijrx: f64 = *rij.offset(0 as i32 as isize) - (*envs).rx_in_rijrx[0];
-    let mut rijry: f64 = *rij.offset(1 as i32 as isize) - (*envs).rx_in_rijrx[1];
-    let mut rijrz: f64 = *rij.offset(2 as i32 as isize) - (*envs).rx_in_rijrx[2];
-    let mut rklrx: f64 = *rkl.offset(0 as i32 as isize) - (*envs).rx_in_rklrx[0];
-    let mut rklry: f64 = *rkl.offset(1 as i32 as isize) - (*envs).rx_in_rklrx[1];
-    let mut rklrz: f64 = *rkl.offset(2 as i32 as isize) - (*envs).rx_in_rklrx[2];
-    let mut bc: Rys2eT = Rys2eT {
-        c00x: [0.; 32],
-        c00y: [0.; 32],
-        c00z: [0.; 32],
-        c0px: [0.; 32],
-        c0py: [0.; 32],
-        c0pz: [0.; 32],
-        b01: [0.; 32],
-        b00: [0.; 32],
-        b10: [0.; 32],
-    };
-    let mut b00: *mut f64 = (bc.b00).as_mut_ptr();
-    let mut b10: *mut f64 = (bc.b10).as_mut_ptr();
-    let mut b01: *mut f64 = (bc.b01).as_mut_ptr();
-    let mut c00x: *mut f64 = (bc.c00x).as_mut_ptr();
-    let mut c00y: *mut f64 = (bc.c00y).as_mut_ptr();
-    let mut c00z: *mut f64 = (bc.c00z).as_mut_ptr();
-    let mut c0px: *mut f64 = (bc.c0px).as_mut_ptr();
-    let mut c0py: *mut f64 = (bc.c0py).as_mut_ptr();
-    let mut c0pz: *mut f64 = (bc.c0pz).as_mut_ptr();
-    irys = 0 as i32;
+    let mut rijrx: f64 = rij[0] - envs.rx_in_rijrx[0];
+    let mut rijry: f64 = rij[1] - envs.rx_in_rijrx[1];
+    let mut rijrz: f64 = rij[2] - envs.rx_in_rijrx[2];
+    let mut rklrx: f64 = rkl[0] - envs.rx_in_rklrx[0];
+    let mut rklry: f64 = rkl[1] - envs.rx_in_rklrx[1];
+    let mut rklrz: f64 = rkl[2] - envs.rx_in_rklrx[2];
+    let mut bc: Rys2eT = Rys2eT::new();
+    let mut b00: [f64; 32] = bc.b00;
+    let mut b10: [f64; 32] = bc.b10;
+    let mut b01: [f64; 32] = bc.b01;
+    let mut c00x: [f64; 32] = bc.c00x;
+    let mut c00y: [f64; 32] = bc.c00y;
+    let mut c00z: [f64; 32] = bc.c00z;
+    let mut c0px: [f64; 32] = bc.c0px;
+    let mut c0py: [f64; 32] = bc.c0py;
+    let mut c0pz: [f64; 32] = bc.c0pz;
+    irys = 0;
     while irys < nroots {
         u2 = a0 * u[irys as usize];
         tmp4 = 0.5f64 / (u2 * (aij + akl) + a1);
@@ -5576,25 +7123,172 @@ pub unsafe extern "C" fn CINTg0_2e(
         tmp1 = 2.0f64 * tmp5;
         tmp2 = tmp1 * akl;
         tmp3 = tmp1 * aij;
-        *b00.offset(irys as isize) = tmp5;
-        *b10.offset(irys as isize) = tmp5 + tmp4 * akl;
-        *b01.offset(irys as isize) = tmp5 + tmp4 * aij;
-        *c00x.offset(irys as isize) = rijrx - tmp2 * xij_kl;
-        *c00y.offset(irys as isize) = rijry - tmp2 * yij_kl;
-        *c00z.offset(irys as isize) = rijrz - tmp2 * zij_kl;
-        *c0px.offset(irys as isize) = rklrx + tmp3 * xij_kl;
-        *c0py.offset(irys as isize) = rklry + tmp3 * yij_kl;
-        *c0pz.offset(irys as isize) = rklrz + tmp3 * zij_kl;
-        *w.offset(irys as isize) *= fac1;
+        b00[irys] = tmp5;
+        b10[irys] = tmp5 + tmp4 * akl;
+        b01[irys] = tmp5 + tmp4 * aij;
+        c00x[irys] = rijrx - tmp2 * xij_kl;
+        c00y[irys] = rijry - tmp2 * yij_kl;
+        c00z[irys] = rijrz - tmp2 * zij_kl;
+        c0px[irys] = rklrx + tmp3 * xij_kl;
+        c0py[irys] = rklry + tmp3 * yij_kl;
+        c0pz[irys] = rklrz + tmp3 * zij_kl;
+        w[irys] *= fac1;
         irys += 1;
     }
-    if let Some(f_g0_2d4d) = (*envs).f_g0_2d4d {
-        f_g0_2d4d.foo(g, &mut bc, envs);
-    } else {
-        panic!("f_g0_2d4d is none");
-    }
+
+    // ::core::mem::transmute::<
+    //     _,
+    //     fn(_, _, _),
+    // >(
+    //     (Some(((*envs).f_g0_2d4d).expect("non-null function pointer")))
+    //         .expect("non-null function pointer"),
+    // )(g, &mut bc, envs);
+
+    envs.f_g0_2d4d.expect("non-null")(g, &mut bc, envs);
     return 1 as i32;
 }
+
+// #[no_mangle]
+// pub unsafe extern "C" fn CINTg0_2e(
+//     mut g: *mut f64,
+//     mut rij: *mut f64,
+//     mut rkl: *mut f64,
+//     mut cutoff: f64,
+//     mut envs: *mut CINTEnvVars,
+// ) -> i32 {
+//     let mut irys: i32 = 0;
+//     let mut nroots: i32 = (*envs).nrys_roots;
+//     let mut aij: f64 = (*envs).ai[0 as i32 as usize] + (*envs).aj[0 as i32 as usize];
+//     let mut akl: f64 = (*envs).ak[0 as i32 as usize] + (*envs).al[0 as i32 as usize];
+//     let mut a0: f64 = 0.;
+//     let mut a1: f64 = 0.;
+//     let mut fac1: f64 = 0.;
+//     let mut x: f64 = 0.;
+//     let mut u: [f64; 32] = [0.; 32];
+//     let mut w: *mut f64 = g.offset(((*envs).g_size * 2 as i32) as isize);
+//     let mut xij_kl: f64 = *rij.offset(0) - *rkl.offset(0);
+//     let mut yij_kl: f64 = *rij.offset(1) - *rkl.offset(1);
+//     let mut zij_kl: f64 = *rij.offset(2) - *rkl.offset(2);
+//     let mut rr: f64 = xij_kl * xij_kl + yij_kl * yij_kl + zij_kl * zij_kl;
+//     a1 = aij * akl;
+//     a0 = a1 / (aij + akl);
+//     fac1 = (a0 / (a1 * a1 * a1)).sqrt() * (*envs).fac[0 as i32 as usize];
+//     x = a0 * rr;
+//     let omega: f64 = (*envs).env[8];
+//     let mut theta: f64 = 0 as i32 as f64;
+//     if omega == 0.0f64 {
+//         CINTrys_roots(nroots, x, u.as_mut_ptr(), w);
+//     } else if omega < 0.0f64 {
+//         theta = omega * omega / (omega * omega + a0);
+//         if theta * x > cutoff || theta * x > 40 as i32 as f64 {
+//             return 0 as i32;
+//         }
+//         let mut rorder: i32 = (*envs).rys_order;
+//         if rorder == nroots {
+//             CINTsr_rys_roots(nroots, x, (theta).sqrt(), u.as_mut_ptr(), w);
+//         } else {
+//             let mut sqrt_theta: f64 = -(theta.sqrt());
+//             CINTrys_roots(rorder, x, u.as_mut_ptr(), w);
+//             CINTrys_roots(
+//                 rorder,
+//                 theta * x,
+//                 u.as_mut_ptr().offset(rorder as isize),
+//                 w.offset(rorder as isize),
+//             );
+//             if (*envs).g_size == 2 as i32 {
+//                 *g.offset(0) = 1 as i32 as f64;
+//                 *g.offset(1) = 1 as i32 as f64;
+//                 *g.offset(2) = 1 as i32 as f64;
+//                 *g.offset(3) = 1 as i32 as f64;
+//                 *g.offset(4) *= fac1;
+//                 *g.offset(5) *= fac1 * sqrt_theta;
+//                 return 1 as i32;
+//             }
+//             irys = rorder;
+//             while irys < nroots {
+//                 let mut ut: f64 = u[irys as usize] * theta;
+//                 u[irys as usize] = ut / (u[irys as usize] + 1.0f64 - ut);
+//                 *w.offset(irys as isize) *= sqrt_theta;
+//                 irys += 1;
+//             }
+//         }
+//     } else {
+//         theta = omega * omega / (omega * omega + a0);
+//         x *= theta;
+//         fac1 *= theta.sqrt();
+//         CINTrys_roots(nroots, x, u.as_mut_ptr(), w);
+//         irys = 0 as i32;
+//         while irys < nroots {
+//             let mut ut_0: f64 = u[irys as usize] * theta;
+//             u[irys as usize] = ut_0 / (u[irys as usize] + 1.0f64 - ut_0);
+//             irys += 1;
+//         }
+//     }
+//     if (*envs).g_size == 1 as i32 {
+//         *g.offset(0) = 1 as i32 as f64;
+//         *g.offset(1) = 1 as i32 as f64;
+//         *g.offset(2) *= fac1;
+//         return 1 as i32;
+//     }
+//     let mut u2: f64 = 0.;
+//     let mut tmp1: f64 = 0.;
+//     let mut tmp2: f64 = 0.;
+//     let mut tmp3: f64 = 0.;
+//     let mut tmp4: f64 = 0.;
+//     let mut tmp5: f64 = 0.;
+//     let mut rijrx: f64 = *rij.offset(0 as i32 as isize) - (*envs).rx_in_rijrx[0];
+//     let mut rijry: f64 = *rij.offset(1 as i32 as isize) - (*envs).rx_in_rijrx[1];
+//     let mut rijrz: f64 = *rij.offset(2 as i32 as isize) - (*envs).rx_in_rijrx[2];
+//     let mut rklrx: f64 = *rkl.offset(0 as i32 as isize) - (*envs).rx_in_rklrx[0];
+//     let mut rklry: f64 = *rkl.offset(1 as i32 as isize) - (*envs).rx_in_rklrx[1];
+//     let mut rklrz: f64 = *rkl.offset(2 as i32 as isize) - (*envs).rx_in_rklrx[2];
+//     let mut bc: Rys2eT = Rys2eT {
+//         c00x: [0.; 32],
+//         c00y: [0.; 32],
+//         c00z: [0.; 32],
+//         c0px: [0.; 32],
+//         c0py: [0.; 32],
+//         c0pz: [0.; 32],
+//         b01: [0.; 32],
+//         b00: [0.; 32],
+//         b10: [0.; 32],
+//     };
+//     let mut b00: *mut f64 = (bc.b00).as_mut_ptr();
+//     let mut b10: *mut f64 = (bc.b10).as_mut_ptr();
+//     let mut b01: *mut f64 = (bc.b01).as_mut_ptr();
+//     let mut c00x: *mut f64 = (bc.c00x).as_mut_ptr();
+//     let mut c00y: *mut f64 = (bc.c00y).as_mut_ptr();
+//     let mut c00z: *mut f64 = (bc.c00z).as_mut_ptr();
+//     let mut c0px: *mut f64 = (bc.c0px).as_mut_ptr();
+//     let mut c0py: *mut f64 = (bc.c0py).as_mut_ptr();
+//     let mut c0pz: *mut f64 = (bc.c0pz).as_mut_ptr();
+//     irys = 0 as i32;
+//     while irys < nroots {
+//         u2 = a0 * u[irys as usize];
+//         tmp4 = 0.5f64 / (u2 * (aij + akl) + a1);
+//         tmp5 = u2 * tmp4;
+//         tmp1 = 2.0f64 * tmp5;
+//         tmp2 = tmp1 * akl;
+//         tmp3 = tmp1 * aij;
+//         *b00.offset(irys as isize) = tmp5;
+//         *b10.offset(irys as isize) = tmp5 + tmp4 * akl;
+//         *b01.offset(irys as isize) = tmp5 + tmp4 * aij;
+//         *c00x.offset(irys as isize) = rijrx - tmp2 * xij_kl;
+//         *c00y.offset(irys as isize) = rijry - tmp2 * yij_kl;
+//         *c00z.offset(irys as isize) = rijrz - tmp2 * zij_kl;
+//         *c0px.offset(irys as isize) = rklrx + tmp3 * xij_kl;
+//         *c0py.offset(irys as isize) = rklry + tmp3 * yij_kl;
+//         *c0pz.offset(irys as isize) = rklrz + tmp3 * zij_kl;
+//         *w.offset(irys as isize) *= fac1;
+//         irys += 1;
+//     }
+//     if let Some(f_g0_2d4d) = (*envs).f_g0_2d4d {
+//         f_g0_2d4d.foo(g, &mut bc, envs);
+//     } else {
+//         panic!("f_g0_2d4d is none");
+//     }
+//     return 1 as i32;
+// }
 // #[no_mangle]
 // pub unsafe extern "C" fn CINTnabla1i_2e(
 //     mut f: *mut f64,

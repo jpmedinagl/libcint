@@ -829,13 +829,14 @@ pub unsafe fn int1e_ovlp_sph(
     let ng = [0, 0, 0, 0, 0, 1, 1, 1];
     let mut envs = CINTEnvVars::new();
     CINTinit_int1e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
-    envs.f_gout = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> ()>,
-        Option<unsafe extern "C" fn() -> ()>,
-    >(Some(
-        CINTgout1e
-            as unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> (),
-    ));
+    // envs.f_gout = ::core::mem::transmute::<
+    //     Option<unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> ()>,
+    //     Option<unsafe extern "C" fn() -> ()>,
+    // >(Some(
+    //     CINTgout1e
+    //         as unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> (),
+    // ));
+    envs.f_gout = Some(CINTgout1e_cpy);
     return CINT1e_drv(
         out,
         dims,
@@ -860,13 +861,14 @@ pub unsafe fn int1e_ovlp_cart(
     let ng = [0, 0, 0, 0, 0, 1, 1, 1];
     let mut envs = CINTEnvVars::new();
     CINTinit_int1e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
-    envs.f_gout = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> ()>,
-        Option<unsafe extern "C" fn() -> ()>,
-    >(Some(
-        CINTgout1e
-            as unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> (),
-    ));
+    // envs.f_gout = ::core::mem::transmute::<
+    //     Option<unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> ()>,
+    //     Option<unsafe extern "C" fn() -> ()>,
+    // >(Some(
+    //     CINTgout1e
+    //         as unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> (),
+    // ));
+    envs.f_gout = Some(CINTgout1e_cpy);
     return CINT1e_drv(
         out,
         dims,
@@ -891,13 +893,14 @@ pub unsafe fn int1e_nuc_sph(
     let ng = [0, 0, 0, 0, 0, 1, 0, 1];
     let mut envs = CINTEnvVars::new();
     CINTinit_int1e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
-    envs.f_gout = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> ()>,
-        Option<unsafe extern "C" fn() -> ()>,
-    >(Some(
-        CINTgout1e_nuc
-            as unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> (),
-    ));
+    // envs.f_gout = ::core::mem::transmute::<
+    //     Option<unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> ()>,
+    //     Option<unsafe extern "C" fn() -> ()>,
+    // >(Some(
+    //     CINTgout1e_nuc
+    //         as unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> (),
+    // ));
+    envs.f_gout = Some(CINTgout1e_nuc_cpy);
     return CINT1e_drv(
         out,
         dims,
@@ -922,13 +925,14 @@ pub unsafe fn int1e_nuc_cart(
     let ng = [0, 0, 0, 0, 0, 1, 0, 1];
     let mut envs = CINTEnvVars::new();
     CINTinit_int1e_EnvVars(&mut envs, &ng, shls, atm, natm, bas, nbas, env);
-    envs.f_gout = ::core::mem::transmute::<
-        Option<unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> ()>,
-        Option<unsafe extern "C" fn() -> ()>,
-    >(Some(
-        CINTgout1e_nuc
-            as unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> (),
-    ));
+    // envs.f_gout = ::core::mem::transmute::<
+    //     Option<unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> ()>,
+    //     Option<unsafe extern "C" fn() -> ()>,
+    // >(Some(
+    //     CINTgout1e_nuc
+    //         as unsafe extern "C" fn(*mut f64, *mut f64, *mut i32, *mut CINTEnvVars, i32) -> (),
+    // ));
+    envs.f_gout = Some(CINTgout1e_nuc_cpy);
     return CINT1e_drv(
         out,
         dims,

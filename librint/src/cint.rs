@@ -94,10 +94,9 @@ pub struct CINTEnvVars {
     pub rj: [f64; 3],
     pub rk: [f64; 3],
     pub c2rust_unnamed_1: C2RustUnnamed,
-    pub f_g0_2e: Option<G2E2>,
-    pub f_g0_2d4d: Option<G2E>,
-    pub f_gout: Option<unsafe extern "C" fn() -> ()>,
-    // pub opt: &'a CINTOpt,
+    pub f_g0_2e: Option<FG0_2E>,
+    pub f_g0_2d4d: Option<FG0_2E_2D4D>,
+    pub f_gout: Option<FGOUT>,
     pub idx: Vec<i32>,
     pub ai: [f64; 1],
     pub aj: [f64; 1],
@@ -139,6 +138,25 @@ impl PairData {
         pdata
     }
 }
+
+impl Rys2eT {
+    pub fn new() -> Self {
+        let mut rys: Rys2eT = Rys2eT {
+            c00x: [0.0; 32],
+            c00y: [0.0; 32],
+            c00z: [0.0; 32],
+            c0px: [0.0; 32],
+            c0py: [0.0; 32],
+            c0pz: [0.0; 32],
+            b01: [0.0; 32],
+            b00: [0.0; 32],
+            b10: [0.0; 32],
+        };
+        rys
+    }
+}
+
+
 
 impl CINTEnvVars {
     pub fn new() -> Self {
