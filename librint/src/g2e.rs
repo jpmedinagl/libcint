@@ -14,6 +14,9 @@ use crate::g1e::CINTcommon_fac_sp;
 use crate::rys_roots::CINTrys_roots;
 use crate::rys_roots::CINTsr_rys_roots;
 
+
+use crate::cint_bas::CINTcart_comp_cpy;
+
 use crate::cint::CINTEnvVars;
 use crate::cint::Rys2eT;
 
@@ -167,6 +170,117 @@ pub unsafe fn CINTinit_int2e_EnvVars(
     }
     (*envs).f_g0_2e = Some(G2E2::g0_2e);
 }
+
+#[no_mangle]
+pub fn CINTg2e_index_xyz_cpy(
+    idx: &mut [i32], 
+    envs: &CINTEnvVars,
+) {
+    let i_l: i32 = envs.i_l;
+    let j_l: i32 = envs.j_l;
+    let k_l: i32 = envs.k_l;
+    let l_l: i32 = envs.l_l;
+    let nfi: usize = envs.nfi as usize;
+    let nfj: usize = envs.nfj as usize;
+    let nfk: usize = envs.c2rust_unnamed.nfk as usize;
+    let nfl: usize = envs.c2rust_unnamed_0.nfl as usize;
+    let di: i32 = envs.g_stride_i;
+    let dk: i32 = envs.g_stride_k;
+    let dl: i32 = envs.g_stride_l;
+    let dj: i32 = envs.g_stride_j;
+    
+    let mut ofx: i32 = 0;
+    let mut ofkx: i32 = 0;
+    let mut oflx: i32 = 0;
+    let mut ofy: i32 = 0;
+    let mut ofky: i32 = 0;
+    let mut ofly: i32 = 0;
+    let mut ofz: i32 = 0;
+    let mut ofkz: i32 = 0;
+    let mut oflz: i32 = 0;
+    let mut i_nx: [i32; 136] = [0; 136];
+    let mut i_ny: [i32; 136] = [0; 136];
+    let mut i_nz: [i32; 136] = [0; 136];
+    let mut j_nx: [i32; 136] = [0; 136];
+    let mut j_ny: [i32; 136] = [0; 136];
+    let mut j_nz: [i32; 136] = [0; 136];
+    let mut k_nx: [i32; 136] = [0; 136];
+    let mut k_ny: [i32; 136] = [0; 136];
+    let mut k_nz: [i32; 136] = [0; 136];
+    let mut l_nx: [i32; 136] = [0; 136];
+    let mut l_ny: [i32; 136] = [0; 136];
+    let mut l_nz: [i32; 136] = [0; 136];
+    CINTcart_comp_cpy(&mut i_nx, &mut i_ny, &mut i_nz, i_l);
+    CINTcart_comp_cpy(&mut j_nx, &mut j_ny, &mut j_nz, j_l);
+    CINTcart_comp_cpy(&mut k_nx, &mut k_ny, &mut k_nz, k_l);
+    CINTcart_comp_cpy(&mut l_nx, &mut l_ny, &mut l_nz, l_l);
+    ofx = 0 as i32;
+    ofy = envs.g_size;
+    ofz = envs.g_size * 2 as i32;
+    let mut n = 0;
+    for j in 0..nfj {
+        for l in 0..nfl {
+            oflx = ofx + dj * j_nx[j] + dl * l_nx[l];
+            ofly = ofy + dj * j_ny[j] + dl * l_ny[l];
+            oflz = ofz + dj * j_nz[j] + dl * l_nz[l];
+            for k in 0..nfk {
+                ofkx = oflx + dk * k_nx[k];
+                ofky = ofly + dk * k_ny[k];
+                ofkz = oflz + dk * k_nz[k];
+                match i_l {
+                    0 => {
+                        idx[n + 0] = ofkx;
+                        idx[n + 1] = ofky;
+                        idx[n + 2] = ofkz;
+                        n += 3;
+                    }
+                    1 => {
+                        idx[n + 0] = ofkx + di;
+                        idx[n + 1] = ofky;
+                        idx[n + 2] = ofkz;
+                        idx[n + 3] = ofkx;
+                        idx[n + 4] = ofky + di;
+                        idx[n + 5] = ofkz;
+                        idx[n + 6] = ofkx;
+                        idx[n + 7] = ofky;
+                        idx[n + 8] = ofkz + di;
+                        n += 9;
+                    }
+                    2 => {
+                        idx[n + 0] = ofkx + di * 2;
+                        idx[n + 1] = ofky;
+                        idx[n + 2] = ofkz;
+                        idx[n + 3] = ofkx + di;
+                        idx[n + 4] = ofky + di;
+                        idx[n + 5] = ofkz;
+                        idx[n + 6] = ofkx + di;
+                        idx[n + 7] = ofky;
+                        idx[n + 8] = ofkz + di;
+                        idx[n + 9] = ofkx;
+                        idx[n + 10] = ofky + di * 2;
+                        idx[n + 11] = ofkz;
+                        idx[n + 12] = ofkx;
+                        idx[n + 13] = ofky + di;
+                        idx[n + 14] = ofkz + di;
+                        idx[n + 15] = ofkx;
+                        idx[n + 16] = ofky;
+                        idx[n + 17] = ofkz + di * 2;
+                        n += 18;
+                    }
+                    _ => {
+                        for i in 0..nfi {
+                            idx[n + 0] = ofkx + di * i_nx[i];
+                            idx[n + 1] = ofky + di * i_ny[i];
+                            idx[n + 2] = ofkz + di * i_nz[i];
+                            n += 3;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 #[no_mangle]
 pub unsafe extern "C" fn CINTg2e_index_xyz(mut idx: *mut i32, mut envs: *const CINTEnvVars) {
     let i_l: i32 = (*envs).i_l;

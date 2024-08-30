@@ -248,10 +248,10 @@ pub fn CINTg1e_ovlp_cpy(g: &mut [f64], envs: &CINTEnvVars) -> i32 {
         gz[(i + 1) * di] = i as f64 * aij2 * gz[(i - 1) * di] + rijrx[2] * gz[i * di];
     }
 
-    for j in 1..lj {
+    for j in 1..(lj + 1) {
         ptr = dj * j;
         n = ptr;
-        for _i in 0..(nmax - j) {
+        for _i in 0..(nmax - j + 1) {
             gx[n] = gx[n + di - dj] + rirj[0] * gx[n - dj];
             gy[n] = gy[n + di - dj] + rirj[1] * gy[n - dj];
             gz[n] = gz[n + di - dj] + rirj[2] * gz[n - dj];
@@ -1080,17 +1080,17 @@ pub fn CINTprim_to_ctr_0_cpy(
     gc: &mut [f64],
     gp: &[f64],
     coeff: &[f64],
-    nf: size_t,
-    nprim: i32,
-    nctr: i32,
-    _non0ctr: i32,
+    nf: usize,
+    nprim: usize,
+    nctr: usize,
+    _non0ctr: usize,
     _sortedidx: &[i32],
 ) {
     let mut c0: f64 = 0.;
-    for i in 0..nctr as usize {
-        c0 = coeff[nprim as usize * i];
-        for n in 0..nf as usize {
-            gc[nf as usize * i + n] = c0 * gp[n];
+    for i in 0..nctr {
+        c0 = coeff[nprim * i];
+        for n in 0..nf {
+            gc[nf * i + n] = c0 * gp[n];
         }
     }
 }
@@ -1099,19 +1099,19 @@ pub fn CINTprim_to_ctr_1_cpy(
     gc: &mut [f64],
     gp: &[f64],
     coeff: &[f64],
-    nf: size_t,
-    nprim: i32,
-    _nctr: i32,
-    non0ctr: i32,
+    nf: usize,
+    nprim: usize,
+    _nctr: usize,
+    non0ctr: usize,
     sortedidx: &[i32],
 ) {
     let mut j: usize = 0;
     let mut c0: f64 = 0.;
-    for i in 0..non0ctr as usize {
-        c0 = coeff[(nprim * sortedidx[i]) as usize];
+    for i in 0..non0ctr {
+        c0 = coeff[nprim * sortedidx[i] as usize];
         j = sortedidx[i] as usize;
-        for n in 0..nf as usize {
-            gc[nf as usize * j + n] += c0 * gp[n];
+        for n in 0..nf {
+            gc[nf * j + n] += c0 * gp[n];
         }
     }
 }

@@ -197,10 +197,10 @@ pub fn CINT1e_loop_cpy(
                             &mut gctri,
                             &gout,
                             &ci[ip..],
-                            (envs.nf * n_comp) as size_t,
-                            i_prim as i32,
-                            i_ctr as i32,
-                            non0ctri[ip],
+                            (envs.nf * n_comp) as usize,
+                            i_prim,
+                            i_ctr,
+                            non0ctri[ip] as usize,
                             &non0idxi[(ip * i_ctr)..],
                         );
                     } else {
@@ -208,10 +208,10 @@ pub fn CINT1e_loop_cpy(
                             &mut gctri,
                             &gout,
                             &ci[ip..],
-                            (envs.nf * n_comp) as u64,
-                            i_prim as i32,
-                            i_ctr as i32,
-                            non0ctri[ip],
+                            (envs.nf * n_comp) as usize,
+                            i_prim,
+                            i_ctr,
+                            non0ctri[ip] as usize,
                             &non0idxi[(ip * i_ctr)..],
                         );
                     }
@@ -231,10 +231,10 @@ pub fn CINT1e_loop_cpy(
                         &mut gctrj,
                         &gctri,
                         &cj[jp..],
-                        (envs.nf * i_ctr as i32 * n_comp) as size_t,
-                        j_prim as i32,
-                        j_ctr as i32,
-                        non0ctrj[jp],
+                        (envs.nf * i_ctr as i32 * n_comp) as usize,
+                        j_prim,
+                        j_ctr,
+                        non0ctrj[jp] as usize,
                         &non0idxj[(jp * j_ctr)..],
                     );
                 } else {
@@ -242,10 +242,10 @@ pub fn CINT1e_loop_cpy(
                         &mut gctrj,
                         &gctri,
                         &cj[jp..],
-                        (envs.nf * i_ctr as i32 * n_comp) as size_t,
-                        j_prim as i32,
-                        j_ctr as i32,
-                        non0ctrj[jp],
+                        (envs.nf * i_ctr as i32 * n_comp) as usize,
+                        j_prim,
+                        j_ctr,
+                        non0ctrj[jp] as usize,
                         &non0idxj[(jp * j_ctr)..],
                     );
                 }
@@ -528,6 +528,9 @@ pub fn CINT1e_drv(
     let has_value: i32;
 
     has_value = CINT1e_loop_cpy(&mut gctr, envs, cache, int1e_type);
+    // unsafe {
+    //     has_value = CINT1e_loop(gctr.as_mut_ptr(), envs as *mut CINTEnvVars, cache.as_mut_ptr(), int1e_type);
+    // }
 
     let mut counts: [i32; 4] = [0; 4];
 
