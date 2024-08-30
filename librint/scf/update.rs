@@ -138,7 +138,7 @@ fn main() -> io::Result<()> {
     let mut bas: Vec<i32> = Vec::new();
     let mut env: Vec<f64> = Vec::new();
 
-    let path = "/u/jpmedina/libcint/librint/molecules/h2o/def2svp.txt";
+    let path = "/u/jpmedina/libcint/librint/molecules/h2o/sto3g.txt";
     read_basis(path, &mut atm, &mut bas, &mut env)?;
 
     let nshells_cart = angl(&mut bas, 0);
@@ -146,11 +146,11 @@ fn main() -> io::Result<()> {
 
     println!("ovlp cart");
     let mut S = integral1e(&mut atm, &mut bas, &mut env, 0, 0);
-    // print_arr(nshells_cart, 2, &mut S);
+    print_arr(nshells_cart, 2, &mut S);
 
     println!("ovlp sph");
     S = integral1e(&mut atm, &mut bas, &mut env, 1, 0);
-    // print_arr(nshells_sph, 2, &mut S);
+    print_arr(nshells_sph, 2, &mut S);
 
     // let mut T = integral1e(&mut atm, &mut bas, &mut env, 0, 1);
     // println!("kin cart");
@@ -170,11 +170,11 @@ fn main() -> io::Result<()> {
 
     println!("repulsion cart");
     let mut R = integral2e(&mut atm, &mut bas, &mut env, 0);
-    // print_arr(nshells_cart, 4, &mut R);
+    print_arr(nshells_cart, 4, &mut R);
 
     println!("repulsion sph");
     R = integral2e(&mut atm, &mut bas, &mut env, 1);
-    // print_arr(nshells_sph, 4, &mut R);
+    print_arr(nshells_sph, 4, &mut R);
 
     // let (s1, s2) = split(&mut bas);
 

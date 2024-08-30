@@ -1,26 +1,21 @@
 #![feature(autodiff)]
 
-use librint::cint_bas::CINTcgto_cart;
-use librint::cint1e::cint1e_ovlp_cart;
 use librint::cint1e::cint1e_nuc_cart;
-use librint::intor1::cint1e_kin_cart;
+use librint::cint1e::cint1e_ovlp_cart;
 use librint::cint2e::cint2e_cart;
+use librint::cint_bas::CINTcgto_cart;
+use librint::intor1::cint1e_kin_cart;
 
-use faer::mat;
-use faer::linalg::solvers::Eigendecomposition;
 use faer::complex_native::c64;
+use faer::linalg::solvers::Eigendecomposition;
+use faer::mat;
 
 pub const ATM_SLOTS: usize = 6;
 pub const BAS_SLOTS: usize = 8;
 
 pub const N_STO: i32 = 3;
 
-fn matmult(
-    n: usize,
-    A: &mut [f64],
-    B: &mut [f64],
-    C: &mut [f64],
-) {
+fn matmult(n: usize, A: &mut [f64], B: &mut [f64], C: &mut [f64]) {
     // cij = aik bkj
     C.fill(0.0);
     for i in 0..n {
@@ -32,11 +27,7 @@ fn matmult(
     }
 }
 
-fn transpose(
-    n: usize,
-    C: &mut [f64],
-    Ct: &mut [f64],
-) {
+fn transpose(n: usize, C: &mut [f64], Ct: &mut [f64]) {
     for i in 0..n {
         for j in 0..n {
             Ct[i * n + j] = C[j * n + i]
@@ -44,11 +35,7 @@ fn transpose(
     }
 }
 
-fn dcopy(
-    n: usize,
-    A: &mut [f64],
-    Ac: &mut [f64],
-) {
+fn dcopy(n: usize, A: &mut [f64], Ac: &mut [f64]) {
     for i in 0..n {
         for j in 0..n {
             Ac[i * n + j] = A[i * n + j];
@@ -56,16 +43,9 @@ fn dcopy(
     }
 }
 
-fn zero(
+fn zero() {}
 
-) {
-
-}
-
-fn print_mat(
-    n: usize,
-    C: &mut [f64],
-) {
+fn print_mat(n: usize, C: &mut [f64]) {
     for i in 0..n {
         for j in 0..n {
             print!("{} ", C[i * n + j]);
@@ -94,45 +74,40 @@ fn integrals(
         for j in 0..nbas {
             shls[0] = i as i32;
             shls[1] = j as i32;
-            
+
             let di = CINTcgto_cart(i as usize, &bas);
             let dj = CINTcgto_cart(j as usize, &bas);
 
             buf = vec![0.0; (di * dj) as usize];
             cint1e_ovlp_cart(&mut buf, &mut shls, atm, natm as i32, bas, nbas as i32, env);
-            S[i*nbas + j] = buf[0];
+            S[i * nbas + j] = buf[0];
 
             cint1e_kin_cart(&mut buf, &mut shls, atm, natm as i32, bas, nbas as i32, env);
-            T[i*nbas + j] = buf[0];
+            T[i * nbas + j] = buf[0];
 
             cint1e_nuc_cart(&mut buf, &mut shls, atm, natm as i32, bas, nbas as i32, env);
-            V[i*nbas + j] = buf[0];
+            V[i * nbas + j] = buf[0];
 
-            H[i*nbas + j] = T[i*nbas + j] + V[i*nbas + j];
+            H[i * nbas + j] = T[i * nbas + j] + V[i * nbas + j];
 
             for k in 0..nbas {
                 for l in 0..nbas {
                     shls[2] = k as i32;
                     shls[3] = l as i32;
-        
+
                     let dk = CINTcgto_cart(k as usize, &bas);
                     let dl = CINTcgto_cart(l as usize, &bas);
 
                     buf = vec![0.0; (di * dj * dk * dl) as usize];
                     cint2e_cart(&mut buf, &mut shls, atm, natm as i32, bas, nbas as i32, env);
-                    two[i*nbas.pow(3) + j*nbas.pow(2) + k*nbas.pow(1) + l] = buf[0];
+                    two[i * nbas.pow(3) + j * nbas.pow(2) + k * nbas.pow(1) + l] = buf[0];
                 }
             }
         }
     }
 }
 
-fn find_X(
-    nbas: usize,
-    S: &mut [f64],
-    X: &mut [f64],
-    Xdag: &mut [f64],
-) {
+fn find_X(nbas: usize, S: &mut [f64], X: &mut [f64], Xdag: &mut [f64]) {
     let s_mat = mat::from_column_major_slice::<f64>(&S, nbas, nbas);
     let eig_decomp: Eigendecomposition<c64> = Eigendecomposition::new_from_real(s_mat);
     let eigenvalues = eig_decomp.s();
@@ -176,13 +151,13 @@ fn calc_F(
         for nu in 0..nbas {
             for la in 0..nbas {
                 for sig in 0..nbas {
-                    G[mu*nbas + nu] += P[la*nbas + sig]
-                        * (two[mu*nbas.pow(3) + nu*nbas.pow(2) + sig*nbas + la]
-                        - 0.5 * two[mu*nbas.pow(3) + la*nbas.pow(2) + sig*nbas + nu]);
+                    G[mu * nbas + nu] += P[la * nbas + sig]
+                        * (two[mu * nbas.pow(3) + nu * nbas.pow(2) + sig * nbas + la]
+                            - 0.5 * two[mu * nbas.pow(3) + la * nbas.pow(2) + sig * nbas + nu]);
                 }
             }
 
-            F[mu*nbas + nu] += G[mu*nbas + nu] + H[mu*nbas + nu];
+            F[mu * nbas + nu] += G[mu * nbas + nu] + H[mu * nbas + nu];
         }
     }
 }
@@ -199,13 +174,7 @@ fn calc_Fprime(
     matmult(nbas, &mut inter, X, &mut Fprime);
 }
 
-fn diag_F(
-    nbas: usize,
-    Fprime: &mut [f64],
-    X: &mut [f64],
-    C: &mut [f64],
-    epsilon: &mut [f64],
-) {
+fn diag_F(nbas: usize, Fprime: &mut [f64], X: &mut [f64], C: &mut [f64], epsilon: &mut [f64]) {
     // diagonalize Fprime
     let fprime_mat = mat::from_column_major_slice::<f64>(&Fprime, nbas, nbas);
     let eig_decomp: Eigendecomposition<c64> = Eigendecomposition::new_from_real(fprime_mat);
@@ -223,7 +192,7 @@ fn diag_F(
     transpose(nbas, &mut U, &mut Udag);
 
     let mut inter = vec![0.0; nbas * nbas];
-    matmult(nbas, &mut Udag, Fprime, &mut inter); 
+    matmult(nbas, &mut Udag, Fprime, &mut inter);
 
     let mut f = vec![0.0; nbas * nbas];
     matmult(nbas, &mut inter, &mut U, &mut f);
@@ -236,15 +205,11 @@ fn diag_F(
     matmult(nbas, X, &mut Cprime, C);
 }
 
-fn calc_P(
-    nbas: usize,
-    nelec: usize,
-    C: &mut [f64],
-) -> Vec<f64> {
+fn calc_P(nbas: usize, nelec: usize, C: &mut [f64]) -> Vec<f64> {
     let mut P = vec![0.0; nbas * nbas];
     for mu in 0..nbas {
         for nu in 0..nbas {
-            for i in 0..(nelec/2) {
+            for i in 0..(nelec / 2) {
                 P[mu * nbas + nu] += 2.0 * C[mu * nbas + i] * C[nu * nbas + i];
             }
         }
@@ -252,11 +217,7 @@ fn calc_P(
     return P;
 }
 
-fn f_delta(
-    nbas: usize,
-    P: &mut [f64],
-    Pold: &mut [f64],
-) -> f64 {
+fn f_delta(nbas: usize, P: &mut [f64], Pold: &mut [f64]) -> f64 {
     let mut delta: f64 = 0.0;
     for mu in 0..nbas {
         for nu in 0..nbas {
@@ -267,20 +228,15 @@ fn f_delta(
     return delta;
 }
 
-fn norm(
-    atm: &mut [i32],
-    env: &mut [f64],
-    i: usize,
-    j: usize,
-) -> f64 {
-    let xi: f64 = env[(atm[i*6 + 1]) as usize];
-    let xj: f64 = env[(atm[j*6 + 1]) as usize];
+fn norm(atm: &mut [i32], env: &mut [f64], i: usize, j: usize) -> f64 {
+    let xi: f64 = env[(atm[i * 6 + 1]) as usize];
+    let xj: f64 = env[(atm[j * 6 + 1]) as usize];
 
-    let yi: f64 = env[(atm[i*6 + 1] + 1) as usize];
-    let yj: f64 = env[(atm[j*6 + 1] + 1) as usize];
+    let yi: f64 = env[(atm[i * 6 + 1] + 1) as usize];
+    let yj: f64 = env[(atm[j * 6 + 1] + 1) as usize];
 
-    let zi: f64 = env[(atm[i*6 + 1] + 2) as usize];
-    let zj: f64 = env[(atm[j*6 + 1] + 2) as usize];
+    let zi: f64 = env[(atm[i * 6 + 1] + 2) as usize];
+    let zj: f64 = env[(atm[j * 6 + 1] + 2) as usize];
 
     return ((xi - xj).powf(2.0) + (yi - yj).powf(2.0) + (zi - zj).powf(2.0)).powf(0.5);
 }
@@ -300,7 +256,9 @@ fn RHF(
     let mut V = vec![0.0; nbas * nbas];
     let mut H = vec![0.0; nbas * nbas];
     let mut two = vec![0.0; nbas * nbas * nbas * nbas];
-    integrals(natm, nbas, atm, bas, env, &mut S, &mut T, &mut V, &mut H, &mut two);
+    integrals(
+        natm, nbas, atm, bas, env, &mut S, &mut T, &mut V, &mut H, &mut two,
+    );
 
     let mut X = vec![0.0; nbas * nbas];
     let mut Xdag = vec![0.0; nbas * nbas];
@@ -310,7 +268,7 @@ fn RHF(
     for i in 0..nbas {
         for j in 0..nbas {
             if i == j {
-                P[i*nbas + j] = 1.0;
+                P[i * nbas + j] = 1.0;
             }
         }
     }
@@ -340,7 +298,7 @@ fn RHF(
     println!("Conv P:");
     for i in 0..nbas {
         for j in 0..nbas {
-            print!("{} ", P[i*nbas + j]);
+            print!("{} ", P[i * nbas + j]);
         }
         println!();
     }
@@ -352,7 +310,9 @@ fn RHF(
     return P;
 }
 
-#[autodiff(denergy, Reverse, Duplicated, Const, Const, Const, Const, Duplicated, Const)]
+#[autodiff(
+    denergy, Reverse, Duplicated, Const, Const, Const, Const, Duplicated, Const
+)]
 fn energy(
     E: &mut f64,
     natm: usize,
@@ -367,7 +327,9 @@ fn energy(
     let mut V = vec![0.0; nbas * nbas];
     let mut H = vec![0.0; nbas * nbas];
     let mut two = vec![0.0; nbas * nbas * nbas * nbas];
-    integrals(natm, nbas, atm, bas, env, &mut S, &mut T, &mut V, &mut H, &mut two);
+    integrals(
+        natm, nbas, atm, bas, env, &mut S, &mut T, &mut V, &mut H, &mut two,
+    );
 
     let mut G = vec![0.0; nbas * nbas];
     let mut F = vec![0.0; nbas * nbas];
@@ -376,7 +338,7 @@ fn energy(
     let mut E0: f64 = 0.0;
     for mu in 0..nbas {
         for nu in 0..nbas {
-            E0 += 0.5 * P[mu*nbas + nu] * (H[mu*nbas + nu]  + F[mu*nbas + nu]);
+            E0 += 0.5 * P[mu * nbas + nu] * (H[mu * nbas + nu] + F[mu * nbas + nu]);
         }
     }
 
@@ -384,7 +346,7 @@ fn energy(
     for i in 0..nbas {
         for j in 0..nbas {
             if i > j {
-                Enuc += (atm[i*6 + 0] * atm[j*6 + 0]) as f64 / (norm(atm, env, i, j));
+                Enuc += (atm[i * 6 + 0] * atm[j * 6 + 0]) as f64 / (norm(atm, env, i, j));
             }
         }
     }
@@ -400,8 +362,11 @@ fn main() {
 
     let mut atm: [i32; natm * ATM_SLOTS] = [1, 20, 1, 23, 0, 0, 1, 24, 1, 27, 0, 0];
     let mut bas: [i32; nbas * BAS_SLOTS] = [0, 0, 3, 1, 0, 28, 31, 0, 1, 0, 3, 1, 0, 28, 31, 0];
-    let mut env: [f64; 34] = [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 
-        -1.5117809, 0., 0., 0., 1.5117809, 0., 3.42525091, 0.62391373, 0.1688554, 0.98170675, 0.94946401, 0.29590645];
+    let mut env: [f64; 34] = [
+        0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+        -1.5117809, 0., 0., 0., 1.5117809, 0., 3.42525091, 0.62391373, 0.1688554, 0.98170675,
+        0.94946401, 0.29590645,
+    ];
     let mut denv: [f64; 34] = [0.0; 34];
 
     const imax: i32 = 2;
@@ -411,7 +376,9 @@ fn main() {
 
     let mut Etot: f64 = 0.0;
     let mut dEtot: f64 = 1.0;
-    denergy(&mut Etot, &mut dEtot, natm, nbas, &mut atm, &mut bas, &mut env, &mut denv, &mut P);
+    denergy(
+        &mut Etot, &mut dEtot, natm, nbas, &mut atm, &mut bas, &mut env, &mut denv, &mut P,
+    );
     println!("Etot: {}", Etot);
 
     println!("denv:");
