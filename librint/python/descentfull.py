@@ -8,20 +8,20 @@ import time
 
 SAVE = True
 
-mol = pyscf.gto.M(atom='''
-                    O   -0.0000000   -0.1113512    0.0000000
-                    H    0.0000000    0.4454047   -0.7830363
-                    H   -0.0000000    0.4454047    0.7830363''',
-                    basis='sto-3g')
-
-nelec = 10
-
 # mol = pyscf.gto.M(atom='''
-#                     H 0 0 -0.4
-#                     H 0 0 0.4''',
+#                     O   -0.0000000   -0.1113512    0.0000000
+#                     H    0.0000000    0.4454047   -0.7830363
+#                     H   -0.0000000    0.4454047    0.7830363''',
 #                     basis='sto-3g')
 
-# nelec = 2
+# nelec = 10
+
+mol = pyscf.gto.M(atom='''
+                    H 0 0 -0.4
+                    H 0 0 0.4''',
+                    basis='sto-3g')
+
+nelec = 2
 
 atm = np.asarray(mol._atm, dtype=np.int32, order='C')
 bas = np.asarray(mol._bas, dtype=np.int32, order='C')
@@ -50,26 +50,29 @@ while not (delta < epsilon or i == max_i):
     
     P = libcscf.density(atm, bas, env, nelec)
     denergy = libcscf.denergyf(atm, bas, env, P)
-    env[a:b] = env[a:b] - alpha * denergy
-    delta = np.linalg.norm(denergy)
-    end = time.perf_counter()
+    danalytical = libcscf.danalyticalf(atm, bas, env, P)
 
     E = libcscf.energy(atm, bas, env, P)
 
-    # fd = np.zeros(b-a)
-    # for j in range(a, b):
-    #     env[j] -= h
-    #     P1 = libcscf.density(atm, bas, env, nelec)
-    #     E1 = libcscf.energy(atm, bas, env, P1)
-    #     env[j] += 2.0*h
-    #     P2 = libcscf.density(atm, bas, env, nelec)
-    #     E2 = libcscf.energy(atm, bas, env, P2)
+    fd = np.zeros(b-a)
+    for j in range(a, b):
+        env[j] -= h
+        P1 = libcscf.density(atm, bas, env, nelec)
+        E1 = libcscf.energy(atm, bas, env, P1)
+        env[j] += 2.0*h
+        P2 = libcscf.density(atm, bas, env, nelec)
+        E2 = libcscf.energy(atm, bas, env, P2)
 
-    #     fd[j-a] = (E2 - E1)/(2.0*h)
-    #     env[j] -= h
+        fd[j-a] = (E2 - E1)/(2.0*h)
+        env[j] -= h
     
     # print(fd)
     # print(denergy)
+    # print(danalytical)
+
+    env[a:b] = env[a:b] - alpha * denergy
+    delta = np.linalg.norm(denergy)
+    end = time.perf_counter()
 
 
     # exit(1)
@@ -78,7 +81,7 @@ while not (delta < epsilon or i == max_i):
     E_arr.append(E)
     
     print(i)
-    # print("E: ", E)
+    print("E: ", E)
     print("delta: ", delta)
     # print("denv:  ", denergy)
     # if (np.linalg.norm(denv - fd) > 1e-4):
