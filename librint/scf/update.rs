@@ -1,5 +1,7 @@
 #![allow(non_snake_case, non_upper_case_globals)]
-// #![feature(autodiff)]
+#![feature(autodiff)]
+
+use std::autodiff::autodiff;
 
 use std::io;
 use std::time::Instant;
@@ -11,28 +13,27 @@ use librint::cint2e::cint2e_cart;
 use librint::cint_bas::CINTcgto_cart;
 
 // use librint::scf::{density, energyfast};
-// use librint::scf::{nmol, angl};
 use librint::scf::{angl, integral1e, integral2e, nmol};
-// use librint::utils::{split, combine};
+use librint::utils::{split, combine};
 use librint::utils::print_arr;
 
 pub const ATM_SLOTS: usize = 6;
 pub const BAS_SLOTS: usize = 8;
 
-// #[no_mangle]
-// #[autodiff(dovlp, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
-// pub fn ovlp(
-//     out: &mut Vec<f64>,
-//     shls: [i32; 4],
-//     atm: &mut Vec<i32>,
-//     bas: &mut Vec<i32>,
-//     env1: &mut Vec<f64>,
-//     env2: &mut Vec<f64>,
-// ) {
-//     let (natm, nbas) = nmol(atm, bas);
-//     let mut env: Vec<f64> = combine(&env1, &env2);
-//     cint1e_ovlp_cart(out, shls, atm, natm as i32, bas, nbas as i32, &mut env);
-// }
+#[no_mangle]
+#[autodiff(dovlp, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
+pub fn ovlp(
+    out: &mut Vec<f64>,
+    shls: [i32; 4],
+    atm: &mut Vec<i32>,
+    bas: &mut Vec<i32>,
+    env1: &mut Vec<f64>,
+    env2: &mut Vec<f64>,
+) {
+    let (natm, nbas) = nmol(atm, bas);
+    let mut env: Vec<f64> = combine(&env1, &env2);
+    cint1e_ovlp_cart(out, shls, atm, natm as i32, bas, nbas as i32, &mut env);
+}
 
 // #[no_mangle]
 // #[autodiff(denergyf, Reverse, Const, Const, Const, Duplicated, Const, Active)]
@@ -138,7 +139,7 @@ fn main() -> io::Result<()> {
     let mut bas: Vec<i32> = Vec::new();
     let mut env: Vec<f64> = Vec::new();
 
-    let path = "/u/jpmedina/libcint/librint/molecules/h2o/sto3g.txt";
+    let path = "/u/jpmedina/libcint/librint/molecules/h2/sto3g.txt";
     read_basis(path, &mut atm, &mut bas, &mut env)?;
 
     let nshells_cart = angl(&mut bas, 0);
@@ -168,42 +169,47 @@ fn main() -> io::Result<()> {
     // println!("nuc sph");
     // print_arr(nshells_sph, 2, &mut V);
 
-    println!("repulsion cart");
-    let mut R = integral2e(&mut atm, &mut bas, &mut env, 0);
-    print_arr(nshells_cart, 4, &mut R);
+    // println!("repulsion cart");
+    // let mut R = integral2e(&mut atm, &mut bas, &mut env, 0);
+    // print_arr(nshells_cart, 4, &mut R);
 
-    println!("repulsion sph");
-    R = integral2e(&mut atm, &mut bas, &mut env, 1);
-    print_arr(nshells_sph, 4, &mut R);
+    // println!("repulsion sph");
+    // R = integral2e(&mut atm, &mut bas, &mut env, 1);
+    // print_arr(nshells_sph, 4, &mut R);
 
-    // let (s1, s2) = split(&mut bas);
+    let (s1, s2) = split(&mut bas);
 
-    // let mut env1: Vec<f64> = env[0..s1].to_vec();
-    // let mut env2: Vec<f64> = env[s1..s2].to_vec();
+    let mut env1: Vec<f64> = env[0..s1].to_vec();
+    let mut env2: Vec<f64> = env[s1..s2].to_vec();
 
-    // let mut dbuf;
-    // let mut denv;
+    let mut buf;
+    let mut dbuf;
+    let mut denv;
 
-    // println!("dovlp");
-    // for i in 0..nbas {
-    //     for j in 0..nbas {
-    //         shls[0] = i as i32;
-    //         shls[1] = j as i32;
+    let (natm, nbas) = nmol(&mut atm, &mut bas);
 
-    //         let di = CINTcgto_cart(i, &bas);
-    //         let dj = CINTcgto_cart(j, &bas);
+    let mut shls: [i32; 4] = [0, 0, 0, 0];
 
-    //         buf = vec![0.0; (di * dj) as usize];
-    //         dbuf = vec![0.0; (di * dj) as usize];
-    //         denv = vec![0.0; env2.len()];
-    //         dovlp(&mut buf, &mut dbuf, shls, &mut atm, &mut bas, &mut env1, &mut env2, &mut denv);
+    println!("dovlp");
+    for i in 0..nbas {
+        for j in 0..nbas {
+            shls[0] = i as i32;
+            shls[1] = j as i32;
 
-    //         for k in 0..denv.len() {
-    //             print!("{} ", denv[k]);
-    //         }
-    //     }
-    //     println!();
-    // }
+            let di = CINTcgto_cart(i, &bas);
+            let dj = CINTcgto_cart(j, &bas);
+
+            buf = vec![0.0; (di * dj) as usize];
+            dbuf = vec![0.0; (di * dj) as usize];
+            denv = vec![0.0; env2.len()];
+            dovlp(&mut buf, &mut dbuf, shls, &mut atm, &mut bas, &mut env1, &mut env2, &mut denv);
+
+            for k in 0..denv.len() {
+                print!("{} ", denv[k]);
+            }
+        }
+        println!();
+    }
 
     // println!("repulsion");
     // for i in 0..nbas {
