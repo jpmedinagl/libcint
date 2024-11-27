@@ -3,21 +3,37 @@ name = "librint"
 version = "0.1.0"
 edition = "2021"
 
+# [target.x86_64-unknown-linux-gnu]
+# linker = "/u/jpmedina/llvm-project/build/bin"
+# rustflags = ["-Clink-arg=-fuse-ld=lld", "-Clink-arg=-Wl,--no-rosegment"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 libc = "0.2.155"
 faer = "0.19.0"
-pyo3 = { version = "0.17", features = ["extension-module"] }
+# pyo3 = { version = "0.17", features = ["extension-module"] }
+flamegraph = "=0.5.0"
+
+# [build]
+# rustflags = ["-C", "force-frame-pointers=yes"]
+
+# [profile.profiling]
+# inherits = "release"
+# debug = true
 
 [profile.dev]
 debug = true
 opt-level = 0
 debug-assertions = true
 lto = "fat"
+# strip = false
 
 [profile.release]
 lto = "fat"
+# debug = true
+# strip = false
+
 
 # ADD TO COMPILE LIBRARY TO .SO
 # [lib]
@@ -96,6 +112,16 @@ path = "scf/gradtiming.rs"
 name = "update"
 path = "scf/update.rs"
 
+[[bin]]
+name = "opt"
+path = "opt2/ovlp.rs"
+
+
+[[bin]]
+name = "stv"
+path = "scf/stv.rs"
+
+
 # AUTODIFF
 
 [[bin]]
@@ -109,3 +135,32 @@ path = "autodiff/forward.rs"
 [[bin]]
 name = "backward"
 path = "autodiff/backward.rs"
+
+[[bin]]
+name = "flame"
+path = "perf/flame.rs"
+
+[[bin]]
+name = "basic"
+path = "perf/basic.rs"
+
+[[bin]]
+name = "rand"
+path = "perf/rand.rs"
+
+[[bin]]
+name = "pscf"
+path = "perf/pscf.rs"
+
+[[bin]]
+name = "int"
+path = "perf/int.rs"
+
+[[bin]]
+name = "custom"
+path = "custom/customcombined.rs"
+
+
+[[bin]]
+name = "rep"
+path = "reproduce/rep.rs"
