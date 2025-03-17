@@ -2,21 +2,21 @@
 
 use std::io;
 
+use librint::utils::print_arr;
 use librint::utils::read_basis;
 use librint::utils::save_arr;
-use librint::utils::print_arr;
 
-use librint::cint_bas::CINTcgto_cart;
-use librint::cint1e::cint1e_ovlp_cart;
-use librint::intor1::cint1e_kin_cart;
 use librint::cint1e::cint1e_nuc_cart;
+use librint::cint1e::cint1e_ovlp_cart;
 use librint::cint2e::cint2e_cart;
+use librint::cint_bas::CINTcgto_cart;
+use librint::intor1::cint1e_kin_cart;
 
-use librint::cint_bas::CINTcgto_spheric;
-use librint::cint1e::cint1e_ovlp_sph;
-use librint::intor1::cint1e_kin_sph;
 use librint::cint1e::cint1e_nuc_sph;
+use librint::cint1e::cint1e_ovlp_sph;
 use librint::cint2e::cint2e_sph;
+use librint::cint_bas::CINTcgto_spheric;
+use librint::intor1::cint1e_kin_sph;
 
 pub const ATM_SLOTS: usize = 6;
 pub const BAS_SLOTS: usize = 8;
@@ -86,14 +86,15 @@ fn two(
     rep: &mut [f64],
 ) {
     let mut buf = vec![0.0; di * dj * dk * dl];
-        
+
     cint2e_cart(&mut buf, shls, atm, natm as i32, bas, nbas as i32, env);
     let mut c: usize = 0;
     for sigi in sig..(sig + dl) {
         for lami in lam..(lam + dk) {
             for nuj in nu..(nu + dj) {
                 for mui in mu..(mu + di) {
-                    rep[mui*nshells.pow(3) + nuj*nshells.pow(2) + lami*nshells + sigi] = buf[c];
+                    rep[mui * nshells.pow(3) + nuj * nshells.pow(2) + lami * nshells + sigi] =
+                        buf[c];
                     c += 1;
                 }
             }
@@ -139,7 +140,10 @@ fn int(
             di = CINTcgto_cart(i, &bas) as usize;
             dj = CINTcgto_cart(j, &bas) as usize;
 
-            one(natm, nbas, nshells, atm, bas, env, &mut shls, mu, nu, di, dj, &mut S, &mut T, &mut V);
+            one(
+                natm, nbas, nshells, atm, bas, env, &mut shls, mu, nu, di, dj, &mut S, &mut T,
+                &mut V,
+            );
 
             for k in 0..nbas {
                 lam = 0;
@@ -149,8 +153,11 @@ fn int(
 
                     dl = CINTcgto_cart(l, &bas) as usize;
                     dk = CINTcgto_cart(k, &bas) as usize;
-                    
-                    two(natm, nbas, nshells, atm, bas, env, &mut shls, mu, nu, sig, lam, di, dj, dk, dl, &mut rep);
+
+                    two(
+                        natm, nbas, nshells, atm, bas, env, &mut shls, mu, nu, sig, lam, di, dj,
+                        dk, dl, &mut rep,
+                    );
 
                     sig += dl;
                 }
@@ -172,8 +179,8 @@ fn main() -> io::Result<()> {
     let path = librint::get_path();
     read_basis(&path, &mut atm, &mut bas, &mut env)?;
 
-	const natm: usize = 3;
-	const nbas: usize = 5;
+    const natm: usize = 3;
+    const nbas: usize = 5;
     const nshells: usize = 7;
 
     let mut stv = int(natm, nbas, nshells, &mut atm, &mut bas, &mut env);

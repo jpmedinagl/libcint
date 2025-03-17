@@ -1,4 +1,12 @@
-#![allow(dead_code, mutable_transmutes, non_camel_case_types, non_snake_case, non_upper_case_globals, unused_assignments, unused_mut)]
+#![allow(
+    dead_code,
+    mutable_transmutes,
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    unused_assignments,
+    unused_mut
+)]
 #[no_mangle]
 pub unsafe extern "C" fn CINTdset0(mut n: i32, mut x: *mut f64) {
     let mut i: i32 = 0;
@@ -24,6 +32,40 @@ pub unsafe extern "C" fn CINTdaxpy2v(
     }
 }
 #[no_mangle]
+pub fn CINTdmat_transpose_cpy(a_t: &mut [f64], a: &[f64], m: usize, n: usize) {
+    let mut j = 0;
+    while j < n - 3 {
+        for i in 0..m {
+            a_t[(j + 0) * m + i] = a[i * n + j + 0];
+            a_t[(j + 1) * m + i] = a[i * n + j + 1];
+            a_t[(j + 2) * m + i] = a[i * n + j + 2];
+            a_t[(j + 3) * m + i] = a[i * n + j + 3];
+        }
+        j += 4;
+    }
+    match n - j {
+        1 => {
+            for i in 0..m {
+                a_t[j * m + i] = a[i * n + j];
+            }
+        }
+        2 => {
+            for i in 0..m {
+                a_t[(j + 0) * m + i] = a[i * n + j + 0];
+                a_t[(j + 1) * m + i] = a[i * n + j + 1];
+            }
+        }
+        3 => {
+            for i in 0..m {
+                a_t[(j + 0) * m + i] = a[i * n + j + 0];
+                a_t[(j + 1) * m + i] = a[i * n + j + 1];
+                a_t[(j + 2) * m + i] = a[i * n + j + 2];
+            }
+        }
+        _ => {}
+    };
+}
+#[no_mangle]
 pub unsafe extern "C" fn CINTdmat_transpose(
     mut a_t: *mut f64,
     mut a: *mut f64,
@@ -37,22 +79,14 @@ pub unsafe extern "C" fn CINTdmat_transpose(
     while j < n - 3 as i32 {
         i = 0 as i32;
         while i < m {
-            *a_t
-                .offset(
-                    ((j + 0 as i32) * m + i) as isize,
-                ) = *a.offset((i * n + j + 0 as i32) as isize);
-            *a_t
-                .offset(
-                    ((j + 1 as i32) * m + i) as isize,
-                ) = *a.offset((i * n + j + 1 as i32) as isize);
-            *a_t
-                .offset(
-                    ((j + 2 as i32) * m + i) as isize,
-                ) = *a.offset((i * n + j + 2 as i32) as isize);
-            *a_t
-                .offset(
-                    ((j + 3 as i32) * m + i) as isize,
-                ) = *a.offset((i * n + j + 3 as i32) as isize);
+            *a_t.offset(((j + 0 as i32) * m + i) as isize) =
+                *a.offset((i * n + j + 0 as i32) as isize);
+            *a_t.offset(((j + 1 as i32) * m + i) as isize) =
+                *a.offset((i * n + j + 1 as i32) as isize);
+            *a_t.offset(((j + 2 as i32) * m + i) as isize) =
+                *a.offset((i * n + j + 2 as i32) as isize);
+            *a_t.offset(((j + 3 as i32) * m + i) as isize) =
+                *a.offset((i * n + j + 3 as i32) as isize);
             i += 1;
         }
         j += 4 as i32;
@@ -68,33 +102,62 @@ pub unsafe extern "C" fn CINTdmat_transpose(
         2 => {
             i = 0 as i32;
             while i < m {
-                *a_t
-                    .offset(
-                        ((j + 0 as i32) * m + i) as isize,
-                    ) = *a.offset((i * n + j + 0 as i32) as isize);
-                *a_t
-                    .offset(
-                        ((j + 1 as i32) * m + i) as isize,
-                    ) = *a.offset((i * n + j + 1 as i32) as isize);
+                *a_t.offset(((j + 0 as i32) * m + i) as isize) =
+                    *a.offset((i * n + j + 0 as i32) as isize);
+                *a_t.offset(((j + 1 as i32) * m + i) as isize) =
+                    *a.offset((i * n + j + 1 as i32) as isize);
                 i += 1;
             }
         }
         3 => {
             i = 0 as i32;
             while i < m {
-                *a_t
-                    .offset(
-                        ((j + 0 as i32) * m + i) as isize,
-                    ) = *a.offset((i * n + j + 0 as i32) as isize);
-                *a_t
-                    .offset(
-                        ((j + 1 as i32) * m + i) as isize,
-                    ) = *a.offset((i * n + j + 1 as i32) as isize);
-                *a_t
-                    .offset(
-                        ((j + 2 as i32) * m + i) as isize,
-                    ) = *a.offset((i * n + j + 2 as i32) as isize);
+                *a_t.offset(((j + 0 as i32) * m + i) as isize) =
+                    *a.offset((i * n + j + 0 as i32) as isize);
+                *a_t.offset(((j + 1 as i32) * m + i) as isize) =
+                    *a.offset((i * n + j + 1 as i32) as isize);
+                *a_t.offset(((j + 2 as i32) * m + i) as isize) =
+                    *a.offset((i * n + j + 2 as i32) as isize);
                 i += 1;
+            }
+        }
+        _ => {}
+    };
+}
+#[no_mangle]
+pub fn CINTdplus_transpose_cpy(
+    a_t: &mut [f64],
+    a: &[f64],
+    m: usize,
+    n: usize,
+) {
+    let mut j: usize = 0;
+    while j < n - 3 {
+        for i in 0..m {
+            a_t[(j + 0) * m + i] += a[i * n + j + 0];
+            a_t[(j + 1) * m + i] += a[i * n + j + 1];
+            a_t[(j + 2) * m + i] += a[i * n + j + 2];
+            a_t[(j + 3) * m + i] += a[i * n + j + 3];
+        }
+        j += 4;
+    }
+    match n - j {
+        1 => {
+            for i in 0..m {
+                a_t[j * m + i] += a[i * n + j];
+            }
+        }
+        2 => {
+            for i in 0..m {
+                a_t[(j + 0) * m + i] += a[i * n + j + 0];
+                a_t[(j + 1) * m + i] += a[i * n + j + 1];
+            }
+        }
+        3 => {
+            for i in 0..m {
+                a_t[(j + 0) * m + i] += a[i * n + j + 0];
+                a_t[(j + 1) * m + i] += a[i * n + j + 1];
+                a_t[(j + 2) * m + i] += a[i * n + j + 2];
             }
         }
         _ => {}
@@ -114,14 +177,14 @@ pub unsafe extern "C" fn CINTdplus_transpose(
     while j < n - 3 as i32 {
         i = 0 as i32;
         while i < m {
-            *a_t.offset(((j + 0 as i32) * m + i) as isize)
-                += *a.offset((i * n + j + 0 as i32) as isize);
-            *a_t.offset(((j + 1 as i32) * m + i) as isize)
-                += *a.offset((i * n + j + 1 as i32) as isize);
-            *a_t.offset(((j + 2 as i32) * m + i) as isize)
-                += *a.offset((i * n + j + 2 as i32) as isize);
-            *a_t.offset(((j + 3 as i32) * m + i) as isize)
-                += *a.offset((i * n + j + 3 as i32) as isize);
+            *a_t.offset(((j + 0 as i32) * m + i) as isize) +=
+                *a.offset((i * n + j + 0 as i32) as isize);
+            *a_t.offset(((j + 1 as i32) * m + i) as isize) +=
+                *a.offset((i * n + j + 1 as i32) as isize);
+            *a_t.offset(((j + 2 as i32) * m + i) as isize) +=
+                *a.offset((i * n + j + 2 as i32) as isize);
+            *a_t.offset(((j + 3 as i32) * m + i) as isize) +=
+                *a.offset((i * n + j + 3 as i32) as isize);
             i += 1;
         }
         j += 4 as i32;
@@ -137,22 +200,22 @@ pub unsafe extern "C" fn CINTdplus_transpose(
         2 => {
             i = 0 as i32;
             while i < m {
-                *a_t.offset(((j + 0 as i32) * m + i) as isize)
-                    += *a.offset((i * n + j + 0 as i32) as isize);
-                *a_t.offset(((j + 1 as i32) * m + i) as isize)
-                    += *a.offset((i * n + j + 1 as i32) as isize);
+                *a_t.offset(((j + 0 as i32) * m + i) as isize) +=
+                    *a.offset((i * n + j + 0 as i32) as isize);
+                *a_t.offset(((j + 1 as i32) * m + i) as isize) +=
+                    *a.offset((i * n + j + 1 as i32) as isize);
                 i += 1;
             }
         }
         3 => {
             i = 0 as i32;
             while i < m {
-                *a_t.offset(((j + 0 as i32) * m + i) as isize)
-                    += *a.offset((i * n + j + 0 as i32) as isize);
-                *a_t.offset(((j + 1 as i32) * m + i) as isize)
-                    += *a.offset((i * n + j + 1 as i32) as isize);
-                *a_t.offset(((j + 2 as i32) * m + i) as isize)
-                    += *a.offset((i * n + j + 2 as i32) as isize);
+                *a_t.offset(((j + 0 as i32) * m + i) as isize) +=
+                    *a.offset((i * n + j + 0 as i32) as isize);
+                *a_t.offset(((j + 1 as i32) * m + i) as isize) +=
+                    *a.offset((i * n + j + 1 as i32) as isize);
+                *a_t.offset(((j + 2 as i32) * m + i) as isize) +=
+                    *a.offset((i * n + j + 2 as i32) as isize);
                 i += 1;
             }
         }
@@ -185,8 +248,7 @@ pub unsafe extern "C" fn CINTdgemm_NN1(
             bi = *b.offset((kp + k * j) as isize);
             i = 0 as i32;
             while i < m {
-                *c.offset((i + ldc * j) as isize)
-                    += *a.offset((i + m * kp) as isize) * bi;
+                *c.offset((i + ldc * j) as isize) += *a.offset((i + m * kp) as isize) * bi;
                 i += 1;
             }
             kp += 1;
@@ -225,9 +287,7 @@ pub unsafe extern "C" fn CINTdgemm_TN(
             ci = 0 as i32 as f64;
             kp = 0 as i32;
             while kp < k {
-                ci
-                    += *a.offset((kp + k * i) as isize)
-                        * *b.offset((kp + k * j) as isize);
+                ci += *a.offset((kp + k * i) as isize) * *b.offset((kp + k * j) as isize);
                 kp += 1;
             }
             *c.offset((i + m * j) as isize) = ci;

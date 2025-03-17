@@ -2,16 +2,17 @@
 // #![feature(autodiff)]
 //use std::autodiff::autodiff;
 use std::io;
+use std::time::Instant;
 
 use librint::utils::read_basis;
 
-// use librint::cint_bas::CINTcgto_cart;
-// use librint::cint1e::cint1e_ovlp_cart;
-// use librint::cint2e::cint2e_cart;
+use librint::cint1e::cint1e_ovlp_cart;
+use librint::cint2e::cint2e_cart;
+use librint::cint_bas::CINTcgto_cart;
 
 // use librint::scf::{density, energyfast};
 // use librint::scf::{nmol, angl};
-use librint::scf::{angl, integral1e, integral2e};
+use librint::scf::{angl, integral1e, integral2e, nmol};
 // use librint::utils::{split, combine};
 use librint::utils::print_arr;
 
@@ -21,10 +22,10 @@ pub const BAS_SLOTS: usize = 8;
 // #[no_mangle]
 // #[autodiff(dovlp, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
 // pub fn ovlp(
-//     out: &mut Vec<f64>, 
-//     shls: [i32; 4], 
+//     out: &mut Vec<f64>,
+//     shls: [i32; 4],
 //     atm: &mut Vec<i32>,
-//     bas: &mut Vec<i32>, 
+//     bas: &mut Vec<i32>,
 //     env1: &mut Vec<f64>,
 //     env2: &mut Vec<f64>,
 // ) {
@@ -32,7 +33,6 @@ pub const BAS_SLOTS: usize = 8;
 //     let mut env: Vec<f64> = combine(&env1, &env2);
 //     cint1e_ovlp_cart(out, shls, atm, natm as i32, bas, nbas as i32, &mut env);
 // }
-
 
 // #[no_mangle]
 // #[autodiff(denergyf, Reverse, Const, Const, Const, Duplicated, Const, Active)]
@@ -92,7 +92,7 @@ pub const BAS_SLOTS: usize = 8;
 // ) -> Vec<f64> {
 //     let (natm, nbas) = nmol(atm, bas);
 //     let nshells = angl(bas, coord);
-    
+
 //     let mut R = vec![0.0; nshells * nshells];
 
 //     let mut buf: Vec<f64>;
@@ -129,11 +129,11 @@ pub const BAS_SLOTS: usize = 8;
 //         }
 //         mu += di;
 //     }
-    
+
 //     return R;
 // }
 
-fn main() -> io::Result<()>{
+fn main() -> io::Result<()> {
     let mut atm: Vec<i32> = Vec::new();
     let mut bas: Vec<i32> = Vec::new();
     let mut env: Vec<f64> = Vec::new();
@@ -154,19 +154,19 @@ fn main() -> io::Result<()>{
 
     // let mut T = integral1e(&mut atm, &mut bas, &mut env, 0, 1);
     // println!("kin cart");
-    // print_arr(nshells, 2, &mut T);
+    // print_arr(nshells_cart, 2, &mut T);
 
     // let mut T = integral1e(&mut atm, &mut bas, &mut env, 1, 1);
     // println!("kin sph");
-    // print_arr(nshells, 2, &mut T);
+    // print_arr(nshells_sph, 2, &mut T);
 
     // let mut V = integral1e(&mut atm, &mut bas, &mut env, 0, 2);
     // println!("nuc cart");
-    // print_arr(nshells, 2, &mut V);
+    // print_arr(nshells_cart, 2, &mut V);
 
     // let mut V = integral1e(&mut atm, &mut bas, &mut env, 1, 2);
     // println!("nuc sph");
-    // print_arr(nshells, 2, &mut V);
+    // print_arr(nshells_sph, 2, &mut V);
 
     println!("repulsion cart");
     let mut R = integral2e(&mut atm, &mut bas, &mut env, 0);
@@ -189,7 +189,7 @@ fn main() -> io::Result<()>{
     //     for j in 0..nbas {
     //         shls[0] = i as i32;
     //         shls[1] = j as i32;
-            
+
     //         let di = CINTcgto_cart(i, &bas);
     //         let dj = CINTcgto_cart(j, &bas);
 
@@ -214,7 +214,7 @@ fn main() -> io::Result<()>{
     //                 shls[1] = j as i32;
     //                 shls[2] = k as i32;
     //                 shls[3] = l as i32;
-                    
+
     //                 let di = CINTcgto_cart(i, &bas);
     //                 let dj = CINTcgto_cart(j, &bas);
     //                 let dk = CINTcgto_cart(k, &bas);
@@ -246,6 +246,6 @@ fn main() -> io::Result<()>{
     // let denv = denergyfast(&mut atm, &mut bas, &mut env, &mut P);
 
     // println!("{:?}", denv);
-    
+
     Ok(())
 }

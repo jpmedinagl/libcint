@@ -6,21 +6,21 @@ use std::time::Instant;
 
 use librint::utils::read_basis;
 
-use librint::cint_bas::CINTcgto_cart;
-use librint::cint1e::cint1e_ovlp_cart;
 use librint::cint1e::cint1e_nuc_cart;
+use librint::cint1e::cint1e_ovlp_cart;
+use librint::cint_bas::CINTcgto_cart;
 use librint::intor1::cint1e_kin_cart;
 
-use librint::cint_bas::CINTcgto_spheric;
-use librint::cint1e::cint1e_ovlp_sph;
 use librint::cint1e::cint1e_nuc_sph;
+use librint::cint1e::cint1e_ovlp_sph;
+use librint::cint_bas::CINTcgto_spheric;
 use librint::intor1::cint1e_kin_sph;
 
-use librint::scf::{nmol, angl, density};
 use librint::dscf::getF;
+use librint::scf::{angl, density, nmol};
 
-use librint::utils::{print_arr, split};
 use librint::linalg::matmult;
+use librint::utils::{print_arr, split};
 
 pub const ATM_SLOTS: usize = 6;
 pub const BAS_SLOTS: usize = 8;
@@ -28,10 +28,10 @@ pub const BAS_SLOTS: usize = 8;
 #[no_mangle]
 #[autodiff(dovlpf, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
 fn ovlpf(
-    out: &mut Vec<f64>, 
-    shls: &mut Vec<i32>, 
+    out: &mut Vec<f64>,
+    shls: &mut Vec<i32>,
     atm: &mut Vec<i32>,
-    bas: &mut Vec<i32>, 
+    bas: &mut Vec<i32>,
     env1: &mut Vec<f64>,
     env2: &mut Vec<f64>,
 ) {
@@ -70,8 +70,10 @@ pub fn dStensor(
 
     for i in 0..nbas {
         for j in 0..nbas {
-            shls[0] = i as i32; let di = CINTcgto_cart(i, &bas) as usize;
-            shls[1] = j as i32; let dj = CINTcgto_cart(j, &bas) as usize;
+            shls[0] = i as i32;
+            let di = CINTcgto_cart(i, &bas) as usize;
+            shls[1] = j as i32;
+            let dj = CINTcgto_cart(j, &bas) as usize;
 
             buf = vec![0.0; di * dj];
             dbuf = vec![0.0; di * dj];
@@ -80,16 +82,18 @@ pub fn dStensor(
                 dbuf[k] = 1.0;
 
                 denv = vec![0.0; env2.len()];
-                dovlpf(&mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv);
+                dovlpf(
+                    &mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv,
+                );
                 for l in 0..denv.len() {
                     dS.push(denv[l]);
                 }
-                
+
                 dbuf[k] = 0.0;
             }
         }
     }
-    
+
     return dS;
 }
 
@@ -116,10 +120,12 @@ pub fn dScont(
 
     mu = 0;
     for i in 0..nbas {
-        shls[0] = i as i32; let di = CINTcgto_cart(i, &bas) as usize;
+        shls[0] = i as i32;
+        let di = CINTcgto_cart(i, &bas) as usize;
         nu = 0;
         for j in 0..nbas {
-            shls[1] = j as i32; let dj = CINTcgto_cart(j, &bas) as usize;
+            shls[1] = j as i32;
+            let dj = CINTcgto_cart(j, &bas) as usize;
 
             buf = vec![0.0; di * dj];
             dbuf = vec![0.0; di * dj];
@@ -130,11 +136,13 @@ pub fn dScont(
                     dbuf[c] = 1.0;
 
                     denv = vec![0.0; env2.len()];
-                    dovlpf(&mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv);
+                    dovlpf(
+                        &mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv,
+                    );
                     for l in 0..env2.len() {
                         dS[l] += Q[nuj * nshells + mui] * denv[l];
                     }
-                    
+
                     dbuf[c] = 0.0;
                     c += 1;
                 }
@@ -143,17 +151,12 @@ pub fn dScont(
         }
         mu += di;
     }
-    
+
     return dS;
 }
 
 #[no_mangle]
-pub fn dSgw(
-    atm: &mut Vec<i32>,
-    bas: &mut Vec<i32>,
-    env: &mut Vec<f64>,
-    P: &Vec<f64>,
-) -> Vec<f64> {
+pub fn dSgw(atm: &mut Vec<i32>, bas: &mut Vec<i32>, env: &mut Vec<f64>, P: &Vec<f64>) -> Vec<f64> {
     let nshells = angl(bas, 0);
 
     let F = getF(atm, bas, env, P);
@@ -191,16 +194,20 @@ fn main() -> io::Result<()> {
     let j = 0;
 
     let mut shls = vec![0; 4];
-    shls[0] = i as i32; let di = CINTcgto_cart(i, &bas) as usize;
-    shls[1] = j as i32; let dj = CINTcgto_cart(j, &bas) as usize;
+    shls[0] = i as i32;
+    let di = CINTcgto_cart(i, &bas) as usize;
+    shls[1] = j as i32;
+    let dj = CINTcgto_cart(j, &bas) as usize;
 
     let mut buf = vec![0.0; di * dj];
     let mut dbuf = vec![0.0; di * dj];
 
-    let mut denv = vec![0.0; s2-s1];
+    let mut denv = vec![0.0; s2 - s1];
 
     let dnow = Instant::now();
-    ovlpf(&mut buf, &mut shls, &mut atm, &mut bas, &mut env1, &mut env2);
+    ovlpf(
+        &mut buf, &mut shls, &mut atm, &mut bas, &mut env1, &mut env2,
+    );
     let delapsed_time = dnow.elapsed();
 
     println!("ovlp time: {}", delapsed_time.as_micros());
@@ -208,7 +215,9 @@ fn main() -> io::Result<()> {
     dbuf[0] = 1.0;
 
     let dnow = Instant::now();
-    dovlpf(&mut buf, &mut dbuf, &mut shls, &mut atm, &mut bas, &mut env1, &mut env2, &mut denv);
+    dovlpf(
+        &mut buf, &mut dbuf, &mut shls, &mut atm, &mut bas, &mut env1, &mut env2, &mut denv,
+    );
     let delapsed_time = dnow.elapsed();
 
     println!("dovlp time: {}", delapsed_time.as_micros());
@@ -222,7 +231,7 @@ fn main() -> io::Result<()> {
     let delapsed_time = dnow.elapsed();
 
     println!("tensor time: {}", delapsed_time.as_micros());
-    
+
     let dnow = Instant::now();
     let mut dS = dSgw(&mut atm, &mut bas, &mut env, &P);
     let delapsed_time = dnow.elapsed();

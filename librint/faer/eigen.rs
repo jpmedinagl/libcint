@@ -1,8 +1,8 @@
 extern crate librint;
 
-use faer::mat;
-use faer::linalg::solvers::Eigendecomposition;
 use faer::complex_native::c64;
+use faer::linalg::solvers::Eigendecomposition;
+use faer::mat;
 
 fn main() {
     // Construct a real matrix
@@ -22,7 +22,6 @@ fn main() {
         print!("{} ", eign.read(i).re());
     }
     println!();
-
 
     // Print the eigenvectors
     println!("Eigenvectors:");

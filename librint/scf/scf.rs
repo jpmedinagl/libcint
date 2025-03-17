@@ -3,14 +3,14 @@
 use std::autodiff::autodiff;
 use std::io;
 
-use librint::utils::{read_basis, print_arr, split};
+use librint::utils::{print_arr, read_basis, split};
 
-use librint::scf::{nmol, angl, density, norm, calc_F};
+use librint::scf::{angl, calc_F, density, nmol, norm};
 
-use librint::cint_bas::{CINTcgto_cart, CINTcgto_spheric};
-use librint::cint1e::{cint1e_ovlp_cart, cint1e_nuc_cart, cint1e_ovlp_sph, cint1e_nuc_sph};
-use librint::intor1::{cint1e_kin_cart, cint1e_kin_sph};
+use librint::cint1e::{cint1e_nuc_cart, cint1e_nuc_sph, cint1e_ovlp_cart, cint1e_ovlp_sph};
 use librint::cint2e::{cint2e_cart, cint2e_sph};
+use librint::cint_bas::{CINTcgto_cart, CINTcgto_spheric};
+use librint::intor1::{cint1e_kin_cart, cint1e_kin_sph};
 
 #[no_mangle]
 pub fn kinf(
@@ -22,7 +22,7 @@ pub fn kinf(
 ) -> Vec<f64> {
     let (natm, nbas) = nmol(atm, bas);
     let nshells = angl(bas, 0);
-    
+
     let mut R = vec![0.0; nshells * nshells];
 
     let mut buf: Vec<f64>;
@@ -59,7 +59,7 @@ pub fn kinf(
         }
         mu += di;
     }
-    
+
     return R;
 }
 
@@ -73,7 +73,7 @@ pub fn nucf(
 ) -> Vec<f64> {
     let (natm, nbas) = nmol(atm, bas);
     let nshells = angl(bas, 0);
-    
+
     let mut R = vec![0.0; nshells * nshells];
 
     let mut buf: Vec<f64>;
@@ -110,17 +110,12 @@ pub fn nucf(
         }
         mu += di;
     }
-    
+
     return R;
 }
 
 #[no_mangle]
-pub fn twof(
-    atm: &mut Vec<i32>,
-    bas: &mut Vec<i32>,
-    env: &mut Vec<f64>,
-    coord: i32,
-) -> Vec<f64> {
+pub fn twof(atm: &mut Vec<i32>, bas: &mut Vec<i32>, env: &mut Vec<f64>, coord: i32) -> Vec<f64> {
     let (natm, nbas) = nmol(atm, bas);
     let nshells = angl(bas, 0);
 
@@ -153,21 +148,24 @@ pub fn twof(
             for k in 0..nbas {
                 shls[2] = k as i32;
                 dk = CINTcgto_spheric(k, &bas) as usize;
-                
+
                 lam = 0;
                 for l in 0..nbas {
                     shls[3] = l as i32;
                     dl = CINTcgto_spheric(l, &bas) as usize;
-                    
+
                     buf = vec![0.0; di * dj * dk * dl];
-        
+
                     cint2e_sph(&mut buf, &mut shls, atm, natm as i32, bas, nbas as i32, env);
                     let mut c: usize = 0;
                     for laml in lam..(lam + dl) {
                         for sigk in sig..(sig + dk) {
                             for nuj in nu..(nu + dj) {
                                 for mui in mu..(mu + di) {
-                                    R[mui*nshells.pow(3) + nuj*nshells.pow(2) + sigk*nshells + laml] = buf[c];
+                                    R[mui * nshells.pow(3)
+                                        + nuj * nshells.pow(2)
+                                        + sigk * nshells
+                                        + laml] = buf[c];
                                     c += 1;
                                 }
                             }
@@ -211,7 +209,7 @@ pub fn energyw(
     let mut E0: f64 = 0.0;
     for mu in 0..nshells {
         for nu in 0..nshells {
-            E0 += 0.5 * P[mu*nshells + nu] * (H[mu*nshells + nu]  + F[mu*nshells + nu]);
+            E0 += 0.5 * P[mu * nshells + nu] * (H[mu * nshells + nu] + F[mu * nshells + nu]);
         }
     }
 
@@ -219,7 +217,7 @@ pub fn energyw(
     for i in 0..natm {
         for j in 0..natm {
             if i > j {
-                Enuc += (atm[i*6 + 0] * atm[j*6 + 0]) as f64 / (norm(atm, env, i, j));
+                Enuc += (atm[i * 6 + 0] * atm[j * 6 + 0]) as f64 / (norm(atm, env, i, j));
             }
         }
     }
@@ -283,8 +281,10 @@ fn main() -> io::Result<()> {
     let mut env1: Vec<f64> = env[0..s1].to_vec();
     let mut env2: Vec<f64> = env[s1..s2].to_vec();
 
-    let mut denv = vec![0.0; s2-s1];
-    let _dEtot = gradscf(&mut atm, &mut bas, &mut env1, &mut env2, &mut denv, &mut P, 1.0);
+    let mut denv = vec![0.0; s2 - s1];
+    let _dEtot = gradscf(
+        &mut atm, &mut bas, &mut env1, &mut env2, &mut denv, &mut P, 1.0,
+    );
     println!("denv: {:.6?}", denv);
 
     Ok(())

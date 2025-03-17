@@ -2,22 +2,23 @@
 #![feature(autodiff)]
 
 use std::autodiff::autodiff;
-use crate::cint_bas::CINTcgto_cart;
-use crate::cint1e::{cint1e_ovlp_cart, cint1e_nuc_cart};
-use crate::intor1::cint1e_kin_cart;
+use crate::cint1e::{cint1e_nuc_cart, cint1e_ovlp_cart};
 use crate::cint2e::cint2e_cart;
 
-use crate::scf::{nmol, angl, integral1e, integral2e, calc_F, energy, energyfast};
-use crate::utils::{split, combine};
+use crate::cint_bas::CINTcgto_cart;
+use crate::intor1::cint1e_kin_cart;
+
 use crate::linalg::matmult;
+use crate::scf::{angl, calc_F, energy, energyfast, integral1e, integral2e, nmol};
+use crate::utils::{combine, split};
 
 #[no_mangle]
 #[autodiff(dovlp, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
 pub fn ovlp(
-    out: &mut Vec<f64>, 
-    shls: &mut Vec<i32>, 
+    out: &mut Vec<f64>,
+    shls: [i32; 4],
     atm: &mut Vec<i32>,
-    bas: &mut Vec<i32>, 
+    bas: &mut Vec<i32>,
     env1: &mut Vec<f64>,
     env2: &mut Vec<f64>,
 ) {
@@ -26,14 +27,13 @@ pub fn ovlp(
     cint1e_ovlp_cart(out, shls, atm, natm as i32, bas, nbas as i32, &mut env);
 }
 
-
 #[no_mangle]
 #[autodiff(dkin, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
 fn kin(
-    out: &mut Vec<f64>, 
-    shls: &mut Vec<i32>, 
+    out: &mut Vec<f64>,
+    shls: [i32; 4],
     atm: &mut Vec<i32>,
-    bas: &mut Vec<i32>, 
+    bas: &mut Vec<i32>,
     env1: &mut Vec<f64>,
     env2: &mut Vec<f64>,
 ) {
@@ -45,10 +45,10 @@ fn kin(
 #[no_mangle]
 #[autodiff(dnuc, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
 fn nuc(
-    out: &mut Vec<f64>, 
-    shls: &mut Vec<i32>, 
+    out: &mut Vec<f64>,
+    shls: [i32; 4],
     atm: &mut Vec<i32>,
-    bas: &mut Vec<i32>, 
+    bas: &mut Vec<i32>,
     env1: &mut Vec<f64>,
     env2: &mut Vec<f64>,
 ) {
@@ -60,10 +60,10 @@ fn nuc(
 #[no_mangle]
 #[autodiff(dtwo, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
 fn two(
-    out: &mut Vec<f64>, 
-    shls: &mut Vec<i32>, 
+    out: &mut Vec<f64>,
+    shls: [i32; 4],
     atm: &mut Vec<i32>,
-    bas: &mut Vec<i32>, 
+    bas: &mut Vec<i32>,
     env1: &mut Vec<f64>,
     env2: &mut Vec<f64>,
 ) {
@@ -88,17 +88,19 @@ fn dSf(
     let mut buf;
     let mut dbuf;
     let mut denv;
-    let mut shls = vec![0; 4];
+    let mut shls = [0; 4];
 
     let mut mu;
     let mut nu;
 
     mu = 0;
     for i in 0..nbas {
-        shls[0] = i as i32; let di = CINTcgto_cart(i, &bas) as usize;
+        shls[0] = i as i32;
+        let di = CINTcgto_cart(i, &bas) as usize;
         nu = 0;
         for j in 0..nbas {
-            shls[1] = j as i32; let dj = CINTcgto_cart(j, &bas) as usize;
+            shls[1] = j as i32;
+            let dj = CINTcgto_cart(j, &bas) as usize;
 
             buf = vec![0.0; di * dj];
             dbuf = vec![0.0; di * dj];
@@ -109,11 +111,11 @@ fn dSf(
                     dbuf[c] = 1.0;
 
                     denv = vec![0.0; env2.len()];
-                    dovlp(&mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv);
+                    dovlp(&mut buf, &mut dbuf, shls, atm, bas, env1, env2, &mut denv);
                     for l in 0..env2.len() {
                         dS[l] += Q[nuj * nshells + mui] * denv[l];
                     }
-                    
+
                     dbuf[c] = 0.0;
                     c += 1;
                 }
@@ -122,10 +124,9 @@ fn dSf(
         }
         mu += di;
     }
-    
+
     return dS;
 }
-
 
 #[no_mangle]
 fn dTf(
@@ -143,32 +144,34 @@ fn dTf(
     let mut buf;
     let mut dbuf;
     let mut denv;
-    let mut shls = vec![0; 4];
+    let mut shls = [0; 4];
 
     let mut mu;
     let mut nu;
 
     mu = 0;
     for i in 0..nbas {
-        shls[0] = i as i32; let di = CINTcgto_cart(i, &bas) as usize;
+        shls[0] = i as i32;
+        let di = CINTcgto_cart(i, &bas) as usize;
         nu = 0;
         for j in 0..nbas {
-            shls[1] = j as i32; let dj = CINTcgto_cart(j, &bas) as usize;
+            shls[1] = j as i32;
+            let dj = CINTcgto_cart(j, &bas) as usize;
 
             buf = vec![0.0; di * dj];
             dbuf = vec![0.0; di * dj];
-            
+
             let mut c: usize = 0;
             for nuj in nu..(nu + dj) {
                 for mui in mu..(mu + di) {
                     dbuf[c] = 1.0;
 
                     denv = vec![0.0; env2.len()];
-                    dkin(&mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv);
+                    dkin(&mut buf, &mut dbuf, shls, atm, bas, env1, env2, &mut denv);
                     for l in 0..env2.len() {
                         dT[l] += P[nuj * nshells + mui] * denv[l];
                     }
-                    
+
                     dbuf[c] = 0.0;
                     c += 1;
                 }
@@ -177,7 +180,7 @@ fn dTf(
         }
         mu += di;
     }
-    
+
     return dT;
 }
 
@@ -197,32 +200,34 @@ fn dVf(
     let mut buf;
     let mut dbuf;
     let mut denv;
-    let mut shls = vec![0; 4];
+    let mut shls = [0; 4];
 
     let mut mu;
     let mut nu;
 
     mu = 0;
     for i in 0..nbas {
-        shls[0] = i as i32; let di = CINTcgto_cart(i, &bas) as usize;
+        shls[0] = i as i32;
+        let di = CINTcgto_cart(i, &bas) as usize;
         nu = 0;
         for j in 0..nbas {
-            shls[1] = j as i32; let dj = CINTcgto_cart(j, &bas) as usize;
+            shls[1] = j as i32;
+            let dj = CINTcgto_cart(j, &bas) as usize;
 
             buf = vec![0.0; di * dj];
             dbuf = vec![0.0; di * dj];
-            
+
             let mut c: usize = 0;
             for nuj in nu..(nu + dj) {
                 for mui in mu..(mu + di) {
                     dbuf[c] = 1.0;
 
                     denv = vec![0.0; env2.len()];
-                    dnuc(&mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv);
+                    dnuc(&mut buf, &mut dbuf, shls, atm, bas, env1, env2, &mut denv);
                     for l in 0..env2.len() {
                         dV[l] += P[nuj * nshells + mui] * denv[l];
                     }
-                    
+
                     dbuf[c] = 0.0;
                     c += 1;
                 }
@@ -231,7 +236,7 @@ fn dVf(
         }
         mu += di;
     }
-    
+
     return dV;
 }
 
@@ -260,12 +265,7 @@ pub fn dHcoreg(
 }
 
 #[no_mangle]
-pub fn getF(
-    atm: &mut Vec<i32>,
-    bas: &mut Vec<i32>,
-    env: &mut Vec<f64>,
-    P: &Vec<f64>,
-) -> Vec<f64> {
+pub fn getF(atm: &mut Vec<i32>, bas: &mut Vec<i32>, env: &mut Vec<f64>, P: &Vec<f64>) -> Vec<f64> {
     let nshells = angl(&bas, 0);
 
     let T = integral1e(atm, bas, env, 0, 1);
@@ -282,12 +282,7 @@ pub fn getF(
 }
 
 #[no_mangle]
-pub fn dSg(
-    atm: &mut Vec<i32>,
-    bas: &mut Vec<i32>,
-    env: &mut Vec<f64>,
-    P: &Vec<f64>,
-) -> Vec<f64> {
+pub fn dSg(atm: &mut Vec<i32>, bas: &mut Vec<i32>, env: &mut Vec<f64>, P: &Vec<f64>) -> Vec<f64> {
     let nshells = angl(&bas, 0);
 
     let F = getF(atm, bas, env, P);
@@ -321,7 +316,7 @@ pub fn dRf(
     let mut buf;
     let mut dbuf;
     let mut denv;
-    let mut shls = vec![0; 4];
+    let mut shls = [0; 4];
 
     let mut mu;
     let mut nu;
@@ -330,20 +325,24 @@ pub fn dRf(
 
     mu = 0;
     for i in 0..nbas {
-        shls[0] = i as i32; let di = CINTcgto_cart(i, &bas) as usize;
+        shls[0] = i as i32;
+        let di = CINTcgto_cart(i, &bas) as usize;
         nu = 0;
         for j in 0..nbas {
-            shls[1] = j as i32; let dj = CINTcgto_cart(j, &bas) as usize;
+            shls[1] = j as i32;
+            let dj = CINTcgto_cart(j, &bas) as usize;
             sig = 0;
             for k in 0..nbas {
-                shls[2] = k as i32; let dk = CINTcgto_cart(k, &bas) as usize;
+                shls[2] = k as i32;
+                let dk = CINTcgto_cart(k, &bas) as usize;
                 lam = 0;
                 for l in 0..nbas {
-                    shls[3] = l as i32; let dl = CINTcgto_cart(l, &bas) as usize;
+                    shls[3] = l as i32;
+                    let dl = CINTcgto_cart(l, &bas) as usize;
 
                     buf = vec![0.0; di * dj * dk * dl];
                     dbuf = vec![0.0; di * dj * dk * dl];
-                    
+
                     let mut c: usize = 0;
                     for laml in lam..(lam + dl) {
                         for sigk in sig..(sig + dk) {
@@ -352,11 +351,18 @@ pub fn dRf(
                                     dbuf[c] = 1.0;
 
                                     denv = vec![0.0; env2.len()];
-                                    dtwo(&mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv);
+                                    dtwo(
+                                        &mut buf, &mut dbuf, shls, atm, bas, env1, env2, &mut denv,
+                                    );
                                     for l in 0..env2.len() {
-                                        dR[l] += 0.5 * (P[mui*nshells + nuj] * P[sigk*nshells + laml] - 0.5 * P[mui*nshells + sigk] * P[nuj*nshells + laml]) * denv[l];
+                                        dR[l] += 0.5
+                                            * (P[mui * nshells + nuj] * P[sigk * nshells + laml]
+                                                - 0.5
+                                                    * P[mui * nshells + sigk]
+                                                    * P[nuj * nshells + laml])
+                                            * denv[l];
                                     }
-                                    
+
                                     dbuf[c] = 0.0;
                                     c += 1;
                                 }
@@ -371,17 +377,12 @@ pub fn dRf(
         }
         mu += di;
     }
-    
+
     return dR;
 }
 
 #[no_mangle]
-pub fn dRg(
-    atm: &mut Vec<i32>,
-    bas: &mut Vec<i32>,
-    env: &mut Vec<f64>,
-    P: &Vec<f64>,
-) -> Vec<f64> {
+pub fn dRg(atm: &mut Vec<i32>, bas: &mut Vec<i32>, env: &mut Vec<f64>, P: &Vec<f64>) -> Vec<f64> {
     let (s1, s2) = split(bas);
 
     let mut env1: Vec<f64> = env[0..s1].to_vec();
@@ -399,7 +400,7 @@ pub fn danalyticalg(
     P: &Vec<f64>,
 ) -> Vec<f64> {
     let dH = dHcoreg(atm, bas, env, P);
-    let dR = dRg(atm, bas, env, P); 
+    let dR = dRg(atm, bas, env, P);
     let dS = dSg(atm, bas, env, P);
 
     let mut dtotal = vec![0.0; dH.len()];
@@ -435,7 +436,7 @@ pub fn gradenergy(
     let mut env1: Vec<f64> = env[0..s1].to_vec();
     let mut env2: Vec<f64> = env[s1..s2].to_vec();
 
-    let mut denv: Vec<f64> = vec![0.0; s2-s1];
+    let mut denv: Vec<f64> = vec![0.0; s2 - s1];
     let _ = denergy(atm, bas, &mut env1, &mut env2, &mut denv, P, 1.0);
 
     return denv;
@@ -484,7 +485,7 @@ pub fn gradenergyfast(
     let mut env1: Vec<f64> = env[0..s1].to_vec();
     let mut env2: Vec<f64> = env[s1..s2].to_vec();
 
-    let mut denv: Vec<f64> = vec![0.0; s2-s1];
+    let mut denv: Vec<f64> = vec![0.0; s2 - s1];
     let _ = denergyf(atm, bas, &mut env1, &mut env2, &mut denv, P, 1.0);
 
     return denv;

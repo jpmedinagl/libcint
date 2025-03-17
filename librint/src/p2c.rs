@@ -1,7 +1,7 @@
 #![allow(non_snake_case, non_upper_case_globals, non_camel_case_types)]
 
-use crate::scf::{integral1e, integral2e, density, energyfast, scf};
-use crate::dscf::{dHcoreg, dSg, dRg, gradenergy, danalyticalg, denergyfast};
+use crate::dscf::{dHcoreg, dRg, dSg, danalyticalg, denergyfast, gradenergy};
+use crate::scf::{density, energyfast, integral1e, integral2e, scf};
 
 #[no_mangle]
 fn c2r_arr(
@@ -21,7 +21,7 @@ fn c2r_arr(
     let env_slice: &mut [f64] = unsafe { std::slice::from_raw_parts_mut(env_p, env_l) };
     let env: Vec<f64> = env_slice.to_vec();
 
-    return (atm, bas, env); 
+    return (atm, bas, env);
 }
 
 #[no_mangle]
@@ -77,7 +77,7 @@ pub extern "C" fn density_c(
     let (mut atm, mut bas, mut env) = c2r_arr(atm_p, atm_l, bas_p, bas_l, env_p, env_l);
 
     let mut P: Vec<f64> = density(&mut atm, &mut bas, &mut env, nelec, imax, conv);
-    
+
     let P_ptr = P.as_mut_ptr();
     std::mem::forget(P);
     return P_ptr;

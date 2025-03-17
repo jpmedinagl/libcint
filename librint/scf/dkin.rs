@@ -6,17 +6,17 @@ use std::time::Instant;
 
 use librint::utils::read_basis;
 
-use librint::cint_bas::CINTcgto_cart;
-use librint::cint1e::cint1e_ovlp_cart;
 use librint::cint1e::cint1e_nuc_cart;
+use librint::cint1e::cint1e_ovlp_cart;
+use librint::cint_bas::CINTcgto_cart;
 use librint::intor1::cint1e_kin_cart;
 
-use librint::cint_bas::CINTcgto_spheric;
-use librint::cint1e::cint1e_ovlp_sph;
 use librint::cint1e::cint1e_nuc_sph;
+use librint::cint1e::cint1e_ovlp_sph;
+use librint::cint_bas::CINTcgto_spheric;
 use librint::intor1::cint1e_kin_sph;
 
-use librint::scf::{nmol, angl, density};
+use librint::scf::{angl, density, nmol};
 use librint::utils::split;
 
 pub const ATM_SLOTS: usize = 6;
@@ -25,10 +25,10 @@ pub const BAS_SLOTS: usize = 8;
 #[no_mangle]
 #[autodiff(dkinw, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
 fn kinw(
-    out: &mut Vec<f64>, 
-    shls: &mut Vec<i32>, 
+    out: &mut Vec<f64>,
+    shls: &mut Vec<i32>,
     atm: &mut Vec<i32>,
-    bas: &mut Vec<i32>, 
+    bas: &mut Vec<i32>,
     env1: &mut Vec<f64>,
     env2: &mut Vec<f64>,
 ) {
@@ -51,10 +51,10 @@ fn kinw(
 #[no_mangle]
 #[autodiff(dnucw, Reverse, Duplicated, Const, Const, Const, Const, Duplicated)]
 fn nucw(
-    out: &mut Vec<f64>, 
-    shls: &mut Vec<i32>, 
+    out: &mut Vec<f64>,
+    shls: &mut Vec<i32>,
     atm: &mut Vec<i32>,
-    bas: &mut Vec<i32>, 
+    bas: &mut Vec<i32>,
     env1: &mut Vec<f64>,
     env2: &mut Vec<f64>,
 ) {
@@ -97,10 +97,12 @@ fn dTk(
 
     mu = 0;
     for i in 0..nbas {
-        shls[0] = i as i32; let di = CINTcgto_cart(i, &bas) as usize;
+        shls[0] = i as i32;
+        let di = CINTcgto_cart(i, &bas) as usize;
         nu = 0;
         for j in 0..nbas {
-            shls[1] = j as i32; let dj = CINTcgto_cart(j, &bas) as usize;
+            shls[1] = j as i32;
+            let dj = CINTcgto_cart(j, &bas) as usize;
 
             buf = vec![0.0; di * dj];
             dbuf = vec![0.0; di * dj];
@@ -111,11 +113,13 @@ fn dTk(
                     dbuf[c] = 1.0;
 
                     denv = vec![0.0; env2.len()];
-                    dkinw(&mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv);
+                    dkinw(
+                        &mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv,
+                    );
                     for l in 0..env2.len() {
                         dS[l] += P[nuj * nshells + mui] * denv[l];
                     }
-                    
+
                     dbuf[c] = 0.0;
                     c += 1;
                 }
@@ -124,7 +128,7 @@ fn dTk(
         }
         mu += di;
     }
-    
+
     return dS;
 }
 
@@ -151,10 +155,12 @@ pub fn dVk(
 
     mu = 0;
     for i in 0..nbas {
-        shls[0] = i as i32; let di = CINTcgto_cart(i, &bas) as usize;
+        shls[0] = i as i32;
+        let di = CINTcgto_cart(i, &bas) as usize;
         nu = 0;
         for j in 0..nbas {
-            shls[1] = j as i32; let dj = CINTcgto_cart(j, &bas) as usize;
+            shls[1] = j as i32;
+            let dj = CINTcgto_cart(j, &bas) as usize;
 
             buf = vec![0.0; di * dj];
             dbuf = vec![0.0; di * dj];
@@ -165,11 +171,13 @@ pub fn dVk(
                     dbuf[c] = 1.0;
 
                     denv = vec![0.0; env2.len()];
-                    dnucw(&mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv);
+                    dnucw(
+                        &mut buf, &mut dbuf, &mut shls, atm, bas, env1, env2, &mut denv,
+                    );
                     for l in 0..env2.len() {
                         dS[l] += P[nuj * nshells + mui] * denv[l];
                     }
-                    
+
                     dbuf[c] = 0.0;
                     c += 1;
                 }
@@ -178,7 +186,7 @@ pub fn dVk(
         }
         mu += di;
     }
-    
+
     return dS;
 }
 
@@ -217,16 +225,20 @@ fn main() -> io::Result<()> {
     let j = 0;
 
     let mut shls = vec![0; 4];
-    shls[0] = i as i32; let di = CINTcgto_cart(i, &bas) as usize;
-    shls[1] = j as i32; let dj = CINTcgto_cart(j, &bas) as usize;
+    shls[0] = i as i32;
+    let di = CINTcgto_cart(i, &bas) as usize;
+    shls[1] = j as i32;
+    let dj = CINTcgto_cart(j, &bas) as usize;
 
     let mut buf = vec![0.0; di * dj];
     let mut dbuf = vec![0.0; di * dj];
 
-    let mut denv = vec![0.0; s2-s1];
+    let mut denv = vec![0.0; s2 - s1];
 
     let dnow = Instant::now();
-    kinw(&mut buf, &mut shls, &mut atm, &mut bas, &mut env1, &mut env2);
+    kinw(
+        &mut buf, &mut shls, &mut atm, &mut bas, &mut env1, &mut env2,
+    );
     let delapsed_time = dnow.elapsed();
 
     println!("kin time: {}", delapsed_time.as_micros());
@@ -234,7 +246,9 @@ fn main() -> io::Result<()> {
     dbuf[0] = 1.0;
 
     let dnow = Instant::now();
-    dkinw(&mut buf, &mut dbuf, &mut shls, &mut atm, &mut bas, &mut env1, &mut env2, &mut denv);
+    dkinw(
+        &mut buf, &mut dbuf, &mut shls, &mut atm, &mut bas, &mut env1, &mut env2, &mut denv,
+    );
     let delapsed_time = dnow.elapsed();
 
     println!("dkin time: {}", delapsed_time.as_micros());
@@ -249,16 +263,20 @@ fn main() -> io::Result<()> {
     let j = 0;
 
     let mut shls = vec![0; 4];
-    shls[0] = i as i32; let di = CINTcgto_cart(i, &bas) as usize;
-    shls[1] = j as i32; let dj = CINTcgto_cart(j, &bas) as usize;
+    shls[0] = i as i32;
+    let di = CINTcgto_cart(i, &bas) as usize;
+    shls[1] = j as i32;
+    let dj = CINTcgto_cart(j, &bas) as usize;
 
     let mut buf = vec![0.0; di * dj];
     let mut dbuf = vec![0.0; di * dj];
 
-    let mut denv = vec![0.0; s2-s1];
+    let mut denv = vec![0.0; s2 - s1];
 
     let dnow = Instant::now();
-    nucw(&mut buf, &mut shls, &mut atm, &mut bas, &mut env1, &mut env2);
+    nucw(
+        &mut buf, &mut shls, &mut atm, &mut bas, &mut env1, &mut env2,
+    );
     let delapsed_time = dnow.elapsed();
 
     println!("nuc time: {}", delapsed_time.as_micros());
@@ -266,7 +284,9 @@ fn main() -> io::Result<()> {
     dbuf[0] = 1.0;
 
     let dnow = Instant::now();
-    dnucw(&mut buf, &mut dbuf, &mut shls, &mut atm, &mut bas, &mut env1, &mut env2, &mut denv);
+    dnucw(
+        &mut buf, &mut dbuf, &mut shls, &mut atm, &mut bas, &mut env1, &mut env2, &mut denv,
+    );
     let delapsed_time = dnow.elapsed();
 
     println!("dnuc time: {}", delapsed_time.as_micros());
