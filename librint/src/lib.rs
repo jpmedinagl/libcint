@@ -1,12 +1,23 @@
-// #![feature(autodiff)]
+#![feature(autodiff)]
+#![allow(unused_variables,improper_ctypes_definitions,static_mut_refs,non_snake_case)]
+
+use std::path::PathBuf;
 
 // pub mod p2r; // pyo3 bindings
 
-// pub mod dscf;
+pub fn get_path() -> PathBuf {
+    let p = std::env::current_dir().unwrap();
+    // now apend to find sto3g.txt
+    let path = p.join("molecules/h2o/sto3g.txt");
+    assert!(path.exists());
+    path
+}
+
 pub mod scf;
 
-pub mod linalg;
-// pub mod p2c;
+pub mod dscf;
+pub mod p2c;
+
 pub mod utils;
 
 pub mod cint;

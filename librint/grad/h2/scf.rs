@@ -1,4 +1,4 @@
-#![allow(non_snake_case, non_upper_case_globals)]
+#![allow(non_snake_case, non_upper_case_globals,unused_variables,improper_ctypes_definitions,static_mut_refs)]
 
 use librint::cint1e::cint1e_nuc_cart;
 use librint::cint1e::cint1e_nuc_sph;

@@ -1,6 +1,6 @@
 #![allow(non_snake_case, non_upper_case_globals)]
 #![feature(autodiff)]
-
+use std::autodiff::autodiff;
 use std::io;
 use std::time::Instant;
 
@@ -179,8 +179,8 @@ fn main() -> io::Result<()> {
     let mut bas = Vec::new();
     let mut env = Vec::new();
 
-    let path = "/u/jpmedina/libcint/librint/molecules/h2/sto3g.txt";
-    read_basis(path, &mut atm, &mut bas, &mut env)?;
+    let path = librint::get_path();
+    read_basis(&path, &mut atm, &mut bas, &mut env);
 
     let nelec = 2;
 

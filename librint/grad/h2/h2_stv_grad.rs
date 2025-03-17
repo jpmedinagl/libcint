@@ -1,6 +1,6 @@
-#![allow(non_snake_case, non_upper_case_globals)]
+#![allow(non_snake_case, non_upper_case_globals,unused_variables,improper_ctypes_definitions,static_mut_refs)]
 #![feature(autodiff)]
-
+use std::autodiff::autodiff;
 use librint::utils::read_basis;
 
 use librint::cint1e::cint1e_ovlp_cart;
@@ -30,8 +30,8 @@ fn main() {
     let mut bas: Vec<i32> = Vec::new();
     let mut env: Vec<f64> = Vec::new();
 
-    let path = "/u/jpmedina/libcint/librint/molecules/h2/sto3g.txt";
-    read_basis(path, &mut atm, &mut bas, &mut env);
+    let path = librint::get_path();
+    read_basis(&path, &mut atm, &mut bas, &mut env);
 
     const natm: usize = 2;
     const nbas: usize = 2;
