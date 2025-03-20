@@ -13,6 +13,7 @@ pub fn get_path() -> PathBuf {
     path
 }
 
+pub mod linalg;
 pub mod scf;
 
 pub mod dscf;
