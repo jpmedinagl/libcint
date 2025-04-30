@@ -46,10 +46,10 @@ include(GNUInstallDirs)
 
 ## ENZYME
 
-find_package(Enzyme REQUIRED CONFIG NO_DEFAULT_PATH)
-message("found dir ${Enzyme_DIR}")
-get_property(importTargetsAfter DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY IMPORTED_TARGETS)
-message("imported targets ${importTargetsAfter}")
+# find_package(Enzyme REQUIRED CONFIG NO_DEFAULT_PATH)
+# message("found dir ${Enzyme_DIR}")
+# get_property(importTargetsAfter DIRECTORY "${CMAKE_SOURCE_DIR}" PROPERTY IMPORTED_TARGETS)
+# message("imported targets ${importTargetsAfter}")
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 find_package(QUADMATH)
