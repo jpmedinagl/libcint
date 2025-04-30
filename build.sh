@@ -7,5 +7,5 @@ cd build
 
 ENZYME=/u/jpmedina/Enzyme/enzyme/build
 
-cmake -G Ninja -DENABLE_STATIC=1 -DEnzyme_DIR=$ENZYME -DSO=0 -DGRAD=0 -DSCF=1 ..
+cmake -G Ninja -DENABLE_STATIC=1 -DEnzyme_DIR=$ENZYME -DSO=0 -DGRAD=0 -DSCF=0 -DFAST=1 ..
 ninja

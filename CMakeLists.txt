@@ -110,6 +110,7 @@ target_link_libraries(cint -lm -flto) # LLDEnzymeFlags LLDEnzymeLooseTypeFlags)
 option(SO "build so" 0)
 option(GRAD "build grad" 0)
 option(SCF "build scf" 0)
+option(FAST "build fast" 0)
 
 add_subdirectory(diagonal)
 
@@ -125,6 +126,10 @@ else()
 
   if (SCF)
     add_subdirectory(scf)
+  endif()
+
+  if (FAST)
+    add_subdirectory(fast)
   endif()
 endif()
 
